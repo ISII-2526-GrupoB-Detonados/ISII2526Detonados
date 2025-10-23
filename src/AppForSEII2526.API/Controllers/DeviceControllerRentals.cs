@@ -6,14 +6,14 @@ namespace AppForSEII2526.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DeviceController : ControllerBase
+    public class DeviceControllerRentals : ControllerBase
     {
-        //ermite interactuar con la base de datos a través de Entity Framework Core.
+        //Permite interactuar con la base de datos a través de Entity Framework Core.
         private readonly ApplicationDbContext _context;
         //Variable para escribir logs,  Permite registrar información,
         // errores, advertencias, etc. específicos de DeviceController
-        private readonly ILogger<DeviceController> _logger;
-        public DeviceController(ApplicationDbContext context, ILogger<DeviceController> logger)
+        private readonly ILogger<DeviceControllerRentals> _logger;
+        public DeviceControllerRentals(ApplicationDbContext context, ILogger<DeviceControllerRentals> logger)
         {
             _context = context;
             _logger = logger;
