@@ -11,7 +11,7 @@ namespace AppForSEII2526.API.Models
         [Key]
         public int Id { get; set; }
 
-        // Jojos
+        
         //---------------------------------------------------------------------------------------
 
         [Required(ErrorMessage = "La dirección de entrega es obligatoria.")]
