@@ -1,4 +1,4 @@
-﻿namespace AppForSEII2526.API.DTOs
+﻿namespace AppForSEII2526.API.DTOs.Devices_DTO_Comprar_J
 {
     public class Device_DTO_Comprar //mirar más y rquired y key
     {
