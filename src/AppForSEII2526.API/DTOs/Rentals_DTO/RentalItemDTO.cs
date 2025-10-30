@@ -8,13 +8,14 @@
 
         }
 
-        public RentalItemDTO(int deviceQuantity, string deviceModel, int deviceId, string deviceName, double priceForRenting)
+        public RentalItemDTO(int deviceQuantity, string deviceModel, int deviceId, string deviceName, double priceForRenting, string brand)
         {
             DeviceQuantity = deviceQuantity;
             DeviceModel = deviceModel;
             DeviceId = deviceId;
             DeviceName = deviceName;
             PriceForRenting = priceForRenting;
+            Brand = brand;
         }
 
         //------------------- Device Info ------------------
@@ -32,6 +33,9 @@
         [Required]
         [Display(Name = "Device ID")]
         public int DeviceId { get; set; }
+        [Required]
+        [Display(Name = "Device Brand")]
+        public string Brand { get; set; }
 
         [Required]
         [StringLength(100)]

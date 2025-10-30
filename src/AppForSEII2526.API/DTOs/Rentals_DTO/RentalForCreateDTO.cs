@@ -5,6 +5,8 @@
 
     public class RentalForCreateDTO
     {
+        //------------------ Constructors ------------------
+ 
         public RentalForCreateDTO(string customerUserName, string customerNameSurname, string deliveryAddress, PaymentMethod paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalItemDTO> rentalItems)
         {
             CustomerUserName = customerUserName ?? throw new ArgumentNullException(nameof(customerUserName));
@@ -16,7 +18,7 @@
             RentalItems = rentalItems ?? throw new ArgumentNullException(nameof(rentalItems));
         }
 
-        public RentalForCreateDTO()
+        public RentalForCreateDTO() // default constructor initializing the list compulsorily
         {
             RentalItems = new List<RentalItemDTO>();
         }

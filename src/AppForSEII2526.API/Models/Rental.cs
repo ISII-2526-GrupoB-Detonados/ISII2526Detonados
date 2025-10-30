@@ -24,7 +24,7 @@ namespace AppForSEII2526.API.Models
         [Required(ErrorMessage = "El método de pago es obligatorio.")]
         public PaymentMethod PaymentMethod { get; set; }
 
-        public RentDevice RentDevice { get; set; }
+        public RentDevice RentDevices { get; set; }
         //---------------------------------------------------------------------------------------
         // Fechas DateTypes
         public ApplicationUser ApplicationUser { get; set; }
@@ -59,7 +59,7 @@ namespace AppForSEII2526.API.Models
             string surname,
             string deliveryAddress,
             PaymentMethod paymentMethod,
-            RentDevice rentDevice,
+            RentDevice rentDevices,
             DateTime rentalDate,
             DateTime rentalDateFrom,
             DateTime rentalDateTo,
@@ -68,7 +68,7 @@ namespace AppForSEII2526.API.Models
             Id = id;
             DeliveryAddress = deliveryAddress;
             PaymentMethod = paymentMethod;
-            RentDevice = rentDevice;
+            RentDevices = rentDevices;
             RentalDate = rentalDate;
             RentalDateFrom = rentalDateFrom;
             RentalDateTo = rentalDateTo;
