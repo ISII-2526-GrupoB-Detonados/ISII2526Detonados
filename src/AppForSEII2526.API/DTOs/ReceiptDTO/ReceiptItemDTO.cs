@@ -7,7 +7,7 @@
     public class ReceiptItemDTO
     {
         [Required(ErrorMessage = "El nombre de la reparación es obligatorio.")]
-        [StringLength(50, ErrorMessage = "El nombre de la reparación no puede tener más de 50 caracteres o menos de 3.", MinimumLength = 3)]
+        [StringLength(500, ErrorMessage = "El nombre de la reparación no puede tener más de 500 caracteres o menos de 3.", MinimumLength = 3)]
         public string RepairName { get; set; }
 
         [Required(ErrorMessage = "La escala es obligatoria.")]
@@ -29,4 +29,4 @@
             RepairCost = repairCost;
         }
     }
-    }
+   }
