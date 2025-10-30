@@ -73,6 +73,7 @@ namespace AppForSEII2526.API.Models
             RentalDateFrom = rentalDateFrom;
             RentalDateTo = rentalDateTo;
             TotalPrice = totalPrice;
+
         }
 
         //---------------------------------------------------------------------------------------
