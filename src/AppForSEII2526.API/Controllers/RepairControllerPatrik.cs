@@ -6,12 +6,12 @@ namespace AppForSEII2526.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DeviceController : ControllerBase
+    public class ReparacionesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<DeviceController> _logger;
+        private readonly ILogger<ReparacionesController> _logger;
 
-        public DeviceController(ApplicationDbContext context, ILogger<DeviceController> logger)
+        public ReparacionesController(ApplicationDbContext context, ILogger<ReparacionesController> logger)
         {
             _context = context;
             _logger = logger;
