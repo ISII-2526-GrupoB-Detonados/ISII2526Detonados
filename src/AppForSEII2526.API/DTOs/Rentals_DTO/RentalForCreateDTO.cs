@@ -3,9 +3,9 @@
 
     using DataType = System.ComponentModel.DataAnnotations.DataType;// Avoid ambiguity with other DataType definitions
 
-    public class Rental_For_Create
+    public class RentalForCreateDTO
     {
-        public Rental_For_Create(string customerUserName, string customerNameSurname, string deliveryAddress, PaymentMethod paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<Rental_Item_DTO> rentalItems)
+        public RentalForCreateDTO(string customerUserName, string customerNameSurname, string deliveryAddress, PaymentMethod paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalItemDTO> rentalItems)
         {
             CustomerUserName = customerUserName ?? throw new ArgumentNullException(nameof(customerUserName));
             CustomerNameSurname = customerNameSurname ?? throw new ArgumentNullException(nameof(customerNameSurname));
@@ -16,9 +16,9 @@
             RentalItems = rentalItems ?? throw new ArgumentNullException(nameof(rentalItems));
         }
 
-        public Rental_For_Create()
+        public RentalForCreateDTO()
         {
-            RentalItems = new List<Rental_Item_DTO>();
+            RentalItems = new List<RentalItemDTO>();
         }
         [Display(Name = "Fecha de alquiler")]
         [DataType(DataType.Date)]
@@ -43,7 +43,7 @@
         [StringLength(50, MinimumLength = 10, ErrorMessage = "Name and Surname must have at least 10 characters")]
         public string CustomerNameSurname { get; set; }
 
-        public IList<Rental_Item_DTO> RentalItems { get; set; } //Ojo. cambio de clases aunque asi queda mas claro una vez se ve 
+        public IList<RentalItemDTO> RentalItems { get; set; } //Ojo. cambio de clases aunque asi queda mas claro una vez se ve 
         [Required]
         public PaymentMethod PaymentMethod { get; set; } // reference to enum PaymentMethodTypes
 
@@ -73,7 +73,7 @@
 
         public override bool Equals(object? obj)
         {
-            return obj is Rental_For_Create dTO &&
+            return obj is RentalForCreateDTO dTO &&
                    CompareDate(RentalDateFrom, dTO.RentalDateFrom) &&
                    CompareDate(RentalDateTo, dTO.RentalDateTo) &&
                    DeliveryAddress == dTO.DeliveryAddress &&

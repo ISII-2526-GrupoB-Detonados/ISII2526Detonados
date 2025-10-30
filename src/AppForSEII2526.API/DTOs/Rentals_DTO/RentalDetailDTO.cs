@@ -2,14 +2,14 @@
 namespace AppForSEII2526.API.DTOs.Rentals_DTO
 
 {
-    public class Rental_Detail_DTO : Rental_For_Create
+    public class RentalDetailDTO : RentalForCreateDTO
     {
-        public Rental_Detail_DTO()
+        public RentalDetailDTO()
         {
         }
         //constructor con herencia (base) y 2 atr mas
-        public Rental_Detail_DTO(int id, DateTime rentalDate, string customerUserName, string customerNameSurname,
-            string deliveryAddress, PaymentMethod paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<Rental_Item_DTO> rentalItems)
+        public RentalDetailDTO(int id, DateTime rentalDate, string customerUserName, string customerNameSurname,
+            string deliveryAddress, PaymentMethod paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalItemDTO> rentalItems)
             :base(customerUserName,
                  customerNameSurname,
                  deliveryAddress,
@@ -31,7 +31,7 @@ namespace AppForSEII2526.API.DTOs.Rentals_DTO
         //------------------ Overload Equals y GetHashCode ------------------
         public override bool Equals(object? obj)
         {
-            return obj is Rental_Detail_DTO dTO &&
+            return obj is RentalDetailDTO dTO &&
                    base.Equals(obj) &&
                    TotalPrice == dTO.TotalPrice &&
                    Id == dTO.Id &&

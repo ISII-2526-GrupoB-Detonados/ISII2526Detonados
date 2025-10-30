@@ -1,14 +1,14 @@
 ﻿namespace AppForSEII2526.API.DTOs.Rentals_DTO
 {
-    public class Rental_Item_DTO
+    public class RentalItemDTO
     {
         //------------------ Constructors ------------------
-        public Rental_Item_DTO()
+        public RentalItemDTO()
         {
 
         }
 
-        public Rental_Item_DTO(int deviceQuantity, string deviceModel, int deviceId, string deviceName, double priceForRenting)
+        public RentalItemDTO(int deviceQuantity, string deviceModel, int deviceId, string deviceName, double priceForRenting)
         {
             DeviceQuantity = deviceQuantity;
             DeviceModel = deviceModel;
@@ -46,7 +46,7 @@
         //------------------ Overload Equals y GetHashCode ------------------
         public override bool Equals(object? obj)
         {
-            return obj is Rental_Item_DTO dTO &&
+            return obj is RentalItemDTO dTO &&
                    DeviceQuantity == dTO.DeviceQuantity &&
                    DeviceModel == dTO.DeviceModel &&
                    DeviceId == dTO.DeviceId &&
