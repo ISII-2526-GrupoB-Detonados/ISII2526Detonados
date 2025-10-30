@@ -1,4 +1,4 @@
-﻿using AppForSEII2526.API.DTOs.RepairDTO;
+﻿using AppForSEII2526.API.DTOs.ReceiptDTO;
 
 [Route("api/[controller]")]
 [ApiController]

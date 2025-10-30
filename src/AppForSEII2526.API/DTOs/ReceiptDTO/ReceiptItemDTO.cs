@@ -1,4 +1,4 @@
-﻿namespace AppForSEII2526.API.DTOs.RepairDTO
+﻿namespace AppForSEII2526.API.DTOs.ReceiptDTO
 {
     using System;
     using System.ComponentModel.DataAnnotations;
