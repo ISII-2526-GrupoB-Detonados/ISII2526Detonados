@@ -8,9 +8,6 @@
 
     public class ReceiptForCreateDTO
     {
-        [DataType(DataType.Currency)]
-        [Range(0, 100000, ErrorMessage = "El precio total debe de estar entre 0 y 100000")]
-        public float TotalPrice { get; set; }
 
         [StringLength(20, ErrorMessage = "El nombre no puede ser mayor de 20 caracteres ni menor de 2", MinimumLength = 2)]
         public string Name { get; set; }
