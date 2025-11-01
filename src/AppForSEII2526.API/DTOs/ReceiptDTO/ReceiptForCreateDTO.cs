@@ -27,22 +27,7 @@
 
         public IList<ReceiptItemDTO> Repairs { get; set; }
 
-        public ReceiptForCreateDTO(
-            float totalPrice,
-            string name,
-            string surname,
-            string userName,
-            string deliveryAddress,
-            PaymentMethod paymentMethod,
-            IList<ReceiptItemDTO> repairs)
-        {
-            TotalPrice = totalPrice;
-            Name = name ?? throw new ArgumentNullException(nameof(Name));
-            Surname = surname ?? throw new ArgumentNullException(nameof(Surname));
-            UserName = userName ?? throw new ArgumentNullException(nameof(UserName));
-            DeliveryAddress = deliveryAddress ?? throw new ArgumentNullException(nameof(DeliveryAddress));
-            PaymentMethod = paymentMethod;
-            Repairs = repairs ?? throw new ArgumentNullException(nameof(Repairs));
-        }
+        public ReceiptForCreateDTO() { }
     }
+       
 }

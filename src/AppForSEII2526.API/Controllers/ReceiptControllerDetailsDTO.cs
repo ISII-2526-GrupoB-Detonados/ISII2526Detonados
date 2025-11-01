@@ -73,23 +73,35 @@ public class RecibosController : ControllerBase
         }
 
         var receiptItems = new List<ReceiptItem>();
+        float totalPrice = 0;
+        var enrichedItems = new List<ReceiptItemDTO>();
+
         foreach (var item in dto.Repairs)
         {
             var repair = await _context.Repairs
                 .Include(r => r.Scale)
-                .FirstOrDefaultAsync(r => r.Name == item.RepairName && r.Scale.Name == item.Scale);
+                .FirstOrDefaultAsync(r => r.Name == item.RepairName);
 
             if (repair == null)
             {
-                _logger.LogError($"Reparación '{item.RepairName}' con escala '{item.Scale}' no encontrada");
-                return BadRequest($"Reparación '{item.RepairName}' con escala '{item.Scale}' no existe");
+                _logger.LogError($"Reparación '{item.RepairName}' no encontrada");
+                return BadRequest($"Reparación '{item.RepairName}' no existe");
             }
+
+            totalPrice += (float)repair.Cost;
 
             receiptItems.Add(new ReceiptItem
             {
                 Repair = repair,
                 Model = item.ModelToRepair
             });
+
+            enrichedItems.Add(new ReceiptItemDTO(
+                repair.Name,
+                repair.Scale.Name,
+                item.ModelToRepair,
+                (float)repair.Cost
+            ));
         }
 
         var receipt = new Receipt
@@ -97,7 +109,7 @@ public class RecibosController : ControllerBase
             ApplicationUser = user,
             DeliveryAddress = dto.DeliveryAddress,
             ReceiptDate = DateTime.Now,
-            TotalPrice = dto.TotalPrice,
+            TotalPrice = totalPrice,
             PaymentMethodTypes = dto.PaymentMethod,
             ReceiptItems = receiptItems
         };
@@ -105,9 +117,16 @@ public class RecibosController : ControllerBase
         _context.Receipts.Add(receipt);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetRepair), new { id = receipt.Id }, receipt.Id);
+        var responseDto = new ReceiptDetailDTO(
+            user.Name,
+            user.Surname,
+            dto.DeliveryAddress,
+            receipt.ReceiptDate,
+            totalPrice,
+            enrichedItems
+        );
+
+        return CreatedAtAction(nameof(GetRepair), new { id = receipt.Id }, responseDto);
     }
-
-
 }
 
