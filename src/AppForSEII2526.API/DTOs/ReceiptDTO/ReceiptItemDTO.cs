@@ -27,5 +27,11 @@
             ModelToRepair = modelToRepair;
             RepairCost = repairCost;
         }
+        public ReceiptItemDTO(string repairName, string modelToRepair)
+        {
+            RepairName = repairName;
+            ModelToRepair = modelToRepair;
+        }
+
     }
    }

@@ -12,7 +12,7 @@ public class RecibosController : ControllerBase
         _context = context;
         _logger = logger;
     }
-
+    //GET
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ReceiptDetailDTO), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -54,6 +54,7 @@ public class RecibosController : ControllerBase
         return Ok(repair);
     }
 
+    // POST 
     [HttpPost]
     [ProducesResponseType(typeof(ReceiptDetailDTO), (int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -98,9 +99,7 @@ public class RecibosController : ControllerBase
 
             enrichedItems.Add(new ReceiptItemDTO(
                 repair.Name,
-                repair.Scale.Name,
-                item.ModelToRepair,
-                (float)repair.Cost
+                item.ModelToRepair
             ));
         }
 
