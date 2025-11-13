@@ -39,5 +39,21 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .WithMany(r => r.ReceiptItems)
             .HasForeignKey(ri => ri.RepairId)
             .OnDelete(DeleteBehavior.Restrict);
+        //
+        //---------------------------------------------------------------------------------------
+        modelBuilder.Entity<RentDevice>()
+        .HasKey(rd => new { rd.DeviceId, rd.RentId });
+
+        modelBuilder.Entity<RentDevice>()
+            .HasOne(rd => rd.Rental)
+            .WithMany(r => r.RentDevices)
+            .HasForeignKey(rd => rd.RentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<RentDevice>()
+            .HasOne(rd => rd.Device)
+            .WithMany(d => d.RentedDevices)
+            .HasForeignKey(rd => rd.DeviceId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

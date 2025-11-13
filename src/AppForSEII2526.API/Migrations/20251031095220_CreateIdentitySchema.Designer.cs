@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppForSEII2526.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251011085808_CreateIdentitySchema")]
+    [Migration("20251031095220_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         /// <inheritdoc />
@@ -124,8 +124,7 @@ namespace AppForSEII2526.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<double?>("PriceForPurchase")
-                        .IsRequired()
+                    b.Property<double>("PriceForPurchase")
                         .HasPrecision(10, 2)
                         .HasColumnType("float(10)");
 
@@ -133,13 +132,13 @@ namespace AppForSEII2526.API.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("float(10)");
 
-                    b.Property<int?>("QuantityForPurchase")
+                    b.Property<int>("QuantityForPurchase")
                         .HasColumnType("int");
 
                     b.Property<int>("QuantityForRent")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Year")
+                    b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -205,34 +204,26 @@ namespace AppForSEII2526.API.Migrations
 
             modelBuilder.Entity("AppForSEII2526.API.Models.PurchaseItem", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("PurchaseId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("DeviceId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("DeviceId")
-                        .HasColumnType("int");
-
                     b.Property<double>("Price")
                         .HasColumnType("float");
-
-                    b.Property<int>("PurchaseId")
-                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("PurchaseId", "DeviceId");
 
                     b.HasIndex("DeviceId");
-
-                    b.HasIndex("PurchaseId");
 
                     b.ToTable("PurchaseItems");
                 });
@@ -253,6 +244,8 @@ namespace AppForSEII2526.API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("DeviceId", "RentId");
+
+                    b.HasIndex("RentId");
 
                     b.ToTable("RentDevices");
                 });
@@ -277,12 +270,6 @@ namespace AppForSEII2526.API.Migrations
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
 
-                    b.Property<int>("RentDeviceDeviceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RentDeviceRentId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("RentalDate")
                         .HasColumnType("datetime2");
 
@@ -299,54 +286,7 @@ namespace AppForSEII2526.API.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("RentDeviceDeviceId", "RentDeviceRentId");
-
                     b.ToTable("Rentals");
-                });
-
-            modelBuilder.Entity("AppForSEII2526.API.Models.ReviewItem", b =>
-                {
-                    b.Property<int>("reviewid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("reviewid"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("DeviceId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rating")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.HasKey("reviewid");
-
-                    b.HasIndex("DeviceId");
-
-                    b.ToTable("ReviewItems");
-                });
-
-            modelBuilder.Entity("DeviceRentDevice", b =>
-                {
-                    b.Property<int>("DevicesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RentedDevicesDeviceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RentedDevicesRentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("DevicesId", "RentedDevicesDeviceId", "RentedDevicesRentId");
-
-                    b.HasIndex("RentedDevicesDeviceId", "RentedDevicesRentId");
-
-                    b.ToTable("DeviceRentDevice");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -506,7 +446,8 @@ namespace AppForSEII2526.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<double>("TotalPrice")
-                        .HasColumnType("float");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("float(10)");
 
                     b.HasKey("Id");
 
@@ -626,6 +567,25 @@ namespace AppForSEII2526.API.Migrations
                     b.Navigation("Purchase");
                 });
 
+            modelBuilder.Entity("AppForSEII2526.API.Models.RentDevice", b =>
+                {
+                    b.HasOne("AppForSEII2526.API.Models.Device", "Device")
+                        .WithMany("RentedDevices")
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppForSEII2526.API.Models.Rental", "Rental")
+                        .WithMany("RentDevices")
+                        .HasForeignKey("RentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
+
+                    b.Navigation("Rental");
+                });
+
             modelBuilder.Entity("AppForSEII2526.API.Models.Rental", b =>
                 {
                     b.HasOne("AppForSEII2526.API.Models.ApplicationUser", "ApplicationUser")
@@ -634,37 +594,7 @@ namespace AppForSEII2526.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppForSEII2526.API.Models.RentDevice", "RentDevice")
-                        .WithMany("Rental")
-                        .HasForeignKey("RentDeviceDeviceId", "RentDeviceRentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("ApplicationUser");
-
-                    b.Navigation("RentDevice");
-                });
-
-            modelBuilder.Entity("AppForSEII2526.API.Models.ReviewItem", b =>
-                {
-                    b.HasOne("AppForSEII2526.API.Models.Device", null)
-                        .WithMany("ReviewItems")
-                        .HasForeignKey("DeviceId");
-                });
-
-            modelBuilder.Entity("DeviceRentDevice", b =>
-                {
-                    b.HasOne("AppForSEII2526.API.Models.Device", null)
-                        .WithMany()
-                        .HasForeignKey("DevicesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AppForSEII2526.API.Models.RentDevice", null)
-                        .WithMany()
-                        .HasForeignKey("RentedDevicesDeviceId", "RentedDevicesRentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -772,7 +702,7 @@ namespace AppForSEII2526.API.Migrations
                 {
                     b.Navigation("PurchaseItems");
 
-                    b.Navigation("ReviewItems");
+                    b.Navigation("RentedDevices");
                 });
 
             modelBuilder.Entity("AppForSEII2526.API.Models.Model", b =>
@@ -785,9 +715,9 @@ namespace AppForSEII2526.API.Migrations
                     b.Navigation("PurchaseItems");
                 });
 
-            modelBuilder.Entity("AppForSEII2526.API.Models.RentDevice", b =>
+            modelBuilder.Entity("AppForSEII2526.API.Models.Rental", b =>
                 {
-                    b.Navigation("Rental");
+                    b.Navigation("RentDevices");
                 });
 
             modelBuilder.Entity("Receipt", b =>

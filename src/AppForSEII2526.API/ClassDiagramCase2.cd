@@ -39,22 +39,20 @@
   <Class Name="AppForSEII2526.API.Models.RentDevice">
     <Position X="8.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAgAAAAAAAQAAAAIEAEAAAgQAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAQAAAgAAgAAAAAAAAAAAAIEAEAAAgQAAAAA=</HashCode>
       <FileName>Models\RentDevice.cs</FileName>
     </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Property Name="Devices" />
+    <ShowAsAssociation>
       <Property Name="Rental" />
-    </ShowAsCollectionAssociation>
+    </ShowAsAssociation>
   </Class>
   <Class Name="AppForSEII2526.API.Models.Rental">
     <Position X="11.25" Y="2.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>EAADAAAAAAAAAAAQhCACAEAAAAAAQIAAAAAAAAAAAAA=</HashCode>
+      <HashCode>EAADAAAAAAAAAAAQhCAAAEAAAAAAQIAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Rental.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="RentDevice" />
       <Property Name="ApplicationUser" />
     </ShowAsAssociation>
   </Class>
