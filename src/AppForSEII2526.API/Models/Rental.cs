@@ -11,7 +11,8 @@ namespace AppForSEII2526.API.Models
         [Key]
         public int Id { get; set; }
 
-        
+        public IList<RentDevice> RentDevices { get; set; } = new List<RentDevice>();
+
         //---------------------------------------------------------------------------------------
 
         [Required(ErrorMessage = "La dirección de entrega es obligatoria.")]
@@ -20,14 +21,15 @@ namespace AppForSEII2526.API.Models
         //---------------------------------------------------------------------------------------
 
         // Clases y Relaciones a otras tablas
-
+        [Display(Name = "Payment Method")]
         [Required(ErrorMessage = "El método de pago es obligatorio.")]
         public PaymentMethod PaymentMethod { get; set; }
 
-        public RentDevice RentDevice { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
+
         //---------------------------------------------------------------------------------------
         // Fechas DateTypes
-        public ApplicationUser ApplicationUser { get; set; }
+
         [DataType(DataType.Date), Display(Name = "Fecha de alquiler")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime RentalDate { get; set; } = DateTime.UtcNow;
@@ -59,7 +61,7 @@ namespace AppForSEII2526.API.Models
             string surname,
             string deliveryAddress,
             PaymentMethod paymentMethod,
-            RentDevice rentDevice,
+            IList<RentDevice> rentDevices,
             DateTime rentalDate,
             DateTime rentalDateFrom,
             DateTime rentalDateTo,
@@ -68,11 +70,12 @@ namespace AppForSEII2526.API.Models
             Id = id;
             DeliveryAddress = deliveryAddress;
             PaymentMethod = paymentMethod;
-            RentDevice = rentDevice;
+            RentDevices = rentDevices ?? new List<RentDevice>();
             RentalDate = rentalDate;
             RentalDateFrom = rentalDateFrom;
             RentalDateTo = rentalDateTo;
             TotalPrice = totalPrice;
+
         }
 
         //---------------------------------------------------------------------------------------

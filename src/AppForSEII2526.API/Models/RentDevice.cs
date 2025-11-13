@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using AppForSEII2526.API.DTOs.Rentals_DTO;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -21,7 +22,7 @@ namespace AppForSEII2526.API.Models
     
         
         [Required(ErrorMessage = "El identificador del alquiler es obligatorio.")]
-        public int RentId { get; set; }
+        public int RentId { get; set; }//fractura de la bdd
 
         [Required(ErrorMessage = "El precio es obligatorio.")]
         [DataType(DataType.Currency)]
@@ -34,9 +35,10 @@ namespace AppForSEII2526.API.Models
         public int Quantity { get; set; }
         //---------------------------------------------------------------------------------------
 
-        // Relaciones muchos-a-uno con otras tablas
-        public IList<Device> Devices { get; set; } = new List<Device>();
-        public IList<Rental> Rental { get; set; } = new List<Rental>();
+        
+
+        public Device Device { get; set; }        // relación con Device
+        public Rental Rental { get; set; }        // relación con Rental
         //---------------------------------------------------------------------------------------
         //Constructores
         public RentDevice() { }
@@ -66,5 +68,7 @@ namespace AppForSEII2526.API.Models
         {
             return (DeviceId, RentId).GetHashCode();
         }
+
+       
     }
 }
