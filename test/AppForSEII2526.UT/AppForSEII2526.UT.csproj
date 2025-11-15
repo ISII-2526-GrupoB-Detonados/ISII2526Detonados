@@ -35,11 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DeviceController_test\" />
     <Folder Include="ReceiptController_test\" />
     <Folder Include="RepairController_test\" />
     <Folder Include="RentalController_test\" />
-    <Folder Include="PurchaseController_test\" />
   </ItemGroup>
 
 </Project>
