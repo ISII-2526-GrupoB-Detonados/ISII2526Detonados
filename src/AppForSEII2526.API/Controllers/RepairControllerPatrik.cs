@@ -1,6 +1,7 @@
 ﻿using AppForSEII2526.API.DTOs.DevicesDTOrepa;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -40,11 +41,30 @@ namespace AppForSEII2526.API.Controllers
         public async Task<ActionResult> GetRepairDTO(string? nombre, string? scaleNombre)
         {
             var repair = await _context.Repairs
-                .Include(r => r.Scale) // Importante: incluir la relación Scale
+                .Include(r => r.Scale) 
                 .Where(r => (nombre == null || r.Name.Contains(nombre)) &&
                            (scaleNombre == null || r.Scale.Name.Contains(scaleNombre)))
                 .Select(r => new repairDTOrepa(r.Id, r.Name, r.Description, r.Scale.Name, r.Cost))
                 .ToListAsync();
+
+            // Si no hay resultados y se pasó un filtro, devolver BadRequest con detalles de validación
+            if (!repair.Any())
+            {
+                if (!string.IsNullOrEmpty(nombre))
+                {
+                    var pd = new ValidationProblemDetails();
+                    pd.Errors.Add("nombre", new[] { "No hay reparaciones con ese nombre" });
+                    return BadRequest(pd);
+                }
+
+                if (!string.IsNullOrEmpty(scaleNombre))
+                {
+                    var pd = new ValidationProblemDetails();
+                    pd.Errors.Add("scaleNombre", new[] { "No hay reparaciones con esa balanza" });
+                    return BadRequest(pd);
+                }
+            }
+
             return Ok(repair);
         }
 

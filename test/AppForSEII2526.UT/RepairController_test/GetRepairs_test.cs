@@ -104,7 +104,6 @@ namespace AppForSEII2526.UT.RepairController_test
 
             // Assert
             // El controlador actual devuelve Ok aunque no haya coincidencias.
-            // deja estas aserciones; si no, cámbialas para comprobar una lista vacía.
             var badNameResult = Assert.IsType<BadRequestObjectResult>(result);
             var problemDetails = Assert.IsType<ValidationProblemDetails>(badNameResult.Value);
             var problem = problemDetails.Errors.First().Value[0];
@@ -126,7 +125,6 @@ namespace AppForSEII2526.UT.RepairController_test
             var result = await controller.GetRepairDTO(null, "Balanza inexistente");
 
             // Assert
-            // Igual que el test anterior: ajusta según el comportamiento real del controlador.
             var badScaleResult = Assert.IsType<BadRequestObjectResult>(result);
             var problemDetails = Assert.IsType<ValidationProblemDetails>(badScaleResult.Value);
             var problem = problemDetails.Errors.First().Value[0];
