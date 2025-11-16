@@ -50,7 +50,6 @@ namespace AppForSEII2526.UT.ReceiptController_test
             _context.SaveChanges();
         }
         // Casos de prueba para CreateReceipt_Error_test
-        // Cada fila: ReceiptForCreateDTO, expectedErrorMessage (null si no se comprueba), forceModelStateInvalid (true para el caso que antes era Fact)
         public static IEnumerable<object[]> TestCasesFor_CreateReceipt()
         {
             // Caso 1 : usuario no registrado
@@ -75,7 +74,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 Repairs = new List<ReceiptItemDTO> { new ReceiptItemDTO("Reparación inexistente", "ModeloY") }
             };
 
-            // Caso 3 (antes era Fact): DTO válido pero forzamos ModelState inválido
+            // Caso 3: DTO válido pero forzamos ModelState inválido
             var dtoValidButModelStateInvalid = new ReceiptForCreateDTO()
             {
                 UserName = _userName,
@@ -89,7 +88,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
             // Lista de todos los casos de prueba
             var allTests = new List<object[]>
             {
-                // los dos casos originales: no existe usuario / reparación inexistente
+                //  no existe usuario / reparación inexistente
                 new object[] { dtoUserNotRegistered, $"Usuario '{dtoUserNotRegistered.UserName}' no existe", false },
                 new object[] { dtoRepairNotExisting, $"Reparación '{dtoRepairNotExisting.Repairs.First().RepairName}' no existe", false },
 
@@ -99,7 +98,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
 
             return allTests;
         }
-        // TEST parametrizado que ahora incluye el caso que antes era Fact (ModelState inválido).
+        // TEST parametrizado, incluye ModelState invalido.
         [Theory]
         [Trait("LevelTesting", "Unit Testing")]
         [Trait("Database", "WithoutFixture")]
@@ -125,10 +124,9 @@ namespace AppForSEII2526.UT.ReceiptController_test
             if (forceModelStateInvalid)
             {
                 // En el caso del ModelState inválido comprobamos:
-                // - El BadRequest contiene algún valor (ModelState/ValidationProblemDetails/SerializableError)
+                // El BadRequest contiene algún valor (ModelState/ValidationProblemDetails/SerializableError)
                 Assert.NotNull(badRequestResult.Value);
-
-                // - El logger registró la advertencia correspondiente (comprobamos las invocaciones para evitar problemas con el tipo genérico del formatter)
+                // Se ha registrado un log de advertencia con el mensaje esperado
                 var logInvocations = mockLogger.Invocations
                     .Where(inv =>
                         inv.Method.Name == "Log" &&
@@ -142,16 +140,16 @@ namespace AppForSEII2526.UT.ReceiptController_test
 
                 Assert.Single(logInvocations);
 
-                // - No se ha creado ningún recibo en la BD de pruebas
+                // No se ha creado ningún recibo en la BD de pruebas
                 Assert.Empty(_context.Receipts);
 
-                // - Y el GET por id 1 no debería encontrar nada (NotFound)
+                // Y el GET por id 1 no debería encontrar nada (NotFound)
                 var getResult = await controller.GetRepair(1);
                 Assert.IsType<NotFoundResult>(getResult);
             }
             else
             {
-                // Para los demás casos comprobamos el mensaje esperado (si se proporcionó)
+                // Para los demás casos comprobamos el mensaje esperado 
                 if (badRequestResult.Value is string s)
                 {
                     Assert.StartsWith(errorExpected, s);

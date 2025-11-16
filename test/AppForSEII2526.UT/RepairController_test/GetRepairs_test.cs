@@ -22,7 +22,7 @@ namespace AppForSEII2526.UT.RepairController_test
                 new Scale { Id = 2, Name = "Balanza B" },
                 new Scale { Id = 3, Name = "Balanza C" }
             };
-            // Reparaciones con diferentes nombres, descripciones, costes y asociadas a las escalas creadas
+            // Reparaciones: con diferentes datos.
             var repairs = new List<Repair>
             {
                 new Repair { Id = 1, Name = "Reparación pantalla", Description = "Cambio de pantalla completa", Cost = 49.99, Scale = scales[0], ScaleId = scales[0].Id },
@@ -31,6 +31,7 @@ namespace AppForSEII2526.UT.RepairController_test
                 // Escala para comprobar filtros
                 new Repair { Id = 4, Name = "Reparación cámara", Description = "Sustitución cámara trasera", Cost = 39.00, Scale = scales[0], ScaleId = scales[0].Id }
             };
+
             // Inserción de datos en el contexto de pruebas
             _context.Scales.AddRange(scales);
             _context.Repairs.AddRange(repairs);
@@ -41,14 +42,14 @@ namespace AppForSEII2526.UT.RepairController_test
         // filterNombre, filterScaleNombre, clearDataBeforeAct, expectOk, expectedRepairs (si expectOk), expectedProblemMessage (si !expectOk)
         public static IEnumerable<object[]> TestCasesFor_GetRepairs()
         {
-            // Datos esperados para las diferentes combinaciones de filtros (cuando se espera OK)
+            // Datos esperados para las diferentes combinaciones de filtros
             var repairsDTOs = new List<repairDTOrepa>()
             {
                 new repairDTOrepa(1, "Reparación pantalla", "Cambio de pantalla completa", "Balanza A", 49.99),
                 new repairDTOrepa(2, "Reparación batería", "Sustitución batería", "Balanza B", 29.99),
                 new repairDTOrepa(3, "Reparación placa", "Reparación placa base", "Balanza C", 79.50)
             };
-            // Lista completa ordenada por Id (según la lógica del controlador y los tests previos)
+            // Lista completa ordenada por Id 
             var allOrdered = new List<repairDTOrepa>
             {
                 repairsDTOs[0],
@@ -56,12 +57,13 @@ namespace AppForSEII2526.UT.RepairController_test
                 repairsDTOs[1]
             };
             // Filtros específicos que devuelven resultados
-            var tcName_bateria = new List<repairDTOrepa>() { repairsDTOs[1] };
-            var tcScale_BalanzaA = new List<repairDTOrepa>() { repairsDTOs[0] };
+            var tcName_bateria = new List<repairDTOrepa>() { repairsDTOs[1] }; // Solo batería
+            var tcScale_BalanzaA = new List<repairDTOrepa>() { repairsDTOs[0] }; // Solo Balanza A
 
             var allTests = new List<object[]>
             {
-                // CASOS QUE DEBEN DEVOLVER OK (expectOk = true)
+                // CASOS QUE DEBEN DEVOLVER OK 
+
                 // nombre nulo, scale nulo -> lista completa
                 new object[] { null, null, false, true, allOrdered, null },
                 // nombre "batería" -> solo batería
@@ -71,7 +73,8 @@ namespace AppForSEII2526.UT.RepairController_test
                 // nombre y scale coincidentes
                 new object[] { "placa", "Balanza C", false, true, new List<repairDTOrepa>() { repairsDTOs[2] }, null },
 
-                // CASOS QUE DEBEN DEVOLVER BadRequest (expectOk = false)
+                // CASOS QUE DEBEN DEVOLVER BadRequest 
+
                 // nombre inexistente
                 new object[] { "Nombre inexistente", null, false, false, null, "No hay reparaciones con ese nombre" },
                 // escala inexistente
@@ -80,7 +83,6 @@ namespace AppForSEII2526.UT.RepairController_test
                 new object[] { "NombreNoExiste", "BalanzaNoExiste", false, false, null, "No hay reparaciones que cumplan los filtros" },
 
                 // CASO: sin filtros y lista vacía -> debe devolver OK con lista vacía.
-                // Para forzarlo marcamos clearDataBeforeAct = true; el test eliminará las reparaciones antes de la invocación.
                 new object[] { null, null, true, true, new List<repairDTOrepa>(), null }
             };
 
