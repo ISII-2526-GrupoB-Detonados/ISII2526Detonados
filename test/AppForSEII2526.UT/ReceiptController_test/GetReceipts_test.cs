@@ -18,6 +18,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
         {
             // Datos de soporte: balanza y reparación, los valores son aleatorios 
             var scale = new Scale { Id = 1, Name = "Balanza Aleatoria" };
+            // 
             var repair = new Repair
             {
                 Id = 1,
@@ -43,7 +44,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 Repair = repair,
                 Model = "Modelo-Aleatorio-123"
             };
-
+            // Recibo completo que agrupa el usuario, dirección, fecha, precio total, método de pago y la lista de items.
             var receipt = new Receipt
             {
                 Id = 1,
@@ -54,30 +55,34 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 PaymentMethodTypes = PaymentMethod.CreditCard,
                 ReceiptItems = new List<ReceiptItem> { receiptItem }
             };
-
+            // Inserción de las entidades en el contexto de pruebas.
             _context.Scales.Add(scale);
             _context.Repairs.Add(repair);
             _context.Users.Add(user);
             _context.Receipts.Add(receipt);
+            // Persistir cambios en la base de datos en memoria.
+
             _context.SaveChanges();
         }
+        // TEST 1: Comprobar que una petición con id inválido devuelve BadRequest.
 
         [Fact]
         [Trait("Database", "WithoutFixture")]
         [Trait("LevelTesting", "Unit Testing")]
         public async Task GetReceipt_BadRequest_test()
         {
-            // Arrange
+            // Arrange: Se crea un mock de ILogger para inyectarlo en el controlador si depender del sistema de logging real.
             var mockLogger = new Mock<ILogger<RecibosController>>();
             var controller = new RecibosController(_context, mockLogger.Object);
 
-            // Act
+            // Act: Llamada con id inválido (<= 0) que debe ser validada por el controlador.
             var result = await controller.GetRepair(0); // id inválido (<=0)
 
-            // Assert
+            // Assert:Se espera un BadRequestObjectResult y que el mensaje devuelto
             var badRequest = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal("Invalid repair id", badRequest.Value);
         }
+        // TEST 2: Comprobar que pedir un id inexistente devuelve NotFound.
 
         [Fact]
         [Trait("Database", "WithoutFixture")]
@@ -94,6 +99,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
             // Assert
             Assert.IsType<NotFoundResult>(result);
         }
+        // TEST 3: Comprobar que pedir un id válido devuelve OK y el DTO esperado.
 
         [Fact]
         [Trait("Database", "WithoutFixture")]
@@ -119,10 +125,10 @@ namespace AppForSEII2526.UT.ReceiptController_test
 
             // La fecha debe ser reciente 
             Assert.True((DateTime.Now - receiptDTOActual.OperationDate).TotalSeconds < 60, "La fecha de la operación debe ser reciente");
-
+            // Compruebo la colección de reparaciones dentro del DTO.
             Assert.NotNull(receiptDTOActual.Repairs);
             Assert.Single(receiptDTOActual.Repairs);
-
+            // Verificaciones del primer (y único) item del recibo.
             var item = receiptDTOActual.Repairs.First();
             Assert.Equal("Reparación pantalla", item.RepairName);
             Assert.Equal("Balanza Aleatoria", item.Scale);
