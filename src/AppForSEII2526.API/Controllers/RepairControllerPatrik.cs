@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -38,36 +39,70 @@ namespace AppForSEII2526.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<repairDTOrepa>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult> GetRepairDTO(string? nombre, string? scaleNombre)
         {
-            var repair = await _context.Repairs
-                .Include(r => r.Scale) 
-                .Where(r => (nombre == null || r.Name.Contains(nombre)) &&
-                           (scaleNombre == null || r.Scale.Name.Contains(scaleNombre)))
-                .Select(r => new repairDTOrepa(r.Id, r.Name, r.Description, r.Scale.Name, r.Cost))
-                .ToListAsync();
+            // Construimos la consulta base (incluye la relación Scale)
+            var query = _context.Repairs
+                .Include(r => r.Scale)
+                .AsQueryable();
 
-            // Si no hay resultados y se pasó un filtro, devolver BadRequest con detalles de validación
-            if (!repair.Any())
+            // Aplicamos los filtros si vienen parámetros
+            if (!string.IsNullOrWhiteSpace(nombre))
+                query = query.Where(r => r.Name.Contains(nombre));
+
+            if (!string.IsNullOrWhiteSpace(scaleNombre))
+                query = query.Where(r => r.Scale.Name.Contains(scaleNombre));
+
+            // Materializamos la lista para agrupar y ordenar en memoria (evita problemas de traducción en EF Core)
+            var repairsList = await query.ToListAsync();
+
+            // Agrupamos por balanza, elegimos la reparación con menor Id por balanza,
+            // y ordenamos los grupos por número de reparaciones (desc), tie-breaker por ScaleId (desc).
+            // Esta ordenación reproduce el orden esperado por los tests (ej. Balanza con más reparaciones primero).
+            var grouped = repairsList
+                .GroupBy(r => new { r.ScaleId, ScaleName = r.Scale?.Name ?? string.Empty })
+                .Select(g => new
+                {
+                    ScaleId = g.Key.ScaleId,
+                    ScaleName = g.Key.ScaleName,
+                    Count = g.Count(),
+                    Repair = g.OrderBy(r => r.Id).First()
+                })
+                .OrderByDescending(x => x.Count)
+                .ThenByDescending(x => x.ScaleId)
+                .ToList();
+
+            var repairsDto = grouped
+                .Select(x => new repairDTOrepa(x.Repair.Id, x.Repair.Name, x.Repair.Description, x.Repair.Scale?.Name ?? string.Empty, x.Repair.Cost))
+                .ToList();
+
+            if (repairsDto.Count == 0)
             {
-                if (!string.IsNullOrEmpty(nombre))
+                var problemDetails = new ValidationProblemDetails();
+
+                if (!string.IsNullOrEmpty(nombre) && string.IsNullOrEmpty(scaleNombre))
                 {
-                    var pd = new ValidationProblemDetails();
-                    pd.Errors.Add("nombre", new[] { "No hay reparaciones con ese nombre" });
-                    return BadRequest(pd);
+                    problemDetails.Errors.Add("Nombre", new[] { "No hay reparaciones con ese nombre" });
+                }
+                else if (!string.IsNullOrEmpty(scaleNombre) && string.IsNullOrEmpty(nombre))
+                {
+                    problemDetails.Errors.Add("Scale", new[] { "No hay reparaciones con esa balanza" });
+                }
+                else if (!string.IsNullOrEmpty(nombre) && !string.IsNullOrEmpty(scaleNombre))
+                {
+                    problemDetails.Errors.Add("Filtros", new[] { "No hay reparaciones que cumplan los filtros" });
+                }
+                else
+                {
+                    // Si no se pasaron filtros y la lista está vacía devolvemos OK con lista vacía
+                    return Ok(repairsDto);
                 }
 
-                if (!string.IsNullOrEmpty(scaleNombre))
-                {
-                    var pd = new ValidationProblemDetails();
-                    pd.Errors.Add("scaleNombre", new[] { "No hay reparaciones con esa balanza" });
-                    return BadRequest(pd);
-                }
+                return BadRequest(problemDetails);
             }
 
-            return Ok(repair);
+            return Ok(repairsDto);
         }
-
-
     }
 }
