@@ -36,101 +36,93 @@ namespace AppForSEII2526.UT.RepairController_test
             _context.Repairs.AddRange(repairs);
             _context.SaveChanges();
         }
-        // Casos de prueba para GetRepairs_OK
-        public static IEnumerable<object[]> TestCasesFor_GetRepairs_OK()
+
+        // Casos de prueba parametrizados. Cada fila contiene:
+        // filterNombre, filterScaleNombre, clearDataBeforeAct, expectOk, expectedRepairs (si expectOk), expectedProblemMessage (si !expectOk)
+        public static IEnumerable<object[]> TestCasesFor_GetRepairs()
         {
-            // Datos esperados para las diferentes combinaciones de filtros
+            // Datos esperados para las diferentes combinaciones de filtros (cuando se espera OK)
             var repairsDTOs = new List<repairDTOrepa>()
             {
                 new repairDTOrepa(1, "Reparación pantalla", "Cambio de pantalla completa", "Balanza A", 49.99),
                 new repairDTOrepa(2, "Reparación batería", "Sustitución batería", "Balanza B", 29.99),
                 new repairDTOrepa(3, "Reparación placa", "Reparación placa base", "Balanza C", 79.50)
             };
-            // Lista completa ordenada por Id
+            // Lista completa ordenada por Id (según la lógica del controlador y los tests previos)
             var allOrdered = new List<repairDTOrepa>
             {
                 repairsDTOs[0],
                 repairsDTOs[2],
                 repairsDTOs[1]
             };
-            // Filtros específicos
+            // Filtros específicos que devuelven resultados
             var tcName_bateria = new List<repairDTOrepa>() { repairsDTOs[1] };
             var tcScale_BalanzaA = new List<repairDTOrepa>() { repairsDTOs[0] };
-            // Combinaciones de filtros y resultados esperados
+
             var allTests = new List<object[]>
             {
-                // nombre nulo, scale nulo 
-                new object[] { null, null, allOrdered },
-                new object[] { "batería", null, tcName_bateria },
-                new object[] { null, "Balanza A", tcScale_BalanzaA },
-                new object[] { "placa", "Balanza C", new List<repairDTOrepa>() { repairsDTOs[2] } }
+                // CASOS QUE DEBEN DEVOLVER OK (expectOk = true)
+                // nombre nulo, scale nulo -> lista completa
+                new object[] { null, null, false, true, allOrdered, null },
+                // nombre "batería" -> solo batería
+                new object[] { "batería", null, false, true, tcName_bateria, null },
+                // scale "Balanza A" -> reparaciones de Balanza A
+                new object[] { null, "Balanza A", false, true, tcScale_BalanzaA, null },
+                // nombre y scale coincidentes
+                new object[] { "placa", "Balanza C", false, true, new List<repairDTOrepa>() { repairsDTOs[2] }, null },
+
+                // CASOS QUE DEBEN DEVOLVER BadRequest (expectOk = false)
+                // nombre inexistente
+                new object[] { "Nombre inexistente", null, false, false, null, "No hay reparaciones con ese nombre" },
+                // escala inexistente
+                new object[] { null, "Balanza inexistente", false, false, null, "No hay reparaciones con esa balanza" },
+                // ambos filtros presentes pero sin coincidencias
+                new object[] { "NombreNoExiste", "BalanzaNoExiste", false, false, null, "No hay reparaciones que cumplan los filtros" },
+
+                // CASO: sin filtros y lista vacía -> debe devolver OK con lista vacía.
+                // Para forzarlo marcamos clearDataBeforeAct = true; el test eliminará las reparaciones antes de la invocación.
+                new object[] { null, null, true, true, new List<repairDTOrepa>(), null }
             };
 
             return allTests;
         }
-        // TEST 1: Comprobar que una petición válida devuelve Ok con la lista correcta de reparaciones.
+
+        // TEST parametrizado que cubre resultados OK y BadRequest según la fila de datos.
         [Theory]
-        [MemberData(nameof(TestCasesFor_GetRepairs_OK))]
+        [MemberData(nameof(TestCasesFor_GetRepairs))]
         [Trait("Database", "WithoutFixtures")]
         [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetRepairs_OK(string? filterNombre, string? filterScaleNombre, List<repairDTOrepa> expectedRepairs)
+        public async Task GetRepairs_TestCases(string? filterNombre, string? filterScaleNombre, bool clearDataBeforeAct, bool expectOk, List<repairDTOrepa>? expectedRepairs, string? expectedProblemMessage)
         {
             // Arrange
             var mockLogger = new Mock<ILogger<ReparacionesController>>();
             ILogger<ReparacionesController> logger = mockLogger.Object;
             var controller = new ReparacionesController(_context, logger);
 
+            // Si la fila de datos indica que debe limpiarse la tabla de reparaciones para este caso, lo hacemos.
+            if (clearDataBeforeAct)
+            {
+                _context.Repairs.RemoveRange(_context.Repairs);
+                _context.SaveChanges();
+            }
+
             // Act
             var result = await controller.GetRepairDTO(filterNombre, filterScaleNombre);
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var repairsDTOsActual = Assert.IsType<List<repairDTOrepa>>(okResult.Value);
-
-            Assert.Equal(expectedRepairs, repairsDTOsActual);
-        }
-        // TEST 2: Comprobar que una petición con nombre o escala inexistente devuelve BadRequest.
-        [Fact]
-        [Trait("Database", "WithoutFixtures")]
-        [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetRepairs_badName_test()
-        {
-            // Arrange: Se crea un mock de ILogger para inyectarlo en el controlador si depender del sistema de logging real.
-            var mock = new Mock<ILogger<ReparacionesController>>();
-            ILogger<ReparacionesController> logger = mock.Object;
-            var controller = new ReparacionesController(_context, logger);
-
-            // Act: Llamada con nombre inexistente
-            var result = await controller.GetRepairDTO("Nombre inexistente", null);
-
-            // Assert
-            // El controlador actual devuelve Ok aunque no haya coincidencias.
-            var badNameResult = Assert.IsType<BadRequestObjectResult>(result);
-            var problemDetails = Assert.IsType<ValidationProblemDetails>(badNameResult.Value);
-            var problem = problemDetails.Errors.First().Value[0];
-
-            Assert.Equal("No hay reparaciones con ese nombre", problem);
-        }
-        // TEST 3: Comprobar que una petición con escala inexistente devuelve BadRequest.
-        [Fact]
-        [Trait("Database", "WithoutFixtures")]
-        [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetRepairs_badScale_test()
-        {
-            // Arrange
-            var mock = new Mock<ILogger<ReparacionesController>>();
-            ILogger<ReparacionesController> logger = mock.Object;
-            var controller = new ReparacionesController(_context, logger);
-
-            // Act
-            var result = await controller.GetRepairDTO(null, "Balanza inexistente");
-
-            // Assert
-            var badScaleResult = Assert.IsType<BadRequestObjectResult>(result);
-            var problemDetails = Assert.IsType<ValidationProblemDetails>(badScaleResult.Value);
-            var problem = problemDetails.Errors.First().Value[0];
-
-            Assert.Equal("No hay reparaciones con esa balanza", problem);
+            // Assert: bifurcamos según lo esperado en los datos
+            if (expectOk)
+            {
+                var okResult = Assert.IsType<OkObjectResult>(result);
+                var repairsDTOsActual = Assert.IsType<List<repairDTOrepa>>(okResult.Value);
+                Assert.Equal(expectedRepairs, repairsDTOsActual);
+            }
+            else
+            {
+                var badResult = Assert.IsType<BadRequestObjectResult>(result);
+                var problemDetails = Assert.IsType<ValidationProblemDetails>(badResult.Value);
+                var problem = problemDetails.Errors.First().Value[0];
+                Assert.Equal(expectedProblemMessage, problem);
+            }
         }
     }
 }

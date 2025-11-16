@@ -50,6 +50,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
             _context.SaveChanges();
         }
         // Casos de prueba para CreateReceipt_Error_test
+        // Cada fila: ReceiptForCreateDTO, expectedErrorMessage (null si no se comprueba), forceModelStateInvalid (true para el caso que antes era Fact)
         public static IEnumerable<object[]> TestCasesFor_CreateReceipt()
         {
             // Caso 1 : usuario no registrado
@@ -73,45 +74,97 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 PaymentMethod = PaymentMethod.CreditCard,
                 Repairs = new List<ReceiptItemDTO> { new ReceiptItemDTO("Reparación inexistente", "ModeloY") }
             };
+
+            // Caso 3 (antes era Fact): DTO válido pero forzamos ModelState inválido
+            var dtoValidButModelStateInvalid = new ReceiptForCreateDTO()
+            {
+                UserName = _userName,
+                Name = _customerName,
+                Surname = _customerSurname,
+                DeliveryAddress = deliveryAddress,
+                PaymentMethod = PaymentMethod.CreditCard,
+                Repairs = new List<ReceiptItemDTO> { new ReceiptItemDTO("Reparación pantalla", "Modelo-Test") }
+            };
+
             // Lista de todos los casos de prueba
             var allTests = new List<object[]>
             {
-                new object[] { dtoUserNotRegistered, $"Usuario '{dtoUserNotRegistered.UserName}' no existe" },
-                new object[] { dtoRepairNotExisting, $"Reparación '{dtoRepairNotExisting.Repairs.First().RepairName}' no existe" }
+                // los dos casos originales: no existe usuario / reparación inexistente
+                new object[] { dtoUserNotRegistered, $"Usuario '{dtoUserNotRegistered.UserName}' no existe", false },
+                new object[] { dtoRepairNotExisting, $"Reparación '{dtoRepairNotExisting.Repairs.First().RepairName}' no existe", false },
+
+                // caso ModelState inválido: no comprobamos mensaje concreto (se pasa null), y marcamos forceModelStateInvalid = true
+                new object[] { dtoValidButModelStateInvalid, null, true }
             };
 
             return allTests;
         }
-        // TEST 1: Comprobar que una petición con datos inválidos devuelve BadRequest con el mensaje adecuado.
+        // TEST parametrizado que ahora incluye el caso que antes era Fact (ModelState inválido).
         [Theory]
         [Trait("LevelTesting", "Unit Testing")]
         [Trait("Database", "WithoutFixture")]
         [MemberData(nameof(TestCasesFor_CreateReceipt))]
-        public async Task CreateReceipt_Error_test(ReceiptForCreateDTO receiptDTO, string errorExpected)
+        public async Task CreateReceipt_Error_test(ReceiptForCreateDTO receiptDTO, string? errorExpected, bool forceModelStateInvalid)
         {
             // Arrange: Se crea un mock de ILogger para inyectarlo en el controlador si depender del sistema de logging real.
             var mockLogger = new Mock<ILogger<RecibosController>>();
             var controller = new RecibosController(_context, mockLogger.Object);
 
-            // Act: Llamada al método CreateRepair con datos inválidos
+            // Si la fila indica que debemos forzar ModelState inválido, lo añadimos antes del Act
+            if (forceModelStateInvalid)
+            {
+                controller.ModelState.AddModelError("DeliveryAddress", "El campo DeliveryAddress es obligatorio.");
+            }
+
+            // Act: Llamada al método CreateRepair con datos inválidos o ModelState inválido forzado
             var result = await controller.CreateRepair(receiptDTO);
 
-            // Assert: Se espera un BadRequestObjectResult y que el mensaje devuelto comience con el error esperado
+            // Assert: Se espera un BadRequestObjectResult
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
 
-            // El controlador puede devolver un string o ValidationProblemDetails
-            if (badRequestResult.Value is string s)
+            if (forceModelStateInvalid)
             {
-                Assert.StartsWith(errorExpected, s);
+                // En el caso del ModelState inválido comprobamos:
+                // - El BadRequest contiene algún valor (ModelState/ValidationProblemDetails/SerializableError)
+                Assert.NotNull(badRequestResult.Value);
+
+                // - El logger registró la advertencia correspondiente (comprobamos las invocaciones para evitar problemas con el tipo genérico del formatter)
+                var logInvocations = mockLogger.Invocations
+                    .Where(inv =>
+                        inv.Method.Name == "Log" &&
+                        inv.Arguments != null &&
+                        inv.Arguments.Count >= 3 &&
+                        inv.Arguments[0] is LogLevel lvl &&
+                        lvl == LogLevel.Warning &&
+                        inv.Arguments[2] != null &&
+                        inv.Arguments[2].ToString().Contains("Datos inválidos para crear el recibo"))
+                    .ToList();
+
+                Assert.Single(logInvocations);
+
+                // - No se ha creado ningún recibo en la BD de pruebas
+                Assert.Empty(_context.Receipts);
+
+                // - Y el GET por id 1 no debería encontrar nada (NotFound)
+                var getResult = await controller.GetRepair(1);
+                Assert.IsType<NotFoundResult>(getResult);
             }
-            else if (badRequestResult.Value is ValidationProblemDetails pd)
+            else
             {
-                var errorActual = pd.Errors.First().Value[0];
-                Assert.StartsWith(errorExpected, errorActual);
-            }
-            else 
-            {
-                Assert.True(false, "Tipo inesperado en BadRequestObjectResult.Value");
+                // Para los demás casos comprobamos el mensaje esperado (si se proporcionó)
+                if (badRequestResult.Value is string s)
+                {
+                    Assert.StartsWith(errorExpected, s);
+                }
+                else if (badRequestResult.Value is ValidationProblemDetails pd)
+                {
+                    var errorActual = pd.Errors.First().Value[0];
+                    Assert.StartsWith(errorExpected, errorActual);
+                }
+                else
+                {
+                    Assert.True(false, "Tipo inesperado en BadRequestObjectResult.Value");
+                }
             }
         }
         // TEST 2: Comprobar que una petición válida crea el recibo correctamente y devuelve CreatedAtAction con los datos correctos.
