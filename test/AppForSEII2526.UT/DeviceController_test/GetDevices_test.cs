@@ -1,5 +1,6 @@
 ﻿using AppForSEII2526.API.Controllers;
 using AppForSEII2526.API.DTOs.Devices_DTO_Comprar_J;
+using AppForSEII2526.API.DTOs.DevicesDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -135,6 +136,111 @@ namespace AppForSEII2526.UT.DeviceController_test
 
             Assert.Equal(expectedDevices, devicesDTOsActual);
         }
+
+        //Luis
+        public static IEnumerable<object[]> TestCasesFor_GetDevicesForRental_OK()
+        {
+            var devicesDTOs = new List<Device_DTO_Alquilar>()
+    {
+        new Device_DTO_Alquilar(1, "Azul", "Pixel 8", 29.99, 2023, "Google Pixel 8", "Google"),
+        new Device_DTO_Alquilar(2, "Naranja", "iPhone 17", 59.99, 2025, "iPhone 17", "Apple"),
+        new Device_DTO_Alquilar(3, "Negro", "Redmi Note 14", 19.99, 2024, "Redmi Note 14", "Xiaomi")
+    };
+
+            // Orden natural
+            var naturalOrder = new List<Device_DTO_Alquilar>()
+    {
+        devicesDTOs[0], // Google - ID 1
+        devicesDTOs[1], // Apple - ID 2  
+        devicesDTOs[2]  // Xiaomi - ID 3
+    };
+
+            var model_iPhone = new List<Device_DTO_Alquilar>() { devicesDTOs[1] };
+            var priceBelow30 = new List<Device_DTO_Alquilar>() {
+        devicesDTOs[0], // Google - 29.99
+        devicesDTOs[2]  // Xiaomi - 19.99
+    };
+
+            var tests = new List<object[]>
+    {
+        new object[] { null, null, naturalOrder },
+        new object[] { "iPhone", null, model_iPhone },
+        new object[] { null, 30, priceBelow30 }
+    };
+
+            return tests;
+        }
+
+        [Theory]
+        [MemberData(nameof(TestCasesFor_GetDevicesForRental_OK))]
+        [Trait("Database", "WithoutFixtures")]
+        [Trait("LevelTesting", "Unit Testing")]
+        public async Task GetDevicesForRental_OK(string? model, int? maxPrice, List<Device_DTO_Alquilar> expectedList)
+        {
+            // Arrange
+            var mockLogger = new Mock<ILogger<DeviceControllerDefault>>();
+            var controller = new DeviceControllerDefault(_context, mockLogger.Object);
+
+            // Act
+            var result = await controller.GetDevices(model, maxPrice);
+
+            // Assert
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var actualList = Assert.IsType<List<Device_DTO_Alquilar>>(ok.Value);
+
+            Assert.Equal(expectedList.Count, actualList.Count);
+
+            for (int i = 0; i < expectedList.Count; i++)
+            {
+                Assert.Equal(expectedList[i].Id, actualList[i].Id);
+                Assert.Equal(expectedList[i].Brand, actualList[i].Brand);
+                Assert.Equal(expectedList[i].Name, actualList[i].Name);
+                Assert.Equal(expectedList[i].PriceForRent, actualList[i].PriceForRent);
+                Assert.Equal(expectedList[i].Model, actualList[i].Model);
+            }
+        }
+
+        //test del filtro modelo incorrecto
+        [Fact]
+        [Trait("Database", "WithoutFixtures")]
+        [Trait("LevelTesting", "Unit Testing")]
+        public async Task GetDevicesForRental_badModel_test()
+        {
+            // Arrange
+            var mockLogger = new Mock<ILogger<DeviceControllerDefault>>();
+            var controller = new DeviceControllerDefault(_context, mockLogger.Object);
+
+            // Act
+            var result = await controller.GetDevices("ModeloInventado123", null);
+
+            // Assert
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var list = Assert.IsType<List<Device_DTO_Alquilar>>(ok.Value);
+
+            Assert.Empty(list);
+        }
+
+        //test del filtro price negativo
+        [Fact]
+        [Trait("Database", "WithoutFixtures")]
+        [Trait("LevelTesting", "Unit Testing")]
+        public async Task GetDevicesForRental_badPrice_test()
+        {
+            // Arrange
+            var mockLogger = new Mock<ILogger<DeviceControllerDefault>>();
+            var controller = new DeviceControllerDefault(_context, mockLogger.Object);
+
+            // Act
+            var result = await controller.GetDevices(null, -5);
+
+            // Assert
+            var bad = Assert.IsType<BadRequestObjectResult>(result);
+            var msg = Assert.IsType<string>(bad.Value);
+
+            Assert.Equal("El precio no puede ser negativo ❤️❤️❤️ ", msg);
+        }
+
+        //
 
         [Fact]
         [Trait("Database", "WithoutFixtures")]
