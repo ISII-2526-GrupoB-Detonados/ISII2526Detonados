@@ -110,6 +110,21 @@ namespace AppForSEII2526.UT.ReceiptController_test
             var mockLogger = new Mock<ILogger<RecibosController>>();
             var controller = new RecibosController(_context, mockLogger.Object);
 
+            // Crear el DTO esperado con los mismos datos que se insertaron en el constructor
+            var expectedReceiptItems = new List<ReceiptItemDTO>
+            {
+                new ReceiptItemDTO("Reparación pantalla", "Balanza Aleatoria", "Modelo-Aleatorio-123", (float)49.99)
+            };
+
+            var expectedReceipt = new ReceiptDetailDTO(
+                "Patrik",
+                "Lopes Bulhoes de Oliveira",
+                "Calle Yeste",
+                DateTime.Now,
+                (float)49.99,
+                expectedReceiptItems
+            );
+
             // Act
             var result = await controller.GetRepair(1); // id que existe
 
@@ -117,23 +132,8 @@ namespace AppForSEII2526.UT.ReceiptController_test
             var okResult = Assert.IsType<OkObjectResult>(result);
             var receiptDTOActual = Assert.IsType<ReceiptDetailDTO>(okResult.Value);
 
-            // Comprobaciones sobre el DTO 
-            Assert.Equal("Patrik", receiptDTOActual.Name);
-            Assert.Equal("Lopes Bulhoes de Oliveira", receiptDTOActual.Surname);
-            Assert.Equal("Calle Yeste", receiptDTOActual.DeliveryAddress);
-            Assert.Equal((float)49.99, receiptDTOActual.TotalPrice);
-
-            // La fecha debe ser reciente 
-            Assert.True((DateTime.Now - receiptDTOActual.OperationDate).TotalSeconds < 60, "La fecha de la operación debe ser reciente");
-            // Compruebo la colección de reparaciones dentro del DTO.
-            Assert.NotNull(receiptDTOActual.Repairs);
-            Assert.Single(receiptDTOActual.Repairs);
-            // Verificaciones del primer (y único) item del recibo.
-            var item = receiptDTOActual.Repairs.First();
-            Assert.Equal("Reparación pantalla", item.RepairName);
-            Assert.Equal("Balanza Aleatoria", item.Scale);
-            Assert.Equal("Modelo-Aleatorio-123", item.ModelToRepair);
-            Assert.Equal((float)49.99, item.RepairCost);
+            // Comparación de objetos usando Equals
+            Assert.Equal(expectedReceipt, receiptDTOActual);
         }
     }
 }
