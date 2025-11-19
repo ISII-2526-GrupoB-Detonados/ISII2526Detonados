@@ -54,6 +54,9 @@ namespace AppForSEII2526.API.Controllers
             if (!string.IsNullOrWhiteSpace(scaleNombre))
                 query = query.Where(r => r.Scale.Name.Contains(scaleNombre));
 
+
+
+
             // Materializamos la lista para agrupar y ordenar en memoria (evita problemas de traducción en EF Core)
             var repairsList = await query.ToListAsync();
 

@@ -108,7 +108,7 @@ namespace AppForSEII2526.UT.RepairController_test
                 _context.SaveChanges();
             }
 
-            // Act
+            // Act: llamada al método GetRepairDTO con los filtros de la fila de datos
             var result = await controller.GetRepairDTO(filterNombre, filterScaleNombre);
 
             // Assert: bifurcamos según lo esperado en los datos
