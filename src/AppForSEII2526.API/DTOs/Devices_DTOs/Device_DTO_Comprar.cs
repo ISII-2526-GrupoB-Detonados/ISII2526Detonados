@@ -1,9 +1,10 @@
 ﻿namespace AppForSEII2526.API.DTOs.Devices_DTO_Comprar_J
 {
+    using System;
     using DataType = System.ComponentModel.DataAnnotations.DataType;
 
 
-    public class Device_DTO_Comprar //mirar más y rquired y key
+    public class Device_DTO_Comprar 
     {
 
         public Device_DTO_Comprar() { } //evita colapso framework
@@ -18,7 +19,7 @@
         }
 
 
-        //Atributos -- Mismas validaciones que en el modelo Device.cs 
+        //Atributos
 
         public int Id { get; set; }
         [Required(ErrorMessage = "La marca es obligatoria.")]
@@ -42,5 +43,20 @@
         [Range(0, double.MaxValue, ErrorMessage = "El precio de alquiler debe ser positivo.")]
         public double PriceForPurchase { get; set; }
 
+        public override bool Equals(object? obj)
+        {
+            return obj is Device_DTO_Comprar comprar &&
+                   Id == comprar.Id &&
+                   Brand == comprar.Brand &&
+                   Color == comprar.Color &&
+                   Name == comprar.Name &&
+                   Model == comprar.Model &&
+                   PriceForPurchase == comprar.PriceForPurchase;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Brand, Color, Name, Model, PriceForPurchase);
+        }
     }
 }
