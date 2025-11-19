@@ -1,5 +1,6 @@
 ﻿using AppForSEII2526.API.Controllers;
 using AppForSEII2526.API.DTOs.Devices_DTO_Comprar_J;
+using AppForSEII2526.API.DTOs.DevicesDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
