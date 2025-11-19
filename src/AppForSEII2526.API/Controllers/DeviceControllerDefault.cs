@@ -19,19 +19,14 @@ namespace AppForSEII2526.API.Controllers
             _logger = logger;
         }
         //-------------------------------------------------------------------------------------------------------------------------
-       
 
-        //Meter los gets de la clase device
+
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<Device_DTO_Alquilar>), (int)HttpStatusCode.OK)]
-        //Devuelve una lista de dispositivos en formato DeviceDTO con un código de estado HTTP 200 (OK) si la operación es exitosa.
-        //son X datos donde x es c.Id,c.Color,c.Name,c.PriceForRent,c.Year,c.Model,c.Brand 
-        public async Task<ActionResult> GetDevices(string? model, int? priceForRent)
+        public async Task<ActionResult> GetDevices(string? model, int? maxPrice)
         {
-
-            //❤️❤️❤️ no meter negativos ❤️❤️❤️
-            if (priceForRent < 0)
+            if (maxPrice < 0)
             {
                 return BadRequest("El precio no puede ser negativo ❤️❤️❤️ ");
             }
@@ -44,24 +39,27 @@ namespace AppForSEII2526.API.Controllers
                     (priceForRent == null || d.PriceForRent <= priceForRent))
 
 
-               //-------------------------------------------------------------------------------------------------------------------------
-               .Select(d => new Device_DTO_Alquilar(
-                  d.Id,
-                 d.Color,
-                 d.Name,
-                 d.PriceForRent,
-                 d.Year,
-                 d.Model.NameModel, //usar un tipo string o Convertir a string para acceder al metodo Contains
-                 d.Brand)
-               )
-        
-                
+            var devices = await _context.Devices
+                // FILTRAR POR DISPONIBILIDAD - Solo dispositivos con stock para alquiler
+                .Where(d => d.QuantityForRent > 0)
+                // FILTRAR POR MODELO (contiene el texto)
+                .Where(d => model == null || d.Model.NameModel.Contains(model))
+                // FILTRAR POR PRECIO MÁXIMO
+                .Where(d => maxPrice == null || d.PriceForRent <= maxPrice)
+                .Select(d => new Device_DTO_Alquilar(
+                    d.Id,
+                    d.Color,
+                    d.Name,
+                    d.PriceForRent,
+                    d.Year,
+                    d.Model.NameModel,
+                    d.Brand)
+                )
                 .ToListAsync();
-            return Ok(devices);
-  
 
+            return Ok(devices);
         }
 
-   
+
     }
 }

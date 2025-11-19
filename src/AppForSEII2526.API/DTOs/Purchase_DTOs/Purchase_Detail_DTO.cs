@@ -34,13 +34,18 @@ namespace AppForSEII2526.API.DTOs.Purchase_DTO
             }
         }
 
+        protected bool CompareDate(DateTime date1, DateTime date2)
+        {
+            return (date1.Subtract(date2) < new TimeSpan(0, 1, 0));
+        }
+
         public override bool Equals(object? obj)
         {
             return obj is Purchase_Detail_DTO dTO &&
                    base.Equals(obj) &&
                    TotalPrice == dTO.TotalPrice &&
                    Id == dTO.Id &&
-                   PurchaseDate == dTO.PurchaseDate;
+                   CompareDate(PurchaseDate, dTO.PurchaseDate);
         }
 
         public override int GetHashCode()
