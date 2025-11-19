@@ -24,6 +24,7 @@ namespace AppForSEII2526.API.Controllers
         public async Task<ActionResult> GetDevicesComprarDTOs(string? color, string? nombre)
         {
             var devices = await _context.Devices
+            .Where(d => d.QuantityForPurchase > 0)
             .Where(d => (color == null || d.Color.Contains(color)) &&
                    (nombre == null || d.Name.Contains(nombre)))
             .Select(d=>new Device_DTO_Comprar(d.Id, d.Brand, d.Color, d.Name, d.Model.NameModel, d.PriceForPurchase))
