@@ -30,6 +30,14 @@ namespace AppForSEII2526.API.Controllers
             {
                 return BadRequest("El precio no puede ser negativo ❤️❤️❤️ ");
             }
+            var devices = await _context.Devices
+                  //-------------------------------------------------------------------------------------------------------------------------
+                  //2.1 El sistema permite a los clientes filtrar los dispositivos en función del modelo y/o el precio del alquiler.
+                  //poner add para encadernar 2
+                .Where(d => d.QuantityForPurchase > 0)
+                .Where(d => (model == null || d.Model.NameModel.Contains(model)) &&
+                    (priceForRent == null || d.PriceForRent <= priceForRent))
+
 
             var devices = await _context.Devices
                 // FILTRAR POR DISPONIBILIDAD - Solo dispositivos con stock para alquiler
