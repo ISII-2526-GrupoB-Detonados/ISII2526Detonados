@@ -1,4 +1,5 @@
 ﻿using AppForSEII2526.API.Controllers;
+using AppForSEII2526.API.DTOs.Devices_DTO_Comprar_J;
 using AppForSEII2526.API.DTOs.Purchase_DTO;
 using AppForSEII2526.API.Models;
 using System;
@@ -88,5 +89,7 @@ namespace AppForSEII2526.UT.PurchaseController_test
             var eq = expectedPurchase.Equals(purchaseDTOActual);
             Assert.Equal(expectedPurchase, purchaseDTOActual);
         }
+
+        
     }
 }

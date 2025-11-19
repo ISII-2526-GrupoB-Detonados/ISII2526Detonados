@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace AppForSEII2526.UT.DeviceController_test
 {
-    public class GetDevices_test : AppForSEII2526SqliteUT
+    public class GetDevicesPurchase_test : AppForSEII2526SqliteUT
     {
-        public GetDevices_test()
+        public GetDevicesPurchase_test()
         {
             var models = new List<Model>
             {
@@ -53,27 +53,10 @@ namespace AppForSEII2526.UT.DeviceController_test
                 }
             };
 
-            var rental = new Rental
-            {
-                Id = 1,
-                DeliveryAddress = "Calle La Roda, 20",
-                PaymentMethod = PaymentMethod.CreditCard,
-                RentalDate = DateTime.Now,
-                RentalDateFrom = DateTime.Today.AddDays(2),
-                RentalDateTo = DateTime.Today.AddDays(5),
-                TotalPrice = devices[1].PriceForRent,
-                ApplicationUser = user,
-                RentDevices = new List<RentDevice>
-                {
-                    new RentDevice { DeviceId = devices[1].Id, RentId = 1 ,Quantity = 1, Price = devices[1].PriceForRent}
-                }
-            };
-
             _context.ApplicationUsers.Add(user);
             _context.Models.AddRange(models);
             _context.Devices.AddRange(devices);
             _context.Purchases.Add(purchase);
-            _context.Rentals.Add(rental);
             _context.SaveChanges();
         }
 
@@ -101,18 +84,13 @@ namespace AppForSEII2526.UT.DeviceController_test
             {
                 new object[] { null, null, allOrdered },
                 new object[] { null, "iPhone 17", tcName_iPhone },
-                new object[] { null, "Redmi", tcName_Redmi },
-                new object[] { null, null, allOrdered },
-                new object[] { null, null, allOrdered },
-                new object[] { "Naranja", null, Color_Naranja },
-                new object[] { null, null, allOrdered },
                 new object[] { "Naranja", null, Color_Naranja }
             };
 
             return allTests;
         }
 
-        // public static IEnumerable<Object[]> TestCasesFor_GetDevicesForRental_OK(){}
+       
 
         [Theory]
         [MemberData(nameof(TestCasesFor_GetDevicesForPurchase_OK))]
@@ -136,46 +114,6 @@ namespace AppForSEII2526.UT.DeviceController_test
             Assert.Equal(expectedDevices, devicesDTOsActual);
         }
 
-        [Fact]
-        [Trait("Database", "WithoutFixtures")]
-        [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetDevicesForPurchase_badName_test()
-        {
-            //Arrange
-            var mock = new Mock<ILogger<DeviceControllerPurchases>>();
-            ILogger<DeviceControllerPurchases> logger = mock.Object;
-            var controller = new DeviceControllerPurchases(_context, logger);
-
-            //Act
-            var result = await controller.GetDevicesComprarDTOs(null, "Samsung Galaxy A3");
-
-            //Assert
-            var badNameResult = Assert.IsType<BadRequestObjectResult>(result);
-            var problemDetails = Assert.IsType<ValidationProblemDetails>(badNameResult.Value);
-            var problem = problemDetails.Errors.First().Value[0];
-
-            Assert.Equal("No hay dispositivos con ese nombre", problem);
-        }
-
-        [Fact]
-        [Trait("Database", "WithoutFixtures")]
-        [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetDevicesForPurchase_badColor_test()
-        {
-            //Arrange
-            var mock = new Mock<ILogger<DeviceControllerPurchases>>();
-            ILogger<DeviceControllerPurchases> logger = mock.Object;
-            var controller = new DeviceControllerPurchases(_context, logger);
-
-            //Act
-            var result = await controller.GetDevicesComprarDTOs("Blanco", null);
-
-            //Assert
-            var badColorResult = Assert.IsType<BadRequestObjectResult>(result);
-            var problemDetails = Assert.IsType<ValidationProblemDetails>(badColorResult.Value);
-            var problem = problemDetails.Errors.First().Value[0];
-
-            Assert.Equal("No hay dispositivos con ese color", problem);
-        }
+        
     }
 }

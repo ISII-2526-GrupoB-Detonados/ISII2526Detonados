@@ -92,6 +92,7 @@ namespace AppForSEII2526.UT.PurchaseController_test
             return allTests;
         }
 
+        //Theory
         [Theory]
         [Trait("LevelTesting", "Unit Testing")]
         [Trait("Database", "WithoutFixture")]
