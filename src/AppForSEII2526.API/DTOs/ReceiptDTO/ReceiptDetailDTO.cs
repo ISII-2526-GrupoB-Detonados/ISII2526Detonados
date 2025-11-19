@@ -5,8 +5,8 @@
     using System.ComponentModel.DataAnnotations;
     using DataType = System.ComponentModel.DataAnnotations.DataType;
 
-public class ReceiptDetailDTO
-{
+public class ReceiptDetailDTO : ReceiptForCreateDTO
+    {
     public string Name { get; set; }
 
     public string Surname { get; set; }
@@ -30,6 +30,25 @@ public class ReceiptDetailDTO
         TotalPrice = totalPrice;
         Repairs = repairs;
     }
-  }
+        public override bool Equals(object? obj)
+        {
+            return obj is ReceiptDetailDTO dTO &&
+                   Name == dTO.Name &&
+                   Surname == dTO.Surname &&
+                   DeliveryAddress == dTO.DeliveryAddress &&
+                   CompareDate(OperationDate, dTO.OperationDate) && // Usar CompareDate aquí
+                   TotalPrice == dTO.TotalPrice &&
+                   Repairs.SequenceEqual(dTO.Repairs); // Usar SequenceEqual en lugar de EqualityComparer
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Surname, DeliveryAddress, OperationDate, TotalPrice, Repairs);
+        }
+
+     
+
+    }
+  
 }
 

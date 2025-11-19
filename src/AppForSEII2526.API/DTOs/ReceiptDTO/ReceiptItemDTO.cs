@@ -32,6 +32,19 @@
             RepairName = repairName;
             ModelToRepair = modelToRepair;
         }
+        public override bool Equals(object? obj)
+        {
+            return obj is ReceiptItemDTO dTO &&
+                   RepairName == dTO.RepairName &&
+                   Scale == dTO.Scale &&
+                   ModelToRepair == dTO.ModelToRepair &&
+                   RepairCost == dTO.RepairCost;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(RepairName, Scale, ModelToRepair, RepairCost);
+        }
 
     }
    }

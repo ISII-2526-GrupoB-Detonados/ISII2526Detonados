@@ -25,6 +25,25 @@
         public IList<ReceiptItemDTO> Repairs { get; set; }
 
         public ReceiptForCreateDTO() { }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is ReceiptForCreateDTO dTO &&
+                   Name == dTO.Name &&
+                   Surname == dTO.Surname &&
+                   UserName == dTO.UserName &&
+                   DeliveryAddress == dTO.DeliveryAddress &&
+                   PaymentMethod == dTO.PaymentMethod &&
+                   EqualityComparer<IList<ReceiptItemDTO>>.Default.Equals(Repairs, dTO.Repairs);
+        }
+        protected bool CompareDate(DateTime date1, DateTime date2)
+        {
+            return (date1.Subtract(date2) < new TimeSpan(0, 1, 0));
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Surname, UserName, DeliveryAddress, PaymentMethod, Repairs);
+        }
     }
        
 }

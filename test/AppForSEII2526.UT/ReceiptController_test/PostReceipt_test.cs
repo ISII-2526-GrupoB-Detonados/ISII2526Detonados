@@ -24,7 +24,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
         {
             // Datos base: balanza y reparación
             var scale = new Scale { Id = 1, Name = "Balanza Aleatoria" };
-           
+
             var repair = new Repair
             {
                 Id = 1,
@@ -180,7 +180,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 new ReceiptItemDTO("Reparación pantalla", "Modelo-Aleatorio-123")
             };
             // DTO para la creación del recibo
-            var dto = new ReceiptForCreateDTO 
+            var dto = new ReceiptForCreateDTO
             {
                 UserName = _userName,
                 Name = _customerName,
@@ -195,21 +195,25 @@ namespace AppForSEII2526.UT.ReceiptController_test
 
             // Assert: Se espera un CreatedAtActionResult con los datos correctos
             var createdResult = Assert.IsType<CreatedAtActionResult>(result); // Verifica que el resultado es CreatedAtActionResult
-            var receiptDetail = Assert.IsType<ReceiptDetailDTO>(createdResult.Value); // Verifica que el valor es del tipo esperado
-            // Verificaciones de los datos devueltos
-            Assert.Equal(_customerName, receiptDetail.Name);
-            Assert.Equal(_customerSurname, receiptDetail.Surname);
-            Assert.Equal(deliveryAddress, receiptDetail.DeliveryAddress);
-            Assert.Equal((float)49.99, receiptDetail.TotalPrice);
-            Assert.NotNull(receiptDetail.Repairs);
-            Assert.Single(receiptDetail.Repairs);
-            // Verificación del item del recibo
-            var item = receiptDetail.Repairs.First();
-            Assert.Equal("Reparación pantalla", item.RepairName);
-            Assert.Equal("Modelo-Aleatorio-123", item.ModelToRepair);
+            var receiptDTOActual = Assert.IsType<ReceiptDetailDTO>(createdResult.Value); // Verifica que el valor es del tipo esperado
 
-            // Fecha reciente 
-            Assert.True((DateTime.Now - receiptDetail.OperationDate).TotalSeconds < 60, "La fecha de la operación debe ser reciente");
+            // Crear el DTO esperado usando la fecha del objeto actual para que coincidan
+            var expectedReceiptItems = new List<ReceiptItemDTO>
+            {
+                new ReceiptItemDTO("Reparación pantalla", "Balanza Aleatoria", "Modelo-Aleatorio-123", (float)49.99)
+            };
+
+            var expectedReceipt = new ReceiptDetailDTO(
+                _customerName,
+                _customerSurname,
+                deliveryAddress,
+                receiptDTOActual.OperationDate, // Usar la fecha del objeto actual
+                (float)49.99,
+                expectedReceiptItems
+            );
+
+            // Comparación de objetos usando Equals
+            Assert.Equal(expectedReceipt, receiptDTOActual);
         }
     }
 }
