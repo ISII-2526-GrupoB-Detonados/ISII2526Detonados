@@ -98,9 +98,11 @@ public class RecibosController : ControllerBase
             });
 
             enrichedItems.Add(new ReceiptItemDTO(
-                repair.Name,
-                item.ModelToRepair
-            ));
+             repair.Name,           // Parámetro 1: repairName
+             repair.Scale.Name,     // Parámetro 2: scale
+              item.ModelToRepair,    // Parámetro 3: modelToRepair
+            (float)repair.Cost    // Parámetro 4: repairCost
+));
         }
 
         var receipt = new Receipt
