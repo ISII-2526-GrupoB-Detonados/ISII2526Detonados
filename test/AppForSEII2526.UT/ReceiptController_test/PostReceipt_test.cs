@@ -176,9 +176,9 @@ namespace AppForSEII2526.UT.ReceiptController_test
             var controller = new RecibosController(_context, mockLogger.Object);
             // Datos para la creación del recibo
             var repairs = new List<ReceiptItemDTO>
-            {
-                new ReceiptItemDTO("Reparación pantalla", "Modelo-Aleatorio-123")
-            };
+    {
+        new ReceiptItemDTO("Reparación pantalla", "Modelo-Aleatorio-123") // Constructor con 2 parámetros
+    };
             // DTO para la creación del recibo
             var dto = new ReceiptForCreateDTO
             {
@@ -199,9 +199,9 @@ namespace AppForSEII2526.UT.ReceiptController_test
 
             // Crear el DTO esperado usando la fecha del objeto actual para que coincidan
             var expectedReceiptItems = new List<ReceiptItemDTO>
-            {
-                new ReceiptItemDTO("Reparación pantalla", "Balanza Aleatoria", "Modelo-Aleatorio-123", (float)49.99)
-            };
+    {
+        new ReceiptItemDTO("Reparación pantalla", "Modelo-Aleatorio-123") // Mismo constructor con 2 parámetros
+    };
 
             var expectedReceipt = new ReceiptDetailDTO(
                 _customerName,
