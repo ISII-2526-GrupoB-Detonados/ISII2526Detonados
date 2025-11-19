@@ -170,7 +170,9 @@ namespace AppForSEII2526.UT.DeviceController_test
 
             return tests;
         }
-
+        //cambiar de clase a una propia
+        //theory con new object nul null, no filtro por nada, uno por modelo, y uno por precio -  precios menores o iguales-+.
+        //test del filtro modelo incorrecto - GetforDevicesForRental
         [Theory]
         [MemberData(nameof(TestCasesFor_GetDevicesForRental_OK))]
         [Trait("Database", "WithoutFixtures")]
@@ -189,7 +191,7 @@ namespace AppForSEII2526.UT.DeviceController_test
             var actualList = Assert.IsType<List<Device_DTO_Alquilar>>(ok.Value);
 
             Assert.Equal(expectedList.Count, actualList.Count);
-
+            //cubrir todo en un aserrt.Equal
             for (int i = 0; i < expectedList.Count; i++)
             {
                 Assert.Equal(expectedList[i].Id, actualList[i].Id);
@@ -199,8 +201,9 @@ namespace AppForSEII2526.UT.DeviceController_test
                 Assert.Equal(expectedList[i].Model, actualList[i].Model);
             }
         }
+        // ----------------------------------------------------------------------------------------------------------------------------------------
+        
 
-        //test del filtro modelo incorrecto
         [Fact]
         [Trait("Database", "WithoutFixtures")]
         [Trait("LevelTesting", "Unit Testing")]
@@ -240,7 +243,7 @@ namespace AppForSEII2526.UT.DeviceController_test
             Assert.Equal("El precio no puede ser negativo ❤️❤️❤️ ", msg);
         }
 
-        //
+        //----------------------------------------------------------------------------------------------------------------------------------------
 
         [Fact]
         [Trait("Database", "WithoutFixtures")]
