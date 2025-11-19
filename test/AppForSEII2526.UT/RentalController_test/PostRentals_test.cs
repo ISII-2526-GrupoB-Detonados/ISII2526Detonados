@@ -14,6 +14,7 @@ namespace AppForSEII2526.UT.RentalController_test
 {
     public class PostRentals_test : AppForSEII2526SqliteUT
     {
+        //DTO_CREATE APPFORMOVIES
         private const string _userName = "luis.lorenzo@uclm.es";
         private const string _customerName = "Luis Lorenzo";
         private const string _customerSurname = "López";
