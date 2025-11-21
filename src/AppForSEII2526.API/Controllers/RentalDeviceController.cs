@@ -74,7 +74,13 @@ namespace AppForSEII2526.API.Controllers
 
             if (rentalForCreate.RentalItems.Count == 0)
                 ModelState.AddModelError("RentalItems", "Error! You must include at least one device to be rented");
-
+            //EXAMEN------------------------------------------------------------------------------------------------------------------------------------------------
+            if (rentalForCreate.DeliveryAddress == null||(!rentalForCreate.DeliveryAddress.Contains("Calle") && !rentalForCreate.DeliveryAddress.Contains("Carretera")))
+            {
+                //return BadRequest("Error en la direccion de envio. Porfavor introduce una direccion valida que incluya las palabras calle o carretera");
+                ModelState.AddModelError("DeliveryAddress", "Error en la direccion de envio. Porfavor introduce una direccion valida que incluya las palabras calle o carretera");
+            }
+            //---------------------------------------------------------------------------------------------------------------------------------------------------------
             // Verificar que el usuario existe
             var user = await _context.ApplicationUsers
                 .FirstOrDefaultAsync(au => au.UserName == rentalForCreate.CustomerUserName);

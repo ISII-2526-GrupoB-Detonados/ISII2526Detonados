@@ -17,7 +17,7 @@ namespace AppForSEII2526.API.Models
 
         [Required(ErrorMessage = "La dirección de entrega es obligatoria.")]
         [StringLength(200, ErrorMessage = "La dirección no puede superar los 200 caracteres.")]
-        public string DeliveryAddress { get; set; }
+        public string? DeliveryAddress { get; set; }
         //---------------------------------------------------------------------------------------
 
         // Clases y Relaciones a otras tablas

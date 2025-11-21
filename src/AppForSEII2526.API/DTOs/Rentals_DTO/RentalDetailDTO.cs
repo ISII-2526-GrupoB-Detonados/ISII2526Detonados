@@ -9,7 +9,7 @@ namespace AppForSEII2526.API.DTOs.Rentals_DTO
         }
         //constructor con herencia (base) y 2 atr mas
         public RentalDetailDTO(int id, DateTime rentalDate, string customerUserName, string customerNameSurname,
-            string deliveryAddress, PaymentMethod paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalItemDTO> rentalItems)
+            string? deliveryAddress, PaymentMethod paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalItemDTO> rentalItems)
             :base(customerUserName,
                  customerNameSurname,
                  deliveryAddress,

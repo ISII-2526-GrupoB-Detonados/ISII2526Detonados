@@ -102,7 +102,14 @@ namespace AppForSEII2526.UT.RentalController_test
 
             var rentalDeviceNotAvailable = new RentalForCreateDTO(_userName, _customerName + " " + _customerSurname, deliveryAddress,
                 PaymentMethod.CreditCard, DateTime.Today.AddDays(3), DateTime.Today.AddDays(4),
+
                 new List<RentalItemDTO>() { new RentalItemDTO(1, _model1Name, 1, "Pixel 8", 29.99, "Google") });
+            //nulo y mala direccion 
+            var BadDirection = new RentalForCreateDTO(_userName, _customerName + "" + _customerSurname, "fsefsfsfsfsdfswe",
+                PaymentMethod.CreditCard, rentalDateFrom, rentalDateTo, rentalItems);
+            var BadDirection2 = new RentalForCreateDTO(_userName, _customerName + "" + _customerSurname, null,
+                PaymentMethod.CreditCard, rentalDateFrom, rentalDateTo, rentalItems);
+            //-----------------
 
             var allTests = new List<object[]>
             {
@@ -110,7 +117,10 @@ namespace AppForSEII2526.UT.RentalController_test
                 new object[] { rentalFromBeforeToday, "Error! Your rental date must start later than today" },
                 new object[] { rentalToBeforeFrom, "Error! Your rental must end later than it starts" },
                 new object[] { rentalApplicationUser, "Error! UserName is not registered" },
-                new object[] { rentalDeviceNotAvailable, $"Error! Device with ID '1' is not available for being rented from" }
+                new object[] { rentalDeviceNotAvailable, $"Error! Device with ID '1' is not available for being rented from" },
+                //nulo y mala direccion ezamen
+                new object[] { BadDirection, "Error en la direccion de envio. Porfavor introduce una direccion valida que incluya las palabras calle o carretera" },
+                new object[] { BadDirection2, "Error en la direccion de envio. Porfavor introduce una direccion valida que incluya las palabras calle o carretera" },
             };
             return allTests;
         }

@@ -7,11 +7,11 @@
     {
         //------------------ Constructors ------------------
  
-        public RentalForCreateDTO(string customerUserName, string customerNameSurname, string deliveryAddress, PaymentMethod paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalItemDTO> rentalItems)
+        public RentalForCreateDTO(string customerUserName, string customerNameSurname, string? deliveryAddress, PaymentMethod paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalItemDTO> rentalItems)
         {
             CustomerUserName = customerUserName ?? throw new ArgumentNullException(nameof(customerUserName));
             CustomerNameSurname = customerNameSurname ?? throw new ArgumentNullException(nameof(customerNameSurname));
-            DeliveryAddress = deliveryAddress ?? throw new ArgumentNullException(nameof(deliveryAddress));
+            DeliveryAddress = deliveryAddress ;
             PaymentMethod = paymentMethod;
             RentalDateFrom = rentalDateFrom;
             RentalDateTo = rentalDateTo;
@@ -35,7 +35,7 @@
         [Display(Name = "Delivery Address")]
         [StringLength(50, MinimumLength = 10, ErrorMessage = "Delivery address must have at least 10 characters")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please, set your address for delivery")]
-        public string DeliveryAddress { get; set; }
+        public string? DeliveryAddress { get; set; }
 
         [EmailAddress]
         [Required]
