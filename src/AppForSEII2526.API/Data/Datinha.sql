@@ -45,7 +45,6 @@ SET IDENTITY_INSERT [dbo].[Receipts] ON
 INSERT INTO [dbo].[Receipts] ([Id], [DeliveryAddress], [PaymentMethodTypes], [ApplicationUserId], [ReceiptDate], [TotalPrice]) VALUES (23, N'123 Calle Principal', 1, N'User-001', N'2025-10-22 10:30:00', 150.75)
 INSERT INTO [dbo].[Receipts] ([Id], [DeliveryAddress], [PaymentMethodTypes], [ApplicationUserId], [ReceiptDate], [TotalPrice]) VALUES (27, N'456 Avenida Secundaria', 2, N'User-002', N'2024-10-22 12:30:00', 34.7)
 INSERT INTO [dbo].[Receipts] ([Id], [DeliveryAddress], [PaymentMethodTypes], [ApplicationUserId], [ReceiptDate], [TotalPrice]) VALUES (33, N'789 Boulevard Central', 3, N'User-003', N'2025-12-21 12:15:00', 76.87)
-INSERT INTO [dbo].[Receipts] ([Id], [DeliveryAddress], [PaymentMethodTypes], [ApplicationUserId], [ReceiptDate], [TotalPrice]) VALUES (38, N'101 Calle Nueva', 2, N'User-004', N'2025-12-22 13:55:00', 123.8)
 SET IDENTITY_INSERT [dbo].[Receipts] OFF
 
 -- ReceiptItems
