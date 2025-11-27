@@ -1,4 +1,4 @@
----------------------------------------------------------------------------------------------------------------
+u---------------------------------------------------------------------------------------------------------------
 -- USUARIOS (3 usuarios)
 INSERT INTO [dbo].[AspNetUsers] ([Id], [Surname], [Name], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) 
 VALUES (N'user-001', N'Lorenzo', N'Luis', N'luis.lorenzo@email.com', N'LUIS.LORENZO@EMAIL.COM', N'luis.lorenzo@email.com', N'LUIS.LORENZO@EMAIL.COM', 1, N'AQAAAAIAAYagAAAAEJ1234567890abcdefghijklmnopqrstuvwxyz', N'339BD9CA-5F0A-44C5-8906-328463C8E2DA', N'C65E85E2-F2CE-4611-B859-73BE18CC24BB', N'+34600111222', 1, 0, NULL, 1, 0)
