@@ -9,7 +9,7 @@ VALUES (N'user-002', N'Lopes', N'Patrik', N'patrik.lopes@email.com', N'PATRIK.LO
 INSERT INTO [dbo].[AspNetUsers] ([Id], [Surname], [Name], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) 
 VALUES (N'user-003', N'Jara', N'Alejandro', N'alejandro.jara@email.com', N'ALEJANDRO.JARA@EMAIL.COM', N'alejandro.jara@email.com', N'ALEJANDRO.JARA@EMAIL.COM', 1, N'AQAAAAIAAYagAAAAEJ1234567890abcdefghijklmnopqrstuvwxyz', N'BE2980C9-97EC-4951-9E27-795F1291FD9D', N'FEAE93AF-0400-4946-B7FA-E19C5D2F649B', N'+34600333444', 1, 0, NULL, 1, 0)
 
-----------------------------------
+-----------------------------------
 -- Patrik
 
 -- Scales 
