@@ -129,3 +129,31 @@ INSERT INTO [dbo].[RentDevices] ([DeviceId], [RentId], [Price], [Quantity]) VALU
 INSERT INTO [dbo].[RentDevices] ([DeviceId], [RentId], [Price], [Quantity]) VALUES (10, 10, 40, 1)
 
 --JARA
+
+-- Purchase
+SET IDENTITY_INSERT [dbo].[Purchases] ON
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (1, N'user-001', N'C/ Mayor 20, Madrid', 1, N'2025-02-02 10:10:00', 299.989990234375, 1)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (2, N'user-002', N'Av. Diagonal 300, Barcelona', 2, N'2025-02-03 11:25:00', 1199.989990234375, 1)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (3, N'user-003', N'C/ Feria 12, Sevilla', 0, N'2025-02-04 09:45:00', 1799.97998046875, 2)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (4, N'user-001', N'Avenida del Puerto 10, Valencia', 1, N'2025-02-05 14:15:00', 849.989990234375, 1)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (5, N'user-002', N'C/ Gran Vía 100, Madrid', 3, N'2025-02-06 17:40:00', 999.989990234375, 1)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (6, N'user-003', N'Paseo del Río 44, Málaga', 2, N'2025-02-07 12:30:00', 1699.97998046875, 2)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (7, N'user-001', N'C/ Serrano 61, Madrid', 1, N'2025-02-08 19:55:00', 599.989990234375, 1)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (8, N'user-002', N'C/ Toledo 18, Toledo', 0, N'2025-02-09 13:00:00', 949.989990234375, 1)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (9, N'user-003', N'C/ Huertas 7, Sevilla', 1, N'2025-02-10 08:20:00', 3899.969970703125, 3)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (10, N'user-001', N'C/ Doctor Fleming 4, Madrid', 2, N'2025-02-11 21:10:00', 399.989990234375, 1)
+SET IDENTITY_INSERT [dbo].[Purchases] OFF
+
+-- PurchaseItems
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (1, 1, N'Compra: Xiaomi x3 Premium', 299.989990234375, 1)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (2, 2, N'Compra: Samsung Galaxy S24 Ultra', 1199.989990234375, 1)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (3, 3, N'Compra: Xiaomi 14 Pro Max', 899.989990234375, 2)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (5, 4, N'Compra: OnePlus 12 Pro', 849.989990234375, 1)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (4, 5, N'Compra: Google Pixel 8 Pro', 999.989990234375, 1)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (9, 6, N'Compra: Sony Xperia 1 VI', 1299.989990234375, 1)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (6, 6, N'Compra: Huawei P60 Pro', 399.989990234375, 1)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (7, 7, N'Compra: Motorola Edge 40 Neo', 599.989990234375, 1)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (8, 8, N'Compra: Oppo Find X7 Ultra', 949.989990234375, 1)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (2, 9, N'Compra: Samsung Galaxy S24 Ultra', 1199.989990234375, 1)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (9, 9, N'Compra: Sony Xperia 1 VI', 1299.989990234375, 2)
+INSERT INTO [dbo].[PurchaseItems] ([DeviceId], [PurchaseId], [Description], [Price], [Quantity]) VALUES (10, 10, N'Compra: Nokia G400 Plus', 399.989990234375, 1)
