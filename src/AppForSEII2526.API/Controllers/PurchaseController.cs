@@ -38,6 +38,7 @@ namespace AppForSEII2526.API.Controllers
                 .Select(p => new Purchase_Detail_DTO(p.Id, p.PurchaseDate, p.ApplicationUser.UserName, p.ApplicationUser.Surname,
                        p.DeliveryAddress, (PaymentMethod)p.PaymentMethod, p.PurchaseItems
                             .Select(pi => new Purchase_Item_DTO(
+                                 pi.DeviceId,
                                  pi.Device.PriceForPurchase,
                                  pi.Device.Brand,
                                  pi.Device.Color,

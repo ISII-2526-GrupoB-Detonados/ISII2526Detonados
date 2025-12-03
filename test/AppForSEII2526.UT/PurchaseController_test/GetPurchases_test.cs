@@ -77,7 +77,7 @@ namespace AppForSEII2526.UT.PurchaseController_test
             ILogger<PurchaseController> logger = mockLogger.Object;
             var controller = new PurchaseController(_context, logger);
             var expectedPurchase = new Purchase_Detail_DTO(1, DateTime.Now, "alejandro.jara1@alu.uclm.es", "Jara Sánchez", "Calle La Roda, 20", PaymentMethod.CreditCard, new List<Purchase_Item_DTO>());
-            expectedPurchase.PurchaseItems.Add(new Purchase_Item_DTO(699.99, "Google", "Azul", "Google Pixel 8", 1, "Nuevo modelo con mejoras"));
+            expectedPurchase.PurchaseItems.Add(new Purchase_Item_DTO(1, 699.99, "Google", "Azul", "Google Pixel 8", 1, "Nuevo modelo con mejoras"));
 
 
             //Act

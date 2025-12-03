@@ -6,8 +6,9 @@ namespace AppForSEII2526.API.DTOs.Purchase_DTO
     {
         
 
-        public Purchase_Item_DTO(double price, string brand, string color, string model, int quantity, string description)
+        public Purchase_Item_DTO(int deviceID, double price, string brand, string color, string model, int quantity, string description)
         {
+            DeviceID = deviceID;
             Price = price;
             Brand = brand;
             Color = color;
@@ -16,6 +17,7 @@ namespace AppForSEII2526.API.DTOs.Purchase_DTO
             Description = description;
         }
 
+        public int DeviceID { get; set; }
         public double Price { get; set; }
         public string Brand { get; set; }
         public string Color { get; set; }
@@ -26,6 +28,7 @@ namespace AppForSEII2526.API.DTOs.Purchase_DTO
         public override bool Equals(object? obj)
         {
             return obj is Purchase_Item_DTO dTO &&
+                   DeviceID == dTO.DeviceID &&
                    Price == dTO.Price &&
                    Brand == dTO.Brand &&
                    Color == dTO.Color &&
@@ -36,7 +39,7 @@ namespace AppForSEII2526.API.DTOs.Purchase_DTO
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Price, Brand, Color, Model, Quantity, Description);
+            return HashCode.Combine(DeviceID, Price, Brand, Color, Model, Quantity, Description);
         }
     }
 }
