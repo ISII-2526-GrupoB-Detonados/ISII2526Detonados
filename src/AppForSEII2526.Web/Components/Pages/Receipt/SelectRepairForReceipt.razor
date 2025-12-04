@@ -2,15 +2,13 @@
 
 @using Microsoft.AspNetCore.Authorization
 @using AppForSEII2526.Web.API
-@using RepairDTO = AppForSEII2526.API.DTOs.DevicesDTOrepa
 @using ReceiptDTO = AppForSEII2526.API.DTOs.ReceiptDTO
 @inject ISII2526DetonadosAPIClient apiclient
 @inject ILogger<SelectRepairForReceipt> logger
 @inject ReceiptStateContainer receiptState
 @inject NavigationManager navigation
 
-@attribute [Authorize]
-<h3>Select Repair For Receipt</h3>
+<h3>Seleccionar Reparacion para Creaer Recibo</h3>
 <div class="container-fluid">
     <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
         <p id="ErrorsShown">Errors: @errors</p>
@@ -96,7 +94,7 @@
 </div>
 
 @code {
-    private IList<RepairDTO.repairDTOrepa>? repairs;
+    private IList<AppForSEII2526.Web.API.RepairDTOrepa>? repairs;
     private bool hideReceiptCart { get { return receipt?.Repairs == null || receipt.Repairs.Count == 0; } }
     private bool hideErrors { get { return string.IsNullOrEmpty(errors); } }
     private string errors = "";
@@ -104,7 +102,7 @@
     private string? repairScale { get; set; }
     private ReceiptDTO.ReceiptForCreateDTO receipt => receiptState.Receipt;
 
-    private void AddRepair(RepairDTO.repairDTOrepa repair)
+    private void AddRepair(AppForSEII2526.Web.API.RepairDTOrepa repair)
     {
         var item = new ReceiptDTO.ReceiptItemDTO(
             repair.Name,
@@ -126,24 +124,24 @@
     {
         if (repairs == null)
         {
-            repairs = new List<RepairDTO.repairDTOrepa>();
+            repairs = new List<AppForSEII2526.Web.API.RepairDTOrepa>();
         }
 
         try
         {
             var result = await apiclient.GetRepairDTOAsync(repairName, repairScale);
-            repairs = result.Cast<RepairDTO.repairDTOrepa>().ToList();
+            repairs = result.ToList();
             errors = "";
         }
         catch (ApiException ex)
         {
             logger.LogError($"{DateTime.Now} Error: {ex}");
-            errors = "Error while connecting to the system";
+            errors = "Error al conectar al sistema";
         }
         catch (Exception ex)
         {
             logger.LogError($"{DateTime.Now} Error: {ex.Message}");
-            errors = "Unexpected error while searching repairs";
+            errors = "Error inesperado al buscar reparaciones";
         }
         StateHasChanged();
     }
@@ -156,7 +154,7 @@
         }
         catch (ApiException ex)
         {
-            logger.LogError("Error! There was an error while connecting to the GetRepairDTOAsync service");
+            logger.LogError("Error! Ha habido un error al intentar conectar con el servicio de reparaciones");
         }
     }
 
@@ -164,7 +162,7 @@
     {
         if (receipt?.Repairs == null || receipt.Repairs.Count == 0)
         {
-            errors = "Add at least one repair to the receipt";
+            errors = "Añade al menos una reparacion al recibo";
             return;
         }
         navigation.NavigateTo("/receipt/createreceipt");
