@@ -1,0 +1,172 @@
+﻿@page "/receipt/select-repair-for-receipt"
+
+@using Microsoft.AspNetCore.Authorization
+@using AppForSEII2526.Web.API
+@using RepairDTO = AppForSEII2526.API.DTOs.DevicesDTOrepa
+@using ReceiptDTO = AppForSEII2526.API.DTOs.ReceiptDTO
+@inject ISII2526DetonadosAPIClient apiclient
+@inject ILogger<SelectRepairForReceipt> logger
+@inject ReceiptStateContainer receiptState
+@inject NavigationManager navigation
+
+@attribute [Authorize]
+<h3>Select Repair For Receipt</h3>
+<div class="container-fluid">
+    <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+        <p id="ErrorsShown">Errors: @errors</p>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Repair Name</span>
+                        <input type="text" id="inputRepairName" @bind="repairName" class="form-control" placeholder="Repair Name" aria-label="Repair Name" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon2">Scale</span>
+                        <input type="text" id="inputScale" @bind="repairScale" class="form-control" placeholder="Scale" aria-label="Scale" aria-describedby="basic-addon2">
+                    </div>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-primary" @onclick="@SearchRepairs" id="searchRepairs">Search repairs</button>
+                </div>
+            </div>
+            <div class="row">
+                @if (repairs == null)
+                {
+                    <p>Loading repairs....</p>
+                }
+                else if (repairs.Count == 0)
+                {
+                    <p>No repairs found</p>
+                }
+                else
+                {
+                    <div class="mh-100 table-responsive">
+                        <table class="table table-condensed table-hover" id="TableOfRepairs">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Scale</th>
+                                    <th>Cost</th>
+                                    <th>Description</th>
+                                    <th>Add to Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var repair in repairs)
+                                {
+                                    <tr id="RepairData_@repair.Name">
+                                        <td>@repair.Name</td>
+                                        <td>@repair.Scale</td>
+                                        <td>@repair.Cost.ToString("C")</td>
+                                        <td>@repair.Description</td>
+                                        <td>
+                                            <button class="btn btn-outline-secondary" id="repairToAdd_@repair.Name" @onclick="@(() => AddRepair(repair))">Add</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-4" hidden="@hideReceiptCart">
+            <div class="row">
+                <h3>Receipt Cart</h3>
+            </div>
+            @if (receipt?.Repairs != null && receipt.Repairs.Count > 0)
+            {
+                @foreach (ReceiptDTO.ReceiptItemDTO item in receipt.Repairs)
+                {
+                    <div class="row">
+                        <button type="button" class="btn btn-light" id="removeRepair_@item.RepairName" @onclick="@(() => RemoveReceiptItem(item))">x @item.RepairName - @item.RepairCost?.ToString("C")</button>
+                    </div>
+                }
+                <div class="row mt-2">
+                    <button type="button" class="btn btn-primary w-100" id="createReceiptButton" @onclick="@CreateReceipt">Create Receipt</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private IList<RepairDTO.repairDTOrepa>? repairs;
+    private bool hideReceiptCart { get { return receipt?.Repairs == null || receipt.Repairs.Count == 0; } }
+    private bool hideErrors { get { return string.IsNullOrEmpty(errors); } }
+    private string errors = "";
+    private string? repairName { get; set; }
+    private string? repairScale { get; set; }
+    private ReceiptDTO.ReceiptForCreateDTO receipt => receiptState.Receipt;
+
+    private void AddRepair(RepairDTO.repairDTOrepa repair)
+    {
+        var item = new ReceiptDTO.ReceiptItemDTO(
+            repair.Name,
+            repair.Scale,
+            "Modelo a especificar",
+            (float)repair.Cost
+        );
+        receiptState.AddRepairToReceipt(item);
+        StateHasChanged();
+    }
+
+    private void RemoveReceiptItem(ReceiptDTO.ReceiptItemDTO item)
+    {
+        receiptState.RemoveRepairItem(item);
+        StateHasChanged();
+    }
+
+    public async Task SearchRepairs()
+    {
+        if (repairs == null)
+        {
+            repairs = new List<RepairDTO.repairDTOrepa>();
+        }
+
+        try
+        {
+            var result = await apiclient.GetRepairDTOAsync(repairName, repairScale);
+            repairs = result.Cast<RepairDTO.repairDTOrepa>().ToList();
+            errors = "";
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"{DateTime.Now} Error: {ex}");
+            errors = "Error while connecting to the system";
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"{DateTime.Now} Error: {ex.Message}");
+            errors = "Unexpected error while searching repairs";
+        }
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await SearchRepairs();
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError("Error! There was an error while connecting to the GetRepairDTOAsync service");
+        }
+    }
+
+    private void CreateReceipt()
+    {
+        if (receipt?.Repairs == null || receipt.Repairs.Count == 0)
+        {
+            errors = "Add at least one repair to the receipt";
+            return;
+        }
+        navigation.NavigateTo("/receipt/createreceipt");
+    }
+}
