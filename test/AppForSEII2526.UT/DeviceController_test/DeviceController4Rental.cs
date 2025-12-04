@@ -74,11 +74,11 @@ namespace AppForSEII2526.UT.DeviceController_test
 
         public static IEnumerable<object[]> TestCasesFor_GetDevicesForRental_OK()
         {
-            var devicesDTOs = new List<Device_DTO_Alquilar>()
+            var devicesDTOs = new List<DeviceDTOAlquilar>()
     {
-        new Device_DTO_Alquilar(1, "Azul", "Pixel 8", 29.99, 2023, "Google Pixel 8", "Google"),
-        new Device_DTO_Alquilar(2, "Naranja", "iPhone 17", 59.99, 2025, "iPhone 17", "Apple"),
-        new Device_DTO_Alquilar(3, "Negro", "Redmi Note 14", 19.99, 2024, "Redmi Note 14", "Xiaomi")
+        new DeviceDTOAlquilar(1, "Azul", "Pixel 8", 29.99, 2023, "Google Pixel 8", "Google"),
+        new DeviceDTOAlquilar(2, "Naranja", "iPhone 17", 59.99, 2025, "iPhone 17", "Apple"),
+        new DeviceDTOAlquilar(3, "Negro", "Redmi Note 14", 19.99, 2024, "Redmi Note 14", "Xiaomi")
         // NOTA: El dispositivo con ID 4 NO está incluido porque no tiene stock para alquiler
     };
 
@@ -101,7 +101,7 @@ namespace AppForSEII2526.UT.DeviceController_test
         [MemberData(nameof(TestCasesFor_GetDevicesForRental_OK))]
         [Trait("Database", "WithoutFixtures")]
         [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetDevicesForRental_OK(string? model, int? maxPrice, List<Device_DTO_Alquilar> expectedDevices)
+        public async Task GetDevicesForRental_OK(string? model, int? maxPrice, List<DeviceDTOAlquilar> expectedDevices)
         {
             //Arrange
             var mockLogger = new Mock<ILogger<DeviceControllerDefault>>();
@@ -113,7 +113,7 @@ namespace AppForSEII2526.UT.DeviceController_test
 
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var devicesDTOsActual = Assert.IsType<List<Device_DTO_Alquilar>>(okResult.Value);
+            var devicesDTOsActual = Assert.IsType<List<DeviceDTOAlquilar>>(okResult.Value);
 
             // Ordenar ambas listas por ID antes de comparar
             var expectedSorted = expectedDevices.OrderBy(d => d.Id).ToList();

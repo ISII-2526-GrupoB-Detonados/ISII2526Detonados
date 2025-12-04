@@ -24,7 +24,7 @@ namespace AppForSEII2526.API.Controllers
         //Meter los gets de la clase device
         [HttpGet]
         [Route("[action]")]
-        [ProducesResponseType(typeof(IList<Device_DTO_Alquilar>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<DeviceDTOAlquilar>), (int)HttpStatusCode.OK)]
         //Devuelve una lista de dispositivos en formato DeviceDTO con un código de estado HTTP 200 (OK) si la operación es exitosa.
         //son X datos donde x es c.Id,c.Color,c.Name,c.PriceForRent,c.Year,c.Model,c.Brand 
         public async Task<ActionResult> GetDevices(string? model, int? priceForRent)
@@ -45,7 +45,7 @@ namespace AppForSEII2526.API.Controllers
 
 
                //-------------------------------------------------------------------------------------------------------------------------
-               .Select(d => new Device_DTO_Alquilar(
+               .Select(d => new DeviceDTOAlquilar(
                   d.Id,
                  d.Color,
                  d.Name,
