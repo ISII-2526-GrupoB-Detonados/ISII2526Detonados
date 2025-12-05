@@ -1,3 +1,4 @@
+using AppForSEII2526.Web;
 using AppForSEII2526.Web.API;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -37,7 +38,17 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 string? URI2API = builder.Configuration.GetValue(typeof(string), "AppForDevices_API") as string;
 
-builder.Services.AddScoped<ISII2526DetonadosAPIClient>(sp => new ISII2526DetonadosAPIClient(URI2API, new HttpClient()));
+// SOLUCION DE LA IA PARA TIRAR LA WEB
+HttpClientHandler handler = new HttpClientHandler();
+if (builder.Environment.IsDevelopment())
+{
+    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+}
+// SOLUCION DE LA IA PARA TIRAR LA WEB
+
+
+builder.Services.AddScoped<ISII2526DetonadosAPIClient>(sp => new ISII2526DetonadosAPIClient(URI2API, new HttpClient(handler)));
+builder.Services.AddScoped<ReceiptStateContainer>();
 
 var app = builder.Build();
 
