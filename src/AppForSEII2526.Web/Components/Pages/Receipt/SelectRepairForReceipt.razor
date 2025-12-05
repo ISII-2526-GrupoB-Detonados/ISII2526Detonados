@@ -8,7 +8,7 @@
 @inject ReceiptStateContainer receiptState
 @inject NavigationManager navigation
 
-<h3>Selecciona Reparacion</h3>
+<h3>Select Repair For Receipt</h3>
 
 <div class="container-fluid">
     <div class="row mb-3">
@@ -41,10 +41,16 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon2">Scale</span>
-                        <input type="text" id="inputScale" @bind="repairScale" class="form-control" placeholder="Scale" aria-label="Scale" aria-describedby="basic-addon2">
-                    </div>
+                    <select class="form-select" @bind="scaleSelected" id="selectScale">
+                        <option value="All">All</option>
+                        @if (scalesNames != null)
+                        {
+                            @foreach (string scaleName in scalesNames)
+                            {
+                                <option value="@scaleName">@scaleName</option>
+                            }
+                        }
+                    </select>
                 </div>
                 <div class="col">
                     <button type="button" class="btn btn-primary" @onclick="@SearchRepairs" id="searchRepairs">Search repairs</button>
@@ -113,11 +119,12 @@
 
 @code {
     private IList<AppForSEII2526.Web.API.RepairDTOrepa>? repairs;
+    private ICollection<string>? scalesNames = new List<string>();
     private bool hideReceiptCart { get { return receipt?.Repairs == null || receipt.Repairs.Count == 0; } }
     private bool hideErrors { get { return string.IsNullOrEmpty(errors); } }
     private string errors = "";
     private string? repairName { get; set; }
-    private string? repairScale { get; set; }
+    private string scaleSelected = "All";
     private int? receiptIdToView { get; set; }
     private ReceiptDTO.ReceiptForCreateDTO receipt => receiptState.Receipt;
 
@@ -148,6 +155,8 @@
 
         try
         {
+            string repairScale = (scaleSelected == "All") ? null : scaleSelected;
+            
             var result = await apiclient.GetRepairDTOAsync(repairName, repairScale);
             repairs = result.ToList();
             errors = "";
@@ -167,6 +176,17 @@
 
     protected override async Task OnInitializedAsync()
     {
+        try
+        {
+            scalesNames = await apiclient.GetScalesAsync(null);
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"GetScalesAsync ERROR: Status={ex.StatusCode}");
+            errors = $"Error loading scales: {ex.StatusCode}";
+            return;
+        }
+
         try
         {
             await SearchRepairs();
