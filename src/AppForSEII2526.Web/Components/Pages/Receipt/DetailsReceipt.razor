@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Authorization
 @inject ISII2526DetonadosAPIClient apiclient
 
-<h3>Detail Receipt</h3>
+<h3>Detalles del recibo</h3>
 
 
 @if (receipt == null)
@@ -15,15 +15,15 @@ else
 {
     <table class="table table-borderless table-sm">
         <tr>
-            <th>Name and Surname</th>
+            <th>Nombre y apellidos</th>
             <td id="NameSurname">@receipt.Name @receipt.Surname</td>
         </tr>
         <tr>
-            <th>Delivery Address</th>
+            <th>Direccion</th>
             <td id="DeliveryAddress">@receipt.DeliveryAddress</td>
         </tr>
         <tr>
-            <th>Operation Date</th>
+            <th>Fecha de la operacion</th>
             <td id="OperationDate">@receipt.OperationDate.ToString("dd/MM/yyyy")</td>
         </tr>
     </table>
