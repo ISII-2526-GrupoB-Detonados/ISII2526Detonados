@@ -26,6 +26,20 @@
         </div>
         <div class="col-md">
             <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.Name" class="form-control" id="Name" />
+                <label for="Name">Nombre</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.Surname" class="form-control" id="Surname" />
+                <label for="Surname">Apellido</label>
+            </div>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-md">
+            <div class="form-floating mb-3">
                 <InputText @bind-Value="receipt.DeliveryAddress" class="form-control" id="DeliveryAddress" />
                 <label for="DeliveryAddress">Dirección de Entrega</label>
             </div>
@@ -40,8 +54,6 @@
                 <label for="PaymentMethod">Método de Pago</label>
             </div>
         </div>
-    </div>
-    <div class="row g-3">
         <div class="col-md">
             <div class="form-floating">
                 <button class="btn btn-primary" type="submit" id="Submit">
@@ -144,11 +156,10 @@
                     }
 
                     // Mapear el DTO del API al DTO generado por OpenAPI
-                    // Name y Surname se obtienen automáticamente del servidor basado en UserName
                     var receiptForApi = new AppForSEII2526.Web.API.ReceiptForCreateDTO
                     {
-                        Name = null, // Se obtiene del servidor
-                        Surname = null, // Se obtiene del servidor
+                        Name = receipt.Name,
+                        Surname = receipt.Surname,
                         UserName = receipt.UserName,
                         DeliveryAddress = receipt.DeliveryAddress,
                         PaymentMethod = (AppForSEII2526.Web.API.PaymentMethod)receipt.PaymentMethod,
@@ -168,7 +179,7 @@
                     
                     receiptState.SetReceiptId(receiptId);
                     receiptState.ReceiptProcessed();
-                    
+
                     messageError = "";
                     navigation.NavigateTo($"/receipt/detailreceipt?ReceiptID={receiptId}");
                 }
@@ -204,6 +215,8 @@
     {
         receipt = receiptState.Receipt;
 
+        receipt.Name = receipt.Name ?? "";
+        receipt.Surname = receipt.Surname ?? "";
         receipt.UserName = receipt.UserName ?? "";
         receipt.DeliveryAddress = receipt.DeliveryAddress ?? "";
     }
