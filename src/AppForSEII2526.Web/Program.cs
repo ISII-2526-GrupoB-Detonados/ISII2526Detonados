@@ -1,3 +1,4 @@
+using AppForSEII2526.Web; //nuevo
 using AppForSEII2526.Web.API;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +39,8 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 string? URI2API = builder.Configuration.GetValue(typeof(string), "AppForDevices_API") as string;
 
 builder.Services.AddScoped<ISII2526DetonadosAPIClient>(sp => new ISII2526DetonadosAPIClient(URI2API, new HttpClient()));
+
+builder.Services.AddScoped<PurchaseStateContainer>(); //nuevo
 
 var app = builder.Build();
 

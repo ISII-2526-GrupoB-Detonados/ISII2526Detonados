@@ -1,0 +1,133 @@
+﻿@page "/purchase/selectdevicesforpurchase"
+
+@using AppForSEII2526.Web.API
+@inject ISII2526DetonadosAPIClient apiclient
+@inject ILogger<SelectDevicesForPurchase> logger
+@inject PurchaseStateContainer purchaseState
+@inject NavigationManager navigation
+
+<h3>Select Devices For Purchase</h3>
+<div class="container-fluid">
+    <div class="row" hidden="@hideErrors">
+        <p>here i will show the errors</p>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Color</span>
+                        <input type="text" id="inputColor" @bind=deviceColor class="from-control" placeholder="Color" aria-label="Color" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Name</span>
+                        <input type="text" id="inputName" @bind=deviceName class="form-control" placeholder="Name" aria-label="Name" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-primary" @onclick=@SearchDevices id="searchDevices">Search devices</button>
+                </div>
+            </div>
+            <div class="row">
+                @if (devices == null)
+                {
+                    <p>Loading devices....</p>
+                }
+                else
+                {
+                    <div class="mh-100 table-responsive">
+                        <table class="table table-condensed table-hover" id="TableOfDevices">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Brand</th>
+                                    <th>Color</th>
+                                    <th>Name</th>
+                                    <th>Model</th>
+                                    <th>Price For Purchase</th>
+                                    <th>Purchase</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var device in devices) {
+                                    <tr id="DeviceData_@device.Name">
+                                        <td>@device.Id</td>
+                                        <td>@device.Brand</td>
+                                        <td>@device.Color</td>
+                                        <td>@device.Name</td>
+                                        <td>@device.Model</td>
+                                        <td>@device.PriceForPurchase €</td>
+                                        <td>
+                                            <button class="btn btn-outline-secondary" id="deviceToPurchase_@device.Name" @onclick="@(() => AddDevice(device))">Add</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-2" hidden="@hidePurchaseCart">
+            <div class="row">
+                <h3>Shopping Cart</h3>
+            </div>
+            @foreach (Purchase_Item_DTO item in purchase.PurchaseItems) {
+                <div class="row">
+                    <button type="button" class="btn btn-light" id="removeDevice_@item.Model" @onclick="@(() => RemovePurchaseItem(item))">x @item.Model - @item.Price€</button>
+                </div>
+            }
+            <div class="row">
+                <button type="button" class="btn btn-primary" id="purchaseDeviceButton" @onclick=@PurchaseDevices>Purchase Devices</button>
+            </div>
+            
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+    private bool hidePurchaseCart { get { return purchase.PurchaseItems.Count == 0; } }
+    private ICollection<Device_DTO_Comprar> devices;
+    private bool hideErrors { get { return errors.Length == 0; } }
+    private string errors = "";
+    private string deviceColor { get; set; }
+    private string deviceName { get; set; }
+
+    private Purchase_ForCreate_DTO purchase => purchaseState.Purchase;
+
+    private bool hiddenPurchaseCart = true;
+
+    private void AddDevice(Device_DTO_Comprar device) {
+        purchaseState.AddDeviceToPurchase(device);
+    }
+
+    private void RemovePurchaseItem(Purchase_Item_DTO item) {
+        purchaseState.RemoveDeviceFromPurchase(item);
+        if (purchase.PurchaseItems.Count == 0) hiddenPurchaseCart = true;
+    }
+
+    public async void SearchDevices() {
+        try {
+            devices = await apiclient.GetDevicesComprarDTOsAsync(deviceColor, deviceName); //null?
+
+        }
+        catch (ApiException ex) {
+            logger.LogError($"{DateTime.Now} Error: {ex}");
+            errors = "Error while connecting to the system";
+        }
+        StateHasChanged();
+    }
+
+    private void PurchaseDevices()
+    {
+        navigation.NavigateTo("/purchases/createpurchase");
+    }
+
+    protected override async Task OnInitializedAsync(){
+        SearchDevices();
+    }
+}
