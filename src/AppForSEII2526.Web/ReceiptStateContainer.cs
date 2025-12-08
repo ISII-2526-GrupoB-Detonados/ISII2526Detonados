@@ -9,6 +9,8 @@ namespace AppForSEII2526.Web
             Repairs = new List<ReceiptItemDTO>()
         };
 
+        public int ReceiptId { get; private set; } = 0;
+
         public event Action? OnChange;
 
         private void NotifyStateChanged() => OnChange?.Invoke();
@@ -40,6 +42,12 @@ namespace AppForSEII2526.Web
             NotifyStateChanged();
         }
 
+        public void SetReceiptId(int id)
+        {
+            ReceiptId = id;
+            NotifyStateChanged();
+        }
+
         public void ReceiptProcessed()
         {
             // Hemos completado el proceso de recibo, creamos un nuevo objeto sin datos
@@ -47,6 +55,7 @@ namespace AppForSEII2526.Web
             {
                 Repairs = new List<ReceiptItemDTO>()
             };
+            ReceiptId = 0;
             NotifyStateChanged();
         }
     }

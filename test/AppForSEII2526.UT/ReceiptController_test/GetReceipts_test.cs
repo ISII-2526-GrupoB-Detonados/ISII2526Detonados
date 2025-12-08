@@ -117,6 +117,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
             };
 
             var expectedReceipt = new ReceiptDetailDTO(
+                1,
                 "Patrik",
                 "Lopes Bulhoes de Oliveira",
                 "Calle Yeste",

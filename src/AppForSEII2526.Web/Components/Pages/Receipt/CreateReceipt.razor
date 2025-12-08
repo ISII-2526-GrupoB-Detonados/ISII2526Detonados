@@ -20,6 +20,12 @@
     <div class="row g-3">
         <div class="col-md">
             <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.UserName" class="form-control" id="UserName" />
+                <label for="UserName">Usuario (Email)</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
                 <InputText @bind-Value="receipt.Name" class="form-control" id="Name" />
                 <label for="Name">Nombre</label>
             </div>
@@ -30,14 +36,14 @@
                 <label for="Surname">Apellido</label>
             </div>
         </div>
+    </div>
+    <div class="row g-3">
         <div class="col-md">
             <div class="form-floating mb-3">
                 <InputText @bind-Value="receipt.DeliveryAddress" class="form-control" id="DeliveryAddress" />
                 <label for="DeliveryAddress">Dirección de Entrega</label>
             </div>
         </div>
-    </div>
-    <div class="row g-2">
         <div class="col-md">
             <div class="form-floating">
                 <InputSelect class="form-select" @bind-Value="@receipt.PaymentMethod" id="PaymentMethod">
@@ -58,12 +64,12 @@
     </div>
     <h4>Detalle del Recibo</h4>
     <p>
-        <b>Precio total:</b> @TotalCost.ToString("C") 
+        <b>Precio total:</b> @TotalCost.ToString("C")
         <button class="btn btn-outline-primary" type="button" @onclick="ModifyReceiptItems" id="ModifyRepairs">
             Modificar reparaciones
         </button>
     </p>
-    
+
     <div class="mh-100 table-responsive">
         <table class="table table-condensed table-hover" id="TableOfReceiptItems">
             <thead>
@@ -77,7 +83,8 @@
             <tbody>
                 @if (receipt?.Repairs != null)
                 {
-                    @foreach (var item in receipt.Repairs) {
+                    @foreach (var item in receipt.Repairs)
+                    {
                         <tr id="RepairData_@item.RepairName">
                             <td>@item.RepairName</td>
                             <td>@item.Scale</td>
@@ -105,14 +112,17 @@
     private bool hideErrors { get { return messageError.Length == 0; } }
     private bool DialogIsOpen;
     private AppForSEII2526.API.DTOs.ReceiptDTO.ReceiptForCreateDTO? receipt;
-    
-    private float TotalCost { 
-        get {
+
+    private float TotalCost
+    {
+        get
+        {
             return receipt?.Repairs?.Sum(ri => ri.RepairCost ?? 0) ?? 0;
         }
     }
-    
-    private void ModifyReceiptItems() {
+
+    private void ModifyReceiptItems()
+    {
         navigation.NavigateTo("/receipt/select-repair-for-receipt");
     }
 
@@ -121,12 +131,30 @@
         DialogIsOpen = true;
     }
 
-    private async Task OnDialogClose(bool isOk) {
+    private async Task OnDialogClose(bool isOk)
+    {
         DialogIsOpen = false;
-        
-        if (isOk) {
-            if (receipt?.Repairs != null && receipt.Repairs.Count > 0) {
-                try {
+
+        if (isOk)
+        {
+            if (receipt?.Repairs != null && receipt.Repairs.Count > 0)
+            {
+                try
+                {
+                    // Validar que UserName no esté vacío
+                    if (string.IsNullOrWhiteSpace(receipt.UserName))
+                    {
+                        messageError = "El usuario (email) es obligatorio.";
+                        return;
+                    }
+
+                    // Validar que DeliveryAddress cumpla los requisitos (5-100 caracteres)
+                    if (string.IsNullOrWhiteSpace(receipt.DeliveryAddress) || receipt.DeliveryAddress.Length < 5)
+                    {
+                        messageError = "La dirección de entrega debe tener al menos 5 caracteres.";
+                        return;
+                    }
+
                     // Mapear el DTO del API al DTO generado por OpenAPI
                     var receiptForApi = new AppForSEII2526.Web.API.ReceiptForCreateDTO
                     {
@@ -143,54 +171,53 @@
                             RepairCost = r.RepairCost
                         }).ToList()
                     };
-                    
+
                     var created = await apiclient.CreateRepairAsync(receiptForApi);
-                    receiptState.ReceiptProcessed();
                     
-                    // El ReceiptDetailDTO no tiene Id, así que navegamos a una página de confirmación genérica
-                    // o mostramos un mensaje de éxito
+                    // Capturar el ID del recibo creado
+                    int receiptId = created.Id;
+                    
+                    receiptState.SetReceiptId(receiptId);
+                    receiptState.ReceiptProcessed();
+
                     messageError = "";
-                    navigation.NavigateTo("/receipts/success");
+                    navigation.NavigateTo($"/receipt/detailreceipt?ReceiptID={receiptId}");
                 }
-                catch (AppForSEII2526.Web.API.ApiException<AppForSEII2526.Web.API.ValidationProblemDetails> apiexceptionvalidation) {
-                    if (apiexceptionvalidation.Result?.Errors?.Values != null) {
-                        messageError = "";
+                catch (AppForSEII2526.Web.API.ApiException<AppForSEII2526.Web.API.ValidationProblemDetails> apiexceptionvalidation)
+                {
+                    if (apiexceptionvalidation.Result?.Errors?.Values != null)
+                    {
+                        messageError = "Errores de validación: ";
                         foreach (var errors in apiexceptionvalidation.Result.Errors.Values)
-                            messageError = string.Join("(*) ", messageError, string.Join(" (*) ", errors));
+                            messageError = string.Join(" | ", messageError, string.Join(" - ", errors));
                     }
+                    logger.LogError($"Validation error: {messageError}");
                 }
-                catch (AppForSEII2526.Web.API.ApiException apiexception) {
-                    messageError = "Error al procesar tu solicitud, por favor intenta más tarde!";
-                    logger.LogError($"Error creating receipt: {apiexception.Message}");
+                catch (AppForSEII2526.Web.API.ApiException apiexception)
+                {
+                    messageError = $"Error al procesar tu solicitud: {apiexception.Message}";
+                    logger.LogError($"Error creating receipt - Status: {apiexception.StatusCode}, Message: {apiexception.Message}");
                 }
-                catch (Exception ex) {
-                    messageError = "Error inesperado al crear el recibo.";
-                    logger.LogError($"Unexpected error: {ex.Message}");
+                catch (Exception ex)
+                {
+                    messageError = $"Error inesperado: {ex.Message}";
+                    logger.LogError($"Unexpected error: {ex}");
                 }
             }
-            else {
+            else
+            {
                 messageError = "Debe agregar al menos una reparación al recibo.";
             }
         }
     }
 
-    protected override async Task OnInitializedAsync() {
+    protected override async Task OnInitializedAsync()
+    {
         receipt = receiptState.Receipt;
 
-        if (authenticationState is not null) {
-            var authState = await authenticationState;
-            var user = authState?.User;
-
-            if (user is not null && user.Identity is not null && user.Identity.IsAuthenticated) {
-                receipt.UserName = user.Identity.Name ?? "";
-            }
-            
-            receipt.Name = receipt.Name ?? "";
-            receipt.Surname = receipt.Surname ?? "";
-            receipt.DeliveryAddress = receipt.DeliveryAddress ?? "";
-        }
+        receipt.Name = receipt.Name ?? "";
+        receipt.Surname = receipt.Surname ?? "";
+        receipt.UserName = receipt.UserName ?? "";
+        receipt.DeliveryAddress = receipt.DeliveryAddress ?? "";
     }
-
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
 }

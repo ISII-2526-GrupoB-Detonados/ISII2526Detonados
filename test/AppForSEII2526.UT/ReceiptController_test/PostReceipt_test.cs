@@ -204,6 +204,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
     };
 
             var expectedReceipt = new ReceiptDetailDTO(
+                receiptDTOActual.Id,
                 _customerName,
                 _customerSurname,
                 deliveryAddress,
