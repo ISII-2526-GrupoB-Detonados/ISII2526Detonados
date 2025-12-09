@@ -1,3 +1,4 @@
+using AppForSEII2526.Web; //nuevo
 using AppForSEII2526.Web;
 using AppForSEII2526.Web.API;
 using AppForSEII2526.Web.Components;
@@ -53,6 +54,8 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddScoped<ISII2526DetonadosAPIClient>(sp => new ISII2526DetonadosAPIClient(URI2API, new HttpClient(handler)));
 builder.Services.AddScoped<ReceiptStateContainer>();
+
+builder.Services.AddScoped<PurchaseStateContainer>(); //nuevo
 
 var app = builder.Build();
 
