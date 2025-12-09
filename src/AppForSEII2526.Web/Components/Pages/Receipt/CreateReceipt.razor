@@ -1,0 +1,223 @@
+@page "/receipts/createreceipt"
+@inject NavigationManager navigation
+@using Microsoft.AspNetCore.Authorization
+@using AppForSEII2526.API.Models
+@using AppForSEII2526.Web.Components.Shared
+@inject AppForSEII2526.Web.API.ISII2526DetonadosAPIClient apiclient
+@inject ILogger<CreateReceipt> logger
+@inject ReceiptStateContainer receiptState
+
+<h3>Crear Recibo</h3>
+
+<EditForm Model="receipt" OnValidSubmit="OpenDialog">
+    <div class="row">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="row alert alert-danger" />
+    </div>
+    <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+        <p id="ErrorsShown">Errores: @messageError</p>
+    </div>
+    <div class="row g-3">
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.UserName" class="form-control" id="UserName" />
+                <label for="UserName">Usuario (Email)</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.Name" class="form-control" id="Name" />
+                <label for="Name">Nombre</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.Surname" class="form-control" id="Surname" />
+                <label for="Surname">Apellido</label>
+            </div>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-md">
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="receipt.DeliveryAddress" class="form-control" id="DeliveryAddress" />
+                <label for="DeliveryAddress">Dirección de Entrega</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
+                <InputSelect class="form-select" @bind-Value="@receipt.PaymentMethod" id="PaymentMethod">
+                    <option value="@PaymentMethod.CreditCard" default> Tarjeta de Crédito</option>
+                    <option value="@PaymentMethod.PayPal"> PayPal</option>
+                    <option value="@PaymentMethod.Cash"> Efectivo</option>
+                </InputSelect>
+                <label for="PaymentMethod">Método de Pago</label>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-floating">
+                <button class="btn btn-primary" type="submit" id="Submit">
+                    Crear recibo
+                </button>
+            </div>
+        </div>
+    </div>
+    <h4>Detalle del Recibo</h4>
+    <p>
+        <b>Precio total:</b> @TotalCost.ToString("C")
+        <button class="btn btn-outline-primary" type="button" @onclick="ModifyReceiptItems" id="ModifyRepairs">
+            Modificar reparaciones
+        </button>
+    </p>
+
+    <div class="mh-100 table-responsive">
+        <table class="table table-condensed table-hover" id="TableOfReceiptItems">
+            <thead>
+                <tr>
+                    <th>Nombre de Reparación</th>
+                    <th>Escala</th>
+                    <th>Modelo a Reparar</th>
+                    <th>Coste de Reparación</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (receipt?.Repairs != null)
+                {
+                    @foreach (var item in receipt.Repairs)
+                    {
+                        <tr id="RepairData_@item.RepairName">
+                            <td>@item.RepairName</td>
+                            <td>@item.Scale</td>
+                            <td>@item.ModelToRepair</td>
+                            <td>@item.RepairCost?.ToString("C")</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</EditForm>
+
+@if (DialogIsOpen)
+{
+    <Dialog Caption="Crear recibo"
+            Message="¿Deseas proceder a crear el recibo para las reparaciones seleccionadas?"
+            OnClose="@OnDialogClose"
+            Type="Dialog.Category.SaveNot">
+    </Dialog>
+}
+
+@code {
+    private string messageError = "";
+    private bool hideErrors { get { return messageError.Length == 0; } }
+    private bool DialogIsOpen;
+    private AppForSEII2526.API.DTOs.ReceiptDTO.ReceiptForCreateDTO? receipt;
+
+    private float TotalCost
+    {
+        get
+        {
+            return receipt?.Repairs?.Sum(ri => ri.RepairCost ?? 0) ?? 0;
+        }
+    }
+
+    private void ModifyReceiptItems()
+    {
+        navigation.NavigateTo("/receipt/select-repair-for-receipt");
+    }
+
+    private void OpenDialog()
+    {
+        DialogIsOpen = true;
+    }
+
+    private async Task OnDialogClose(bool isOk)
+    {
+        DialogIsOpen = false;
+
+        if (isOk)
+        {
+            if (receipt?.Repairs != null && receipt.Repairs.Count > 0)
+            {
+                try
+                {
+                    // Validar que UserName no esté vacío
+                    if (string.IsNullOrWhiteSpace(receipt.UserName))
+                    {
+                        messageError = "El usuario (email) es obligatorio.";
+                        return;
+                    }
+
+                    // Validar que DeliveryAddress cumpla los requisitos (5-100 caracteres)
+                    if (string.IsNullOrWhiteSpace(receipt.DeliveryAddress) || receipt.DeliveryAddress.Length < 5)
+                    {
+                        messageError = "La dirección de entrega debe tener al menos 5 caracteres.";
+                        return;
+                    }
+
+                    // Mapear el DTO del API al DTO generado por OpenAPI
+                    var receiptForApi = new AppForSEII2526.Web.API.ReceiptForCreateDTO
+                    {
+                        Name = receipt.Name,
+                        Surname = receipt.Surname,
+                        UserName = receipt.UserName,
+                        DeliveryAddress = receipt.DeliveryAddress,
+                        PaymentMethod = (AppForSEII2526.Web.API.PaymentMethod)receipt.PaymentMethod,
+                        Repairs = receipt.Repairs.Select(r => new AppForSEII2526.Web.API.ReceiptItemDTO
+                        {
+                            RepairName = r.RepairName,
+                            Scale = r.Scale,
+                            ModelToRepair = r.ModelToRepair,
+                            RepairCost = r.RepairCost
+                        }).ToList()
+                    };
+
+                    var created = await apiclient.CreateRepairAsync(receiptForApi);
+                    
+                    // Capturar el ID del recibo creado
+                    int receiptId = created.Id;
+                    
+                    receiptState.SetReceiptId(receiptId);
+                    receiptState.ReceiptProcessed();
+
+                    messageError = "";
+                    navigation.NavigateTo($"/receipt/detailreceipt?ReceiptID={receiptId}");
+                }
+                catch (AppForSEII2526.Web.API.ApiException<AppForSEII2526.Web.API.ValidationProblemDetails> apiexceptionvalidation)
+                {
+                    if (apiexceptionvalidation.Result?.Errors?.Values != null)
+                    {
+                        messageError = "Errores de validación: ";
+                        foreach (var errors in apiexceptionvalidation.Result.Errors.Values)
+                            messageError = string.Join(" | ", messageError, string.Join(" - ", errors));
+                    }
+                    logger.LogError($"Validation error: {messageError}");
+                }
+                catch (AppForSEII2526.Web.API.ApiException apiexception)
+                {
+                    messageError = $"Error al procesar tu solicitud: {apiexception.Message}";
+                    logger.LogError($"Error creating receipt - Status: {apiexception.StatusCode}, Message: {apiexception.Message}");
+                }
+                catch (Exception ex)
+                {
+                    messageError = $"Error inesperado: {ex.Message}";
+                    logger.LogError($"Unexpected error: {ex}");
+                }
+            }
+            else
+            {
+                messageError = "Debe agregar al menos una reparación al recibo.";
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        receipt = receiptState.Receipt;
+
+        receipt.Name = receipt.Name ?? "";
+        receipt.Surname = receipt.Surname ?? "";
+        receipt.UserName = receipt.UserName ?? "";
+        receipt.DeliveryAddress = receipt.DeliveryAddress ?? "";
+    }
+}

@@ -35,21 +35,8 @@ namespace AppForSEII2526.API.Controllers
             return Ok(result);
         }
         */
-        [HttpGet]
-        [Route("/GetScales")] // ruta absoluta
-        [ProducesResponseType(typeof(ICollection<string>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult> GetScales(string? scaleName)
-        {
-            var scales = await _context.Scales
-                .Select(s => s.Name)
-                .Distinct()
-                .ToListAsync();
 
-            if (!string.IsNullOrEmpty(scaleName))
-                scales = scales.Where(s => s.Contains(scaleName)).ToList();
-
-            return Ok(scales);
-        }
+        
 
         [HttpGet]
         [Route("[action]")]
@@ -121,6 +108,23 @@ namespace AppForSEII2526.API.Controllers
             }
 
             return Ok(repairsDto);
+        }
+        
+        // SPRINT 3, ANADIMOS ESTE GET PARA OBTENER LAS ESCALAS (BALANZAS) DISTINTAS
+        [HttpGet]
+        [Route("/GetScales")] // ruta absoluta
+        [ProducesResponseType(typeof(ICollection<string>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult> GetScales(string? scaleName)
+        {
+            var scales = await _context.Scales
+                .Select(s => s.Name)
+                .Distinct()
+                .ToListAsync();
+
+            if (!string.IsNullOrEmpty(scaleName))
+                scales = scales.Where(s => s.Contains(scaleName)).ToList();
+
+            return Ok(scales);
         }
     }
 }

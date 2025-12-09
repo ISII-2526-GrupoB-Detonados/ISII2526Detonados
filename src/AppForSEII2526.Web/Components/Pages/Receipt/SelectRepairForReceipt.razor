@@ -8,26 +8,9 @@
 @inject ReceiptStateContainer receiptState
 @inject NavigationManager navigation
 
-<h3>Select Repair For Receipt</h3>
+<h3>Selecciona Reparacion</h3>
 
 <div class="container-fluid">
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Ver Detalles de Recibo</h5>
-                    <div class="input-group">
-                        <span class="input-group-text">Receipt ID</span>
-                        <input type="number" class="form-control" @bind="receiptIdToView" placeholder="Ingrese el ID del recibo" min="1" />
-                        <button type="button" class="btn btn-info" @onclick="ViewReceiptDetails" id="viewReceiptButton">
-                            <i class="bi bi-eye"></i> Ver Detalles
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
         <p id="ErrorsShown">Errors: @errors</p>
     </div>
@@ -125,7 +108,6 @@
     private string errors = "";
     private string? repairName { get; set; }
     private string scaleSelected = "All";
-    private int? receiptIdToView { get; set; }
     private ReceiptDTO.ReceiptForCreateDTO receipt => receiptState.Receipt;
 
     private void AddRepair(AppForSEII2526.Web.API.RepairDTOrepa repair)
@@ -178,6 +160,7 @@
     {
         try
         {
+            // Evita CS1061: usa el método generado por OpenAPI conforme a swagger.json
             scalesNames = await apiclient.GetScalesAsync(null);
         }
         catch (ApiException ex)
@@ -204,18 +187,6 @@
             errors = "Add at least one repair to the receipt";
             return;
         }
-        navigation.NavigateTo("/receipt/createreceipt");
-    }
-
-    private void ViewReceiptDetails()
-    {
-        if (receiptIdToView.HasValue && receiptIdToView.Value > 0)
-        {
-            navigation.NavigateTo($"/receipt/detailreceipt?ReceiptID={receiptIdToView.Value}");
-        }
-        else
-        {
-            errors = "Please enter a valid Receipt ID";
-        }
+        navigation.NavigateTo("/receipts/createreceipt");
     }
 }
