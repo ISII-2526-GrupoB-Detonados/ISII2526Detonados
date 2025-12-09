@@ -45,7 +45,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Device_DTO_Alquilar"
+                    "$ref": "#/components/schemas/DeviceDTOAlquilar"
                   }
                 }
               },
@@ -53,7 +53,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Device_DTO_Alquilar"
+                    "$ref": "#/components/schemas/DeviceDTOAlquilar"
                   }
                 }
               },
@@ -61,7 +61,55 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Device_DTO_Alquilar"
+                    "$ref": "#/components/schemas/DeviceDTOAlquilar"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GetModels": {
+      "get": {
+        "tags": [
+          "DeviceControllerDefault"
+        ],
+        "operationId": "GetModels",
+        "parameters": [
+          {
+            "name": "modelName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
                   }
                 }
               }
@@ -700,7 +748,7 @@
   },
   "components": {
     "schemas": {
-      "Device_DTO_Alquilar": {
+      "DeviceDTOAlquilar": {
         "type": "object",
         "properties": {
           "id": {

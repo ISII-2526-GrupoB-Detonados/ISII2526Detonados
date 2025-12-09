@@ -1,7 +1,7 @@
 ﻿namespace AppForSEII2526.API.DTOs.DevicesDTO
 {
     //para alquilar
-    public class Device_DTO_Alquilar
+    public class DeviceDTOAlquilar
     {
 
 
@@ -18,7 +18,7 @@
         public string Model { get; set; }
         public string Brand { get; set; }
 
-        public Device_DTO_Alquilar(int id, string color, string name, double priceForRent, int year, string model, string brand)
+        public DeviceDTOAlquilar(int id, string color, string name, double priceForRent, int year, string model, string brand)
         {
             Id = id;
             Color = color;
@@ -31,7 +31,7 @@
         //Añadido
         public override bool Equals(object obj)
         {
-            if (obj is not Device_DTO_Alquilar other)
+            if (obj is not DeviceDTOAlquilar other)
                 return false;
 
             return Id == other.Id &&
