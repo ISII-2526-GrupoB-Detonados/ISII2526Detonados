@@ -58,7 +58,7 @@
                                         <td>@device.Color</td>
                                         <td>@device.Name</td>
                                         <td>@device.Model</td>
-                                        <td>@device.PriceForPurchase €</td>
+                                        <td>@device.PriceForPurchase.ToString("N2") €</td>
                                         <td>
                                             <button class="btn btn-outline-secondary" id="deviceToPurchase_@device.Name" @onclick="@(() => AddDevice(device))">Add</button>
                                         </td>
@@ -76,7 +76,7 @@
             </div>
             @foreach (Purchase_Item_DTO item in purchase.PurchaseItems) {
                 <div class="row">
-                    <button type="button" class="btn btn-light" id="removeDevice_@item.Model" @onclick="@(() => RemovePurchaseItem(item))">x @item.Model - @item.Price€</button>
+                    <button type="button" class="btn btn-light" id="removeDevice_@item.Name" @onclick="@(() => RemovePurchaseItem(item))">x @item.Name - @item.Price.ToString("N2")€</button>
                 </div>
             }
             <div class="row">
