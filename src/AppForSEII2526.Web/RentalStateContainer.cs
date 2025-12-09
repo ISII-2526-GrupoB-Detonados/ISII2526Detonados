@@ -1,5 +1,4 @@
-﻿using AppForSEII2526.API.DTOs.DevicesDTO;
-using AppForSEII2526.Web.API;
+﻿using AppForSEII2526.Web.API;
 
 
 

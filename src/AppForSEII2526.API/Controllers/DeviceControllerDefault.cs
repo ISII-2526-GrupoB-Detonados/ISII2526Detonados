@@ -61,6 +61,22 @@ namespace AppForSEII2526.API.Controllers
 
 
         }
+        //--------EndPount GetModels----------------------------------------------------------------------------------------------------------
+        [HttpGet]
+        [Route("/GetModels")]
+        public async Task<ActionResult<List<string>>> GetModels(string? modelName)
+        {
+            var models = await _context.Devices
+                .Select(d => d.Model.NameModel)
+                .Distinct()
+                .ToListAsync();
+
+            if (!string.IsNullOrEmpty(modelName))
+                models = models.Where(m => m.Contains(modelName)).ToList();
+
+            return Ok(models);
+        }
+
 
 
     }

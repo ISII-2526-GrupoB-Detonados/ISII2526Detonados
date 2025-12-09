@@ -45,7 +45,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Device_DTO_Alquilar"
+                    "$ref": "#/components/schemas/DeviceDTOAlquilar"
                   }
                 }
               },
@@ -53,7 +53,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Device_DTO_Alquilar"
+                    "$ref": "#/components/schemas/DeviceDTOAlquilar"
                   }
                 }
               },
@@ -61,7 +61,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Device_DTO_Alquilar"
+                    "$ref": "#/components/schemas/DeviceDTOAlquilar"
                   }
                 }
               }
@@ -70,11 +70,10 @@
         }
       }
     },
-    //---------------------------------------------------------------
     "/GetModels": {
       "get": {
         "tags": [
-          "Models"
+          "DeviceControllerDefault"
         ],
         "operationId": "GetModels",
         "parameters": [
@@ -119,8 +118,6 @@
         }
       }
     },
-
-    //---------------------------------------------------------------
     "/api/DeviceControllerPurchases/GetDevicesComprarDTOs": {
       "get": {
         "tags": [
@@ -702,7 +699,7 @@
   },
   "components": {
     "schemas": {
-      "Device_DTO_Alquilar": {
+      "DeviceDTOAlquilar": {
         "type": "object",
         "properties": {
           "id": {
