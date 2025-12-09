@@ -71,16 +71,16 @@ namespace AppForSEII2526.UT.PurchaseController_test
             var purchaseNoItem = new Purchase_ForCreate_DTO(_userName, _customerName + " " + _customerSurname, deliveryAddress,
                 PaymentMethod.CreditCard, new List<Purchase_Item_DTO>());
 
-            var purchaseItems = new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(999.99, "Apple", "Naranja", _model2Name, 1, "Último modelo") };
+            var purchaseItems = new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(1, "iPhone17", 999.99, "Apple", "Naranja", _model2Name, 1, "Último modelo") };
 
             var purchaseApplicationUser = new Purchase_ForCreate_DTO("luis.lorenzo@alu.uclm.es", _customerName + " " + _customerSurname, deliveryAddress,
                 PaymentMethod.CreditCard, purchaseItems);
 
             var purchaseDeviceNotExisting = new Purchase_ForCreate_DTO(_userName, _customerName + " " + _customerSurname, deliveryAddress,
-                PaymentMethod.CreditCard, new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(999.99, "Apple", "Naranja", "iPhone 18", 1, "Último modelo") });
+                PaymentMethod.CreditCard, new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(1, "iPhone17", 999.99, "Apple", "Naranja", "iPhone 18", 1, "Último modelo") });
 
             var purchaseDeviceNotAvailable = new Purchase_ForCreate_DTO(_userName, _customerName + " " + _customerSurname, deliveryAddress,
-                PaymentMethod.CreditCard, new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(999.99, "Apple", "Naranja", "iPhone 17", 20, "Último modelo") });
+                PaymentMethod.CreditCard, new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(1, "iPhone17", 999.99, "Apple", "Naranja", "iPhone 17", 20, "Último modelo") });
 
             var allTests = new List<object[]>
             {
@@ -128,7 +128,7 @@ namespace AppForSEII2526.UT.PurchaseController_test
 
             var controller = new PurchaseController(_context, logger);
 
-            var purchaseItems = new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(999.99, "Apple", "Naranja", _model2Name, 1, "Último modelo") };
+            var purchaseItems = new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(1, "iPhone17", 999.99, "Apple", "Naranja", _model2Name, 1, "Último modelo") };
             var purchaseDTO = new Purchase_ForCreate_DTO(_userName, _customerName + " " + _customerSurname, deliveryAddress,
                 PaymentMethod.CreditCard, purchaseItems);
             var expectedPurchaseDetailDTO = new Purchase_Detail_DTO(2, DateTime.Now, _userName, _customerName + " " + _customerSurname,

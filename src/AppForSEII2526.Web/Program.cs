@@ -42,6 +42,18 @@ builder.Services.AddScoped<ISII2526DetonadosAPIClient>(sp => new ISII2526Detonad
 //Luis-------------------------
 builder.Services.AddScoped<RentalStateContainer>();
 //-----------------------------
+// SOLUCION DE LA IA PARA TIRAR LA WEB
+HttpClientHandler handler = new HttpClientHandler();
+if (builder.Environment.IsDevelopment())
+{
+    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+}
+// SOLUCION DE LA IA PARA TIRAR LA WEB
+
+
+builder.Services.AddScoped<ISII2526DetonadosAPIClient>(sp => new ISII2526DetonadosAPIClient(URI2API, new HttpClient(handler)));
+builder.Services.AddScoped<ReceiptStateContainer>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
