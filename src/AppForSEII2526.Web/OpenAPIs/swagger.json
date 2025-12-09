@@ -632,8 +632,7 @@
             "name": "scaleName",
             "in": "query",
             "schema": {
-              "type": "string",
-              "nullable": true
+              "type": "string"
             }
           }
         ],
@@ -960,6 +959,14 @@
       "Purchase_Item_DTO": {
         "type": "object",
         "properties": {
+          "deviceID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
           "price": {
             "type": "number",
             "format": "double"

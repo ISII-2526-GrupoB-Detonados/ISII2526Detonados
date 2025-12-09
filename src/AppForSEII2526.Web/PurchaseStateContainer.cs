@@ -28,6 +28,7 @@ namespace AppForSEII2526.Web
                 Purchase.PurchaseItems.Add(new Purchase_Item_DTO()
                 {
                     DeviceID = device.Id,
+                    Name = device.Name,
                     Brand = device.Brand,
                     Model = device.Model,
                     Color = device.Color,
