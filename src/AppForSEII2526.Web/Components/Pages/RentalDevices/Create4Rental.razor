@@ -10,8 +10,6 @@
 @inject RentalStateContainer rentalState
 @inject NavigationManager navigation
 
-
-
 <h3>Create Rental</h3>
 
 <div class="container-fluid">
@@ -27,15 +25,15 @@
 
                 <div class="mb-3">
                     <label for="customerName" class="form-label">Customer Name and Surname</label>
-                    <InputText id="customerName" class="form-control" 
-                               @bind-Value="rental.CustomerNameSurname" 
+                    <InputText id="customerName" class="form-control"
+                               @bind-Value="rental.CustomerNameSurname"
                                placeholder="Name and Surname" />
                 </div>
 
                 <div class="mb-3">
                     <label for="deliveryAddress" class="form-label">Delivery Address</label>
-                    <InputText id="deliveryAddress" class="form-control" 
-                               @bind-Value="rental.DeliveryAddress" 
+                    <InputText id="deliveryAddress" class="form-control"
+                               @bind-Value="rental.DeliveryAddress"
                                placeholder="Calle o Carretera..." />
                     <small class="text-muted">Debe incluir "Calle" o "Carretera"</small>
                 </div>
@@ -54,14 +52,14 @@
                     <div class="row">
                         <div class="col">
                             <label for="rentalFrom" class="form-label">From</label>
-                            <InputDate id="rentalFrom" class="form-control" 
-                                       @bind-Value="rental.RentalDateFrom" 
+                            <InputDate id="rentalFrom" class="form-control"
+                                       @bind-Value="rental.RentalDateFrom"
                                        disabled />
                         </div>
                         <div class="col">
                             <label for="rentalTo" class="form-label">To</label>
-                            <InputDate id="rentalTo" class="form-control" 
-                                       @bind-Value="rental.RentalDateTo" 
+                            <InputDate id="rentalTo" class="form-control"
+                                       @bind-Value="rental.RentalDateTo"
                                        disabled />
                         </div>
                     </div>
@@ -69,12 +67,19 @@
 
                 <div class="row">
                     <div class="col">
-                        <button type="submit" class="btn btn-primary" id="createRentalButton">
+                        <!-- Flujo alternativo 4: Deshabilitar botón si no hay dispositivos -->
+                        <button type="submit" class="btn btn-primary" id="createRentalButton"
+                                disabled="@(!HasDevicesInCart)">
                             Create Rental
                         </button>
-                        <button type="button" class="btn btn-secondary" 
+                        <button type="button" class="btn btn-secondary"
                                 @onclick="CancelRental">
                             Cancel
+                        </button>
+                        <!-- Flujo alternativo 6: Botón para volver a selección conservando datos -->
+                        <button type="button" class="btn btn-info"
+                                @onclick="BackToDeviceSelection">
+                            Modify Devices
                         </button>
                     </div>
                 </div>
@@ -83,7 +88,7 @@
 
         <div class="col-4">
             <h4>Shopping Cart Summary</h4>
-            
+
             @if (rental.RentalItems == null || rental.RentalItems.Count == 0)
             {
                 <div class="alert alert-warning">
@@ -92,6 +97,7 @@
             }
             else
             {
+                <!-- Flujo alternativo 3: Permitir eliminar dispositivos del carrito -->
                 <table class="table table-sm" id="RentalItemsTable">
                     <thead>
                         <tr>
@@ -99,6 +105,7 @@
                             <th>Model</th>
                             <th>Qty</th>
                             <th>Price</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -109,12 +116,19 @@
                                 <td>@item.DeviceModel</td>
                                 <td>@item.DeviceQuantity</td>
                                 <td>@item.PriceForRenting.ToString("F2") €</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger"
+                                            @onclick="@(() => RemoveDevice(item))"
+                                            title="Remove from cart">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </td>
                             </tr>
                         }
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="3" class="text-end">Total:</th>
+                            <th colspan="4" class="text-end">Total:</th>
                             <td id="TotalPrice"><strong>@rental.TotalPrice.ToString("F2") €</strong></td>
                         </tr>
                     </tfoot>
@@ -140,8 +154,12 @@
     private string errors = "";
     private bool hideErrors => errors.Length == 0;
 
+    // Flujo alternativo 4: Propiedad para verificar si hay dispositivos
+    private bool HasDevicesInCart => rental.RentalItems != null && rental.RentalItems.Count > 0;
+
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         if (authenticationState is not null)
@@ -157,34 +175,50 @@
         }
 
         logger.LogInformation($"CustomerUserName al iniciar: '{rental.CustomerUserName}'");
+
+        // Suscribirse a cambios del estado para actualizar la UI
+        rentalState.OnChange += StateHasChanged;
     }
 
+    // Liberar suscripción cuando el componente se destruya
+    public void Dispose()
+    {
+        rentalState.OnChange -= StateHasChanged;
+    }
 
+    // Flujo alternativo 3: Método para eliminar dispositivo del carrito
+    private void RemoveDevice(RentalItemDTO item)
+    {
+        rentalState.RemoveRentalItemToRent(item);
+        logger.LogInformation($"Dispositivo eliminado del carrito: {item.DeviceName}");
 
+        // Actualizar el precio total automáticamente
+        StateHasChanged();
+    }
+
+    // Flujo alternativo 6: Volver a la selección de dispositivos conservando datos
+    private void BackToDeviceSelection()
+    {
+        logger.LogInformation("Volviendo a selección de dispositivos, conservando datos del formulario");
+        navigation.NavigateTo("/rental/selectdevicesforrental");
+    }
 
     private void OpenDialog()
     {
-        
         errors = "";
-       
-
 
         // Validaciones antes de abrir el dialog
-       
         if (string.IsNullOrWhiteSpace(rental.CustomerUserName))
         {
             errors = "User authentication error. Please log in again.";
             return;
         }
-        
+
         if (string.IsNullOrWhiteSpace(rental.CustomerNameSurname))
         {
             errors = "Customer name and surname is required.";
             return;
         }
-
-
-        
 
         if (string.IsNullOrWhiteSpace(rental.DeliveryAddress))
         {
@@ -198,13 +232,12 @@
             return;
         }
 
-        // PaymentMethod es un enum, no puede ser null, así que no hace falta validarlo
-
         if (rental.RentalItems == null || rental.RentalItems.Count == 0)
         {
             errors = "No devices selected for rental.";
             return;
         }
+
         logger.LogInformation("Todas las validaciones OK, abriendo diálogo");
         DialogIsOpen = true;
     }
@@ -212,13 +245,13 @@
     private async Task OnDialogClose(bool isOk)
     {
         DialogIsOpen = false;
-        
+
         if (isOk)
         {
             await CreateRentalAsync();
         }
     }
-    
+
     private async Task CreateRentalAsync()
     {
         try
@@ -239,28 +272,45 @@
         {
             logger.LogError($"API ERROR StatusCode: {ex.StatusCode}");
             logger.LogError($"API ERROR Response: {ex.Response}");
-
-            // AÑADE ESTA LÍNEA para ver el mensaje completo
             logger.LogError($"API ERROR Message: {ex.Message}");
 
-            // También loguea los detalles si existen
-            if (!string.IsNullOrEmpty(ex.Response))
+            //PARSEAR LOS ERRORES DE VALIDACIÓN
+            if (ex.StatusCode == 400 && !string.IsNullOrEmpty(ex.Response))
             {
-                logger.LogError($"Detalles del error: {ex.Response}");
+                try
+                {
+                    // Intentar extraer errores específicos del ValidationProblemDetails
+                    var validationErrors = System.Text.Json.JsonSerializer
+                        .Deserialize<ValidationProblemDetails>(ex.Response);
+
+                    if (validationErrors?.Errors != null && validationErrors.Errors.Any())
+                    {
+                        // Concatenar todos los mensajes de error
+                        var errorMessages = validationErrors.Errors
+                            .SelectMany(e => e.Value)
+                            .ToList();
+
+                        errors = string.Join(" | ", errorMessages);
+                        logger.LogError($"Errores de validación: {errors}");
+                        return;
+                    }
+                }
+                catch (Exception parseEx)
+                {
+                    logger.LogWarning($"No se pudo parsear el error de validación: {parseEx.Message}");
+                }
             }
 
+            // Si no es error de validación o no se pudo parsear, mostrar mensaje genérico
             errors = $"Error creating rental: {ex.Message}";
         }
-
         catch (Exception ex)
         {
             logger.LogError($"Unexpected error: {ex.Message}");
             logger.LogError(ex.StackTrace);
             errors = "An unexpected error occurred while creating the rental.";
         }
-        
     }
-    
 
     private void CancelRental()
     {

@@ -166,6 +166,12 @@ namespace AppForSEII2526.API.Controllers
                         Quantity = item.DeviceQuantity
                     });
                     item.PriceForRenting = device.PriceForRent;
+                    var deviceEntity = await _context.Devices.FindAsync(device.Id);
+                    if (deviceEntity != null)
+                    {
+                        deviceEntity.QuantityForRent -= item.DeviceQuantity;
+                        _logger.LogInformation($"Stock actualizado para '{deviceEntity.Name}': {deviceEntity.QuantityForRent + item.DeviceQuantity} -> {deviceEntity.QuantityForRent}");
+                    }
                 }
             }
 
