@@ -85,6 +85,28 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 Repairs = new List<ReceiptItemDTO> { new ReceiptItemDTO("Reparación pantalla", "Modelo-Test") }
             };
 
+            //Caso 4: Direccion de envio nula 
+            var dtoNullDeliveryAddress = new ReceiptForCreateDTO()
+            {
+                UserName = _userName,
+                Name = _customerName,
+                Surname = _customerSurname,
+                DeliveryAddress = null,
+                PaymentMethod = PaymentMethod.CreditCard,
+                Repairs = new List<ReceiptItemDTO> { new ReceiptItemDTO("Reparación pantalla", "Modelo-Test") }
+            };
+
+            //Caso 5: Direccion de envio no valida
+            var dtoInvalidDeliveryAddress = new ReceiptForCreateDTO()
+            {
+                UserName = _userName,
+                Name = _customerName,
+                Surname = _customerSurname,
+                DeliveryAddress = "Direccion Invalida",
+                PaymentMethod = PaymentMethod.CreditCard,
+                Repairs = new List<ReceiptItemDTO> { new ReceiptItemDTO("Reparación pantalla", "Modelo-Test") }
+            };
+
             // Lista de todos los casos de prueba
             var allTests = new List<object[]>
             {
@@ -94,6 +116,10 @@ namespace AppForSEII2526.UT.ReceiptController_test
 
                 // caso ModelState inválido: no comprobamos mensaje concreto (se pasa null), y marcamos forceModelStateInvalid = true
                 new object[] { dtoValidButModelStateInvalid, null, true }
+
+                // Direccion de envio nula / no valida
+                , new object[] { dtoNullDeliveryAddress, "Dirección de envío no válida", false }
+                , new object[] { dtoInvalidDeliveryAddress, "Dirección de envío no válida", false }
             };
 
             return allTests;

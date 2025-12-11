@@ -67,6 +67,7 @@ public class RecibosController : ControllerBase
         }
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
+
         if (user == null)
         {
             _logger.LogError($"Usuario '{dto.UserName}' no encontrado");
@@ -103,6 +104,12 @@ public class RecibosController : ControllerBase
               item.ModelToRepair,    // Parámetro 3: modelToRepair
             (float)repair.Cost    // Parámetro 4: repairCost
 ));
+        }
+
+        if (dto.DeliveryAddress == null || (!dto.DeliveryAddress.Contains("Calle") && !dto.DeliveryAddress.Contains("Avenida")))
+        {
+            _logger.LogError("Dirección de envío no válida");
+            return BadRequest("Dirección de envío no válida");
         }
 
         var receipt = new Receipt
