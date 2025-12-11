@@ -85,11 +85,26 @@ namespace AppForSEII2526.API.Controllers
             var user = await _context.ApplicationUsers
                 .FirstOrDefaultAsync(au => au.UserName == rentalForCreate.CustomerUserName);
 
+            
             if (user == null)
                 ModelState.AddModelError("RentalApplicationUser", "Error! UserName is not registered");
 
             if (ModelState.ErrorCount > 0)
+            {
+                // AÑADE ESTE LOG AQUÍ TAMBIÉN
+                _logger.LogWarning("==== ERRORES DE VALIDACIÓN (Primera verificación) ====");
+                foreach (var error in ModelState)
+                {
+                    foreach (var err in error.Value.Errors)
+                    {
+                        _logger.LogWarning($"Campo: {error.Key} - Error: {err.ErrorMessage}");
+                    }
+                }
+                _logger.LogWarning("================================");
+
                 return BadRequest(new ValidationProblemDetails(ModelState));
+            }
+
 
             // ========== OBTENER LOS IDs DE DISPOSITIVOS ==========
             var deviceIds = rentalForCreate.RentalItems.Select(ri => ri.DeviceId).ToList();
@@ -159,6 +174,17 @@ namespace AppForSEII2526.API.Controllers
             // Si hay problemas de disponibilidad
             if (ModelState.ErrorCount > 0)
             {
+                // AÑADE ESTE LOG PARA VER LOS ERRORES
+                _logger.LogWarning("==== ERRORES DE VALIDACIÓN ====");
+                foreach (var error in ModelState)
+                {
+                    foreach (var err in error.Value.Errors)
+                    {
+                        _logger.LogWarning($"Campo: {error.Key} - Error: {err.ErrorMessage}");
+                    }
+                }
+                _logger.LogWarning("================================");
+
                 return BadRequest(new ValidationProblemDetails(ModelState));
             }
 

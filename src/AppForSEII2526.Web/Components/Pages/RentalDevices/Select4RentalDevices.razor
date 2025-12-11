@@ -2,7 +2,7 @@
 
 @using AppForSEII2526.Web.API
 @using Microsoft.AspNetCore.Authorization
-
+@attribute [Authorize]
 @inject ISII2526DetonadosAPIClient apiclient
 @inject ILogger<Select4RentalDevices> logger
 @inject RentalStateContainer rentalState
