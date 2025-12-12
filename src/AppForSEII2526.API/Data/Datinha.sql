@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------------------------------------------------
 -- USUARIOS (3 usuarios)
 INSERT INTO [dbo].[AspNetUsers] ([Id], [Surname], [Name], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) 
-VALUES (N'user-001', N'Lorenzo', N'Luis', N'luis.lorenzo@email.com', N'LUIS.LORENZO@EMAIL.COM', N'luis.lorenzo@email.com', N'LUIS.LORENZO@EMAIL.COM', 1, N'AQAAAAIAAYagAAAAEJ1234567890abcdefghijklmnopqrstuvwxyz', N'339BD9CA-5F0A-44C5-8906-328463C8E2DA', N'C65E85E2-F2CE-4611-B859-73BE18CC24BB', N'+34600111222', 1, 0, NULL, 1, 0)
+VALUES (N'user-001', N'Lorenzo', N'Luis', N'luis.lorenzo@email.com', N'LUIS.LORENZO@EMAIL.COM', N'luis.lorenzo@email.com', N'LUIS.LORENZO@EMAIL.COM', 1, N'AQAAAAIAAYagAAAAEGJlFzgvI3GjBm0sYvMaQwzYb8aU5k59/G2J4K5XVkxPmxbKVt7sM01O6+mktdy8Fg== ', N'339BD9CA-5F0A-44C5-8906-328463C8E2DA', N'C65E85E2-F2CE-4611-B859-73BE18CC24BB', N'+34600111222', 1, 0, NULL, 1, 0)
 
 INSERT INTO [dbo].[AspNetUsers] ([Id], [Surname], [Name], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) 
 VALUES (N'user-002', N'Lopes', N'Patrik', N'patrik.lopes@email.com', N'PATRIK.LOPES@EMAIL.COM', N'patrik.lopes@email.com', N'PATRIK.LOPES@EMAIL.COM', 1, N'AQAAAAIAAYagAAAAEJ1234567890abcdefghijklmnopqrstuvwxyz', N'415AEF77-B318-43BC-96D4-57347ED71A0D', N'8D6F3E42-20F5-4EF6-ACCC-F368DB0B16EB', N'+34600222333', 1, 0, NULL, 1, 0)
@@ -9,7 +9,8 @@ VALUES (N'user-002', N'Lopes', N'Patrik', N'patrik.lopes@email.com', N'PATRIK.LO
 INSERT INTO [dbo].[AspNetUsers] ([Id], [Surname], [Name], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) 
 VALUES (N'user-003', N'Jara', N'Alejandro', N'alejandro.jara@email.com', N'ALEJANDRO.JARA@EMAIL.COM', N'alejandro.jara@email.com', N'ALEJANDRO.JARA@EMAIL.COM', 1, N'AQAAAAIAAYagAAAAEJ1234567890abcdefghijklmnopqrstuvwxyz', N'BE2980C9-97EC-4951-9E27-795F1291FD9D', N'FEAE93AF-0400-4946-B7FA-E19C5D2F649B', N'+34600333444', 1, 0, NULL, 1, 0)
 
------------------------------------
+----------------------------------- hascode contraseña AQAAAAIAAYagAAAAEGJlFzgvI3GjBm0sYvMaQwzYb8aU5k59/G2J4K5XVkxPmxbKVt7sM01O6+mktdy8Fg==   equivale  a Password123!
+
 -- Patrik
 
 -- Scales 

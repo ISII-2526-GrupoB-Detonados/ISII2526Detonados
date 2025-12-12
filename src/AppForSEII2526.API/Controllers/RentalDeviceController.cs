@@ -149,14 +149,21 @@ namespace AppForSEII2526.API.Controllers
             {
                 var device = devices.FirstOrDefault(d => d.Id == item.DeviceId);
 
-                // Verificar que el dispositivo existe y hay cantidad disponible
-                if ((device == null) || (device.NumberOfRentedDevices >= device.QuantityForRent))
+                if (device == null)
                 {
                     ModelState.AddModelError("RentalItems",
-                        $"Error! Device with ID '{item.DeviceId}' is not available for being rented from {rentalForCreate.RentalDateFrom.ToShortDateString()} to {rentalForCreate.RentalDateTo.ToShortDateString()}");
+                        $"Error! Device with ID '{item.DeviceId}' does not exist.");
+                    continue; // ← CLAVE: Salta al siguiente item sin procesar este
                 }
-                else
+                if (device.QuantityForRent < item.DeviceQuantity)
                 {
+                    ModelState.AddModelError("RentalItems",
+                        $"Error! Not enough stock for '{device.Name}'. Available: {device.QuantityForRent}, Requested: {item.DeviceQuantity}");
+                    continue; // ← No procesar este dispositivo
+                }
+                
+                
+                
                     // Agregar RentDevice
                     rental.RentDevices.Add(new RentDevice
                     {
@@ -166,13 +173,14 @@ namespace AppForSEII2526.API.Controllers
                         Quantity = item.DeviceQuantity
                     });
                     item.PriceForRenting = device.PriceForRent;
+                    // actualizar stock
                     var deviceEntity = await _context.Devices.FindAsync(device.Id);
                     if (deviceEntity != null)
                     {
                         deviceEntity.QuantityForRent -= item.DeviceQuantity;
                         _logger.LogInformation($"Stock actualizado para '{deviceEntity.Name}': {deviceEntity.QuantityForRent + item.DeviceQuantity} -> {deviceEntity.QuantityForRent}");
                     }
-                }
+                
             }
 
             rental.TotalPrice = rental.RentDevices.Sum(rd => rd.Price * rd.Quantity * numDays);
@@ -180,7 +188,6 @@ namespace AppForSEII2526.API.Controllers
             // Si hay problemas de disponibilidad
             if (ModelState.ErrorCount > 0)
             {
-                // AÑADE ESTE LOG PARA VER LOS ERRORES
                 _logger.LogWarning("==== ERRORES DE VALIDACIÓN ====");
                 foreach (var error in ModelState)
                 {
@@ -191,7 +198,12 @@ namespace AppForSEII2526.API.Controllers
                 }
                 _logger.LogWarning("================================");
 
-                return BadRequest(new ValidationProblemDetails(ModelState));
+                // log para  Ver el JSON que se enviará al cliente
+                var validationProblem = new ValidationProblemDetails(ModelState);
+                var json = System.Text.Json.JsonSerializer.Serialize(validationProblem);
+                _logger.LogWarning($"JSON enviado al cliente: {json}");
+
+                return BadRequest(validationProblem);
             }
 
             _context.Add(rental);

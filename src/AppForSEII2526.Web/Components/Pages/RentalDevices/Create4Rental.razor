@@ -271,38 +271,14 @@
         catch (ApiException ex)
         {
             logger.LogError($"API ERROR StatusCode: {ex.StatusCode}");
-            logger.LogError($"API ERROR Response: {ex.Response}");
             logger.LogError($"API ERROR Message: {ex.Message}");
 
-            //PARSEAR LOS ERRORES DE VALIDACIÓN
-            if (ex.StatusCode == 400 && !string.IsNullOrEmpty(ex.Response))
+            // Maquillaje del Badrequest 400
+            if (ex.StatusCode == 400)
             {
-                try
-                {
-                    // Intentar extraer errores específicos del ValidationProblemDetails
-                    var validationErrors = System.Text.Json.JsonSerializer
-                        .Deserialize<ValidationProblemDetails>(ex.Response);
-
-                    if (validationErrors?.Errors != null && validationErrors.Errors.Any())
-                    {
-                        // Concatenar todos los mensajes de error
-                        var errorMessages = validationErrors.Errors
-                            .SelectMany(e => e.Value)
-                            .ToList();
-
-                        errors = string.Join(" | ", errorMessages);
-                        logger.LogError($"Errores de validación: {errors}");
-                        return;
-                    }
-                }
-                catch (Exception parseEx)
-                {
-                    logger.LogWarning($"No se pudo parsear el error de validación: {parseEx.Message}");
-                }
+                errors = "Error catidad de stock insuficiente";
             }
-
-            // Si no es error de validación o no se pudo parsear, mostrar mensaje genérico
-            errors = $"Error creating rental: {ex.Message}";
+            
         }
         catch (Exception ex)
         {
