@@ -7,6 +7,7 @@
 @inject ILogger<CreateReceipt> logger
 @inject ReceiptStateContainer receiptState
 
+@attribute [Authorize]
 <h3>Crear Recibo</h3>
 
 <EditForm Model="receipt" OnValidSubmit="OpenDialog">
