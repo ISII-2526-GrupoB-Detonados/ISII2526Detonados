@@ -39,8 +39,8 @@ namespace AppForSEII2526.UIT.CU_Receipt
         private const string PAYMENT_METHOD_PAYPAL = "PayPal";
 
         // ========== DATOS DE PRUEBA: MODELOS A REPARAR ==========
-        private const string MODEL_1 = "Balanza Capacidad 5kg";
-        private const string MODEL_2 = "Balanza Digital Plateada";
+        private const string MODEL_1 = "Iphone";
+        private const string MODEL_2 = "Android";
 
         public CU_receiptForRepair_UIT(ITestOutputHelper output) : base(output)
         {
