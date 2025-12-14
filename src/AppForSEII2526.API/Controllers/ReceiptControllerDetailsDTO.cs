@@ -32,6 +32,7 @@ public class RecibosController : ControllerBase
                 .ThenInclude(ri => ri.Repair)
                     .ThenInclude(rep => rep.Scale)
             .Select(r => new ReceiptDetailDTO(
+                r.Id,
                 r.ApplicationUser.Name,
                 r.ApplicationUser.Surname,
                 r.DeliveryAddress,
@@ -119,6 +120,7 @@ public class RecibosController : ControllerBase
         await _context.SaveChangesAsync();
 
         var responseDto = new ReceiptDetailDTO(
+            receipt.Id,
             user.Name,
             user.Surname,
             dto.DeliveryAddress,

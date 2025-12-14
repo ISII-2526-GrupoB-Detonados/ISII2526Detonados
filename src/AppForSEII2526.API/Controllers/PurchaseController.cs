@@ -82,7 +82,7 @@ namespace AppForSEII2526.API.Controllers
             var deviceModels = purchaseForCreate.PurchaseItems.Select(pi => pi.Model).ToList();
 
             // Consultar los dispositivos disponibles con su stock actual
-            var devices = _context.Devices
+            var devices = await _context.Devices
                 .Include(d => d.Model)
                 .Include(d => d.PurchaseItems)
                 .Where(d => deviceBrands.Contains(d.Brand) && deviceModels.Contains(d.Model.NameModel))
@@ -97,7 +97,7 @@ namespace AppForSEII2526.API.Controllers
                     // Contar cuántos de este dispositivo ya están en compras (vendidos)
                     NumberOfPurchasedItems = d.PurchaseItems.Sum(pi => pi.Quantity)
                 })
-                .ToList();
+                .ToListAsync();
 
             // Crear la entidad Purchase
             Purchase purchase = new Purchase
@@ -124,7 +124,7 @@ namespace AppForSEII2526.API.Controllers
                 {
                     ModelState.AddModelError("PurchaseItems", $"Error! Device {item.Brand} {item.Model} {item.Color} does not exist");
                 }
-                else if (item.Quantity > (device.QuantityForPurchase - device.NumberOfPurchasedItems))
+                else if (item.Quantity > device.QuantityForPurchase)
                 {
                     ModelState.AddModelError("PurchaseItems", $"Error! Device {device.Brand} {device.NameModel} does not have enough stock. Available: {device.QuantityForPurchase - device.NumberOfPurchasedItems}, Requested: {item.Quantity}");
                 }
@@ -144,6 +144,14 @@ namespace AppForSEII2526.API.Controllers
 
                     // Actualizar el precio en el DTO para la respuesta
                     item.Price = device.PriceForPurchase;
+
+                    //Actualizar stock
+                    var deviceEntity = await _context.Devices.FindAsync(device.Id);
+                    if(deviceEntity != null)
+                    {
+                        deviceEntity.QuantityForPurchase -= item.Quantity;
+                        _logger.LogInformation($"Stock actualizado para '{deviceEntity.Name}': {deviceEntity.QuantityForPurchase + item.Quantity} -> {deviceEntity.QuantityForPurchase}");
+                    }
                 }
             }
 
