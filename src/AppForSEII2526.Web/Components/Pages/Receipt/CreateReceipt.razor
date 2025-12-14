@@ -6,7 +6,7 @@
 @inject AppForSEII2526.Web.API.ISII2526DetonadosAPIClient apiclient
 @inject ILogger<CreateReceipt> logger
 @inject ReceiptStateContainer receiptState
-
+@attribute [Authorize]
 <h3>Crear Recibo</h3>
 
 <EditForm Model="receipt" OnValidSubmit="OpenDialog">
