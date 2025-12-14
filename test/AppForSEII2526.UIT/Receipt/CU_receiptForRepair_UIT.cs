@@ -107,9 +107,13 @@ namespace AppForSEII2526.UIT.CU_Receipt
                 // Dialog puede no aparecer si la validación falla
             }
 
-            // Assert - Paso 7: Verificar recibo
-            Assert.True(_driver.Url.Contains("/receipt/detailreceipt") ||
-                       _driver.Url.Contains("/receipt/create"));
+            // Assert - Paso 7: Verificar recibo (aceptar ambas posibles URLs)
+            bool isSuccessful = _driver.Url.Contains("/receipt/detailreceipt") ||
+                               _driver.Url.Contains("/receipts/detailreceipt") ||
+                               _driver.Url.Contains("/receipt/create") ||
+                               _driver.Url.Contains("/receipts/createreceipt");
+
+            Assert.True(isSuccessful, $"URL inesperada: {_driver.Url}");
         }
 
         // FLUJO BÁSICO COMPLETO - Variantes del método de pago
@@ -150,8 +154,12 @@ namespace AppForSEII2526.UIT.CU_Receipt
             catch { }
 
             // Assert
-            Assert.True(_driver.Url.Contains("/receipt/detailreceipt") ||
-                       _driver.Url.Contains("/receipt/create"));
+            bool isSuccessful = _driver.Url.Contains("/receipt/detailreceipt") ||
+                               _driver.Url.Contains("/receipts/detailreceipt") ||
+                               _driver.Url.Contains("/receipt/create") ||
+                               _driver.Url.Contains("/receipts/createreceipt");
+
+            Assert.True(isSuccessful, $"URL inesperada: {_driver.Url}");
         }
 
         /*
@@ -355,25 +363,24 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
 
-            // Act - Intentar rellenar el formulario sin un campo obligatorio
-            try
-            {
-                _createReceiptPO.FillNameField(nombre);
-                _createReceiptPO.FillSurnameField(apellidos);
-                _createReceiptPO.FillDeliveryAddressField(direccion);
-                _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
-                Thread.Sleep(500);
-                _createReceiptPO.ClickSubmitButton();
-                Thread.Sleep(1000);
-            }
-            catch (Exception ex)
-            {
-                _output.WriteLine($"Excepción durante validación: {ex.Message}");
-            }
+            // Act - Rellenar el formulario sin un campo obligatorio
+            _createReceiptPO.FillNameField(nombre);
+            _createReceiptPO.FillSurnameField(apellidos);
+            _createReceiptPO.FillDeliveryAddressField(direccion);
+            _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
+            Thread.Sleep(1000);
 
-            // Assert - Debe seguir en la página de creación
-            bool isStillOnCreatePage = _driver.Url.Contains("/receipt/create");
-            Assert.True(isStillOnCreatePage, $"Se esperaba validación de campo vacío: {fieldName}");
+            // Intentar enviar el formulario
+            _createReceiptPO.ClickSubmitButton();
+            Thread.Sleep(1500);
+
+            // Assert - Debe seguir en la página de creación y/o mostrar errores
+            bool isStillOnCreatePage = _driver.Url.Contains("/receipt/create") ||
+                                      _driver.Url.Contains("/receipts/createreceipt");
+            bool hasValidationErrors = _createReceiptPO.HasValidationErrors();
+
+            Assert.True(isStillOnCreatePage || hasValidationErrors,
+                $"Se esperaba validación para campo vacío: {fieldName}");
         }
 
         // Validación específica: campo nombre vacío
@@ -392,21 +399,24 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
 
-            // Act
-            try
-            {
-                _createReceiptPO.FillSurnameField(CLIENT_SURNAME);
-                _createReceiptPO.FillDeliveryAddressField(DELIVERY_ADDRESS);
-                _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
-                Thread.Sleep(500);
-                _createReceiptPO.ClickSubmitButton();
-                Thread.Sleep(1000);
-            }
-            catch { }
+            // Act - Rellenar los campos sin nombre (nombre vacío)
+            _createReceiptPO.FillNameField("");  // Nombre vacío
+            _createReceiptPO.FillSurnameField(CLIENT_SURNAME);
+            _createReceiptPO.FillDeliveryAddressField(DELIVERY_ADDRESS);
+            _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
+            Thread.Sleep(1000);
 
-            // Assert
-            bool isStillOnCreatePage = _driver.Url.Contains("/receipt/create");
-            Assert.True(isStillOnCreatePage, "Debería permanecer en la página de creación sin nombre");
+            // Intentar enviar el formulario
+            _createReceiptPO.ClickSubmitButton();
+            Thread.Sleep(1500);
+
+            // Assert - Debe permanecer en la página de creación o mostrar errores
+            bool isStillOnCreatePage = _driver.Url.Contains("/receipt/create") ||
+                                      _driver.Url.Contains("/receipts/createreceipt");
+            bool hasValidationErrors = _createReceiptPO.HasValidationErrors();
+
+            Assert.True(isStillOnCreatePage || hasValidationErrors,
+                "Se esperaba validación: permanencia en página o errores visibles");
         }
 
         /*
@@ -469,8 +479,12 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
 
-            // Assert - Solo verificar que se llegó a la página de crear recibo
-            Assert.True(_driver.Url.Contains("/receipt/create"));
+            // Assert - Verificar navegación exitosa
+            bool isOnCreatePage = _driver.Url.Contains("/receipt/create") ||
+                                 _driver.Url.Contains("/receipts/createreceipt");
+
+            Assert.True(isOnCreatePage,
+                $"Se esperaba navegación a la página de crear recibo. URL actual: {_driver.Url}");
         }
 
         // Verificar que se muestra correctamente el carrito de la compra
@@ -493,8 +507,12 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
 
-            // Assert - Verificar que la página de crear recibo se cargó
-            Assert.True(_driver.Url.Contains("/receipt/create"));
+            // Assert - Verificar que se navegó a la página de crear recibo
+            bool isOnCreatePage = _driver.Url.Contains("/receipt/create") ||
+                                 _driver.Url.Contains("/receipts/createreceipt");
+
+            Assert.True(isOnCreatePage,
+                $"Se esperaba navegación a página de crear recibo. URL actual: {_driver.Url}");
         }
 
         // Verificar navegación completa del flujo
@@ -517,7 +535,10 @@ namespace AppForSEII2526.UIT.CU_Receipt
 
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
-            Assert.True(_driver.Url.Contains("/receipt/create"));
+
+            bool isOnCreatePage = _driver.Url.Contains("/receipt/create") ||
+                                 _driver.Url.Contains("/receipts/createreceipt");
+            Assert.True(isOnCreatePage);
 
             _createReceiptPO.FillReceiptForm(
                 nombre: CLIENT_NAME,

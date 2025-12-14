@@ -21,6 +21,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
         private By tableOfReceiptItemsBy = By.Id("TableOfReceiptItems");
         private By totalPriceElement = By.XPath("//*[contains(text(), 'Total price:')]");
         private By errorMessageElement = By.Id("ErrorsShown");
+        private By validationSummary = By.XPath("//div[contains(@class, 'alert alert-danger')]");
 
         public CreateReceiptPO(IWebDriver driver, ITestOutputHelper output) : base(driver, output)
         {
@@ -31,55 +32,112 @@ namespace AppForSEII2526.UIT.CU_Receipt
         /// </summary>
         public void FillReceiptForm(string nombre, string apellidos, string direccion, string metodoPago)
         {
-            // Esperar a que los inputs estén listos
-            WaitForBeingClickable(inputName);
-            _driver.FindElement(inputName).Clear();
-            _driver.FindElement(inputName).SendKeys(nombre);
+            // Rellenar nombre
+            FillNameField(nombre);
+            Thread.Sleep(300);
 
-            WaitForBeingClickable(inputSurname);
-            _driver.FindElement(inputSurname).Clear();
-            _driver.FindElement(inputSurname).SendKeys(apellidos);
+            // Rellenar apellidos
+            FillSurnameField(apellidos);
+            Thread.Sleep(300);
 
-            WaitForBeingClickable(inputDeliveryAddress);
-            _driver.FindElement(inputDeliveryAddress).Clear();
-            _driver.FindElement(inputDeliveryAddress).SendKeys(direccion);
+            // Rellenar dirección
+            FillDeliveryAddressField(direccion);
+            Thread.Sleep(300);
 
             // Seleccionar método de pago
             SelectPaymentMethodByText(metodoPago);
+            Thread.Sleep(300);
         }
 
         /// <summary>
-        /// Rellena solo el campo de nombre
+        /// Rellena solo el campo de nombre con disparó de evento blur
         /// </summary>
         public void FillNameField(string nombre)
         {
             WaitForBeingClickable(inputName);
-            _driver.FindElement(inputName).Clear();
-            _driver.FindElement(inputName).SendKeys(nombre);
+            IWebElement nameField = _driver.FindElement(inputName);
+            
+            // Limpiar completamente el campo
+            nameField.Clear();
+            Thread.Sleep(100);
+            
+            // Usar triple-click para seleccionar todo (alternativa a Clear)
+            nameField.SendKeys(Keys.Control + "a");
+            Thread.Sleep(50);
+            
+            // Escribir el nuevo valor
+            nameField.SendKeys(nombre);
+            Thread.Sleep(100);
+            
+            // Disparar evento blur para que Blazor procese la validación
+            DispatchBlurEvent(nameField);
         }
 
         /// <summary>
-        /// Rellena solo el campo de apellidos
+        /// Rellena solo el campo de apellidos con disparo de evento blur
         /// </summary>
         public void FillSurnameField(string apellidos)
         {
             WaitForBeingClickable(inputSurname);
-            _driver.FindElement(inputSurname).Clear();
-            _driver.FindElement(inputSurname).SendKeys(apellidos);
+            IWebElement surnameField = _driver.FindElement(inputSurname);
+            
+            // Limpiar completamente el campo
+            surnameField.Clear();
+            Thread.Sleep(100);
+            surnameField.SendKeys(Keys.Control + "a");
+            Thread.Sleep(50);
+            
+            // Escribir el nuevo valor
+            surnameField.SendKeys(apellidos);
+            Thread.Sleep(100);
+            
+            // Disparar evento blur
+            DispatchBlurEvent(surnameField);
         }
 
         /// <summary>
-        /// Rellena solo el campo de dirección
+        /// Rellena solo el campo de dirección con disparo de evento blur
         /// </summary>
         public void FillDeliveryAddressField(string direccion)
         {
             WaitForBeingClickable(inputDeliveryAddress);
-            _driver.FindElement(inputDeliveryAddress).Clear();
-            _driver.FindElement(inputDeliveryAddress).SendKeys(direccion);
+            IWebElement addressField = _driver.FindElement(inputDeliveryAddress);
+            
+            // Limpiar completamente el campo
+            addressField.Clear();
+            Thread.Sleep(100);
+            addressField.SendKeys(Keys.Control + "a");
+            Thread.Sleep(50);
+            
+            // Escribir el nuevo valor
+            addressField.SendKeys(direccion);
+            Thread.Sleep(100);
+            
+            // Disparar evento blur
+            DispatchBlurEvent(addressField);
         }
 
         /// <summary>
-        /// Selecciona el método de pago por valor numérico
+        /// Dispara el evento blur en un elemento para que Blazor valide
+        /// </summary>
+        private void DispatchBlurEvent(IWebElement element)
+        {
+            try
+            {
+                // Usar JavaScript para disparar el evento blur
+                ((IJavaScriptExecutor)_driver).ExecuteScript("arguments[0].blur();", element);
+                Thread.Sleep(200);
+            }
+            catch
+            {
+                // Si falla el JavaScript, intentar con Tab
+                element.SendKeys(Keys.Tab);
+                Thread.Sleep(200);
+            }
+        }
+
+        /// <summary>
+        /// Selecciona el método de pago
         /// </summary>
         public void SelectPaymentMethod(string metodoPago)
         {
@@ -97,7 +155,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             
             try
             {
-                // Intentar por texto visible primero (para "Tarjeta de Crédito", "PayPal", "Efectivo")
+                // Intentar por texto visible primero
                 selectElement.SelectByText(metodoPago);
             }
             catch
@@ -122,6 +180,22 @@ namespace AppForSEII2526.UIT.CU_Receipt
                     }
                 }
             }
+            
+            // Disparar evento change en el dropdown
+            DispatchChangeEvent(paymentDropdown);
+        }
+
+        /// <summary>
+        /// Dispara el evento change en un elemento
+        /// </summary>
+        private void DispatchChangeEvent(IWebElement element)
+        {
+            try
+            {
+                ((IJavaScriptExecutor)_driver).ExecuteScript("arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", element);
+                Thread.Sleep(200);
+            }
+            catch { }
         }
 
         /// <summary>
@@ -166,11 +240,28 @@ namespace AppForSEII2526.UIT.CU_Receipt
         {
             try
             {
-                WaitForBeingVisible(totalPriceElement);
-                string text = _driver.FindElement(totalPriceElement).Text;
-                // Extrae el número del texto "Total price: 150.75 €"
-                var match = System.Text.RegularExpressions.Regex.Match(text, @"[\d.]+");
-                return match.Value;
+                // Buscar el texto que contiene "Precio total:" o "Total price:"
+                var priceElements = _driver.FindElements(By.XPath("//*[contains(text(), 'Precio total:') or contains(text(), 'Total price:')]"));
+                
+                if (priceElements.Count > 0)
+                {
+                    string text = priceElements[0].Text;
+                    // Extrae el número del texto
+                    var match = System.Text.RegularExpressions.Regex.Match(text, @"[\d.,]+");
+                    if (match.Success)
+                    {
+                        return match.Value;
+                    }
+                }
+                
+                // Si no se encuentra por XPath, intentar buscar el elemento con ID TotalPrice
+                var totalPriceByIdElements = _driver.FindElements(By.Id("TotalPrice"));
+                if (totalPriceByIdElements.Count > 0)
+                {
+                    return totalPriceByIdElements[0].Text;
+                }
+                
+                return "";
             }
             catch
             {
@@ -185,6 +276,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
         {
             WaitForBeingClickable(buttonSubmit);
             _driver.FindElement(buttonSubmit).Click();
+            Thread.Sleep(500); // Esperar a que Blazor procese
         }
 
         /// <summary>
@@ -219,6 +311,71 @@ namespace AppForSEII2526.UIT.CU_Receipt
             catch
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Verifica si hay errores de validación visibles en el formulario
+        /// </summary>
+        public bool HasValidationErrors()
+        {
+            try
+            {
+                // Buscar cualquier elemento con clase alert alert-danger
+                var validationElements = _driver.FindElements(validationSummary);
+                
+                if (validationElements.Count > 0)
+                {
+                    return validationElements.Any(el => 
+                    {
+                        try
+                        {
+                            return el.Displayed && !string.IsNullOrWhiteSpace(el.Text);
+                        }
+                        catch { return false; }
+                    });
+                }
+
+                // También buscar mensajes de error inline (data-validation-summary)
+                var inlineErrors = _driver.FindElements(By.XPath("//div[contains(@class, 'invalid-feedback') or contains(@class, 'field-validation-error')]"));
+                return inlineErrors.Count > 0 && inlineErrors.Any(el => 
+                {
+                    try
+                    {
+                        return el.Displayed && !string.IsNullOrWhiteSpace(el.Text);
+                    }
+                    catch { return false; }
+                });
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene el texto de los errores de validación
+        /// </summary>
+        public string GetValidationErrorText()
+        {
+            try
+            {
+                var validationElements = _driver.FindElements(validationSummary);
+                if (validationElements.Count > 0)
+                {
+                    return string.Join(" | ", validationElements
+                        .Where(el => 
+                        {
+                            try { return el.Displayed; }
+                            catch { return false; }
+                        })
+                        .Select(el => el.Text));
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
             }
         }
 
