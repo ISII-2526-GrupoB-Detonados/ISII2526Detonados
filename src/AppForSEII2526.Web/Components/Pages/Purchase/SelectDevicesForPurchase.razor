@@ -1,15 +1,17 @@
 ﻿@page "/purchase/selectdevicesforpurchase"
 
+@using Microsoft.AspNetCore.Authorization
 @using AppForSEII2526.Web.API
 @inject ISII2526DetonadosAPIClient apiclient
 @inject ILogger<SelectDevicesForPurchase> logger
 @inject PurchaseStateContainer purchaseState
 @inject NavigationManager navigation
 
+@attribute [Authorize]
 <h3>Select Devices For Purchase</h3>
 <div class="container-fluid">
-    <div class="row" hidden="@hideErrors">
-        <p>here i will show the errors</p>
+    <div class="row alert alert-danger" role="alert" hidden="@hideErrors">
+        <p id="ErrorsShown">Errors: @errors</p>
     </div>
     <div class="row">
         <div class="col-8">
@@ -41,7 +43,6 @@
                         <table class="table table-condensed table-hover" id="TableOfDevices">
                             <thead>
                                 <tr>
-                                    <th>Id</th>
                                     <th>Brand</th>
                                     <th>Color</th>
                                     <th>Name</th>
@@ -53,7 +54,6 @@
                             <tbody>
                                 @foreach (var device in devices) {
                                     <tr id="DeviceData_@device.Name">
-                                        <td>@device.Id</td>
                                         <td>@device.Brand</td>
                                         <td>@device.Color</td>
                                         <td>@device.Name</td>
