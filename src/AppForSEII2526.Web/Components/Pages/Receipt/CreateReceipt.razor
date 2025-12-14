@@ -1,12 +1,15 @@
 @page "/receipts/createreceipt"
 @inject NavigationManager navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @using Microsoft.AspNetCore.Authorization
 @using AppForSEII2526.API.Models
 @using AppForSEII2526.Web.Components.Shared
 @inject AppForSEII2526.Web.API.ISII2526DetonadosAPIClient apiclient
 @inject ILogger<CreateReceipt> logger
 @inject ReceiptStateContainer receiptState
+
 @attribute [Authorize]
+
 <h3>Crear Recibo</h3>
 
 <EditForm Model="receipt" OnValidSubmit="OpenDialog">
@@ -20,8 +23,9 @@
     <div class="row g-3">
         <div class="col-md">
             <div class="form-floating mb-3">
-                <InputText @bind-Value="receipt.UserName" class="form-control" id="UserName" />
+                <InputText @bind-Value="receipt.UserName" class="form-control" id="UserName" disabled />
                 <label for="UserName">Usuario (Email)</label>
+                <small class="form-text text-muted">Información del usuario autenticado</small>
             </div>
         </div>
         <div class="col-md">
@@ -217,7 +221,15 @@
 
         receipt.Name = receipt.Name ?? "";
         receipt.Surname = receipt.Surname ?? "";
-        receipt.UserName = receipt.UserName ?? "";
         receipt.DeliveryAddress = receipt.DeliveryAddress ?? "";
+
+        // Obtener el username del usuario autenticado
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            receipt.UserName = user.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? user.Identity.Name ?? "";
+        }
     }
 }
