@@ -85,11 +85,26 @@ namespace AppForSEII2526.API.Controllers
             var user = await _context.ApplicationUsers
                 .FirstOrDefaultAsync(au => au.UserName == rentalForCreate.CustomerUserName);
 
+            
             if (user == null)
                 ModelState.AddModelError("RentalApplicationUser", "Error! UserName is not registered");
 
             if (ModelState.ErrorCount > 0)
+            {
+                // AÑADE ESTE LOG AQUÍ TAMBIÉN
+                _logger.LogWarning("==== ERRORES DE VALIDACIÓN (Primera verificación) ====");
+                foreach (var error in ModelState)
+                {
+                    foreach (var err in error.Value.Errors)
+                    {
+                        _logger.LogWarning($"Campo: {error.Key} - Error: {err.ErrorMessage}");
+                    }
+                }
+                _logger.LogWarning("================================");
+
                 return BadRequest(new ValidationProblemDetails(ModelState));
+            }
+
 
             // ========== OBTENER LOS IDs DE DISPOSITIVOS ==========
             var deviceIds = rentalForCreate.RentalItems.Select(ri => ri.DeviceId).ToList();
@@ -134,14 +149,21 @@ namespace AppForSEII2526.API.Controllers
             {
                 var device = devices.FirstOrDefault(d => d.Id == item.DeviceId);
 
-                // Verificar que el dispositivo existe y hay cantidad disponible
-                if ((device == null) || (device.NumberOfRentedDevices >= device.QuantityForRent))
+                if (device == null)
                 {
                     ModelState.AddModelError("RentalItems",
-                        $"Error! Device with ID '{item.DeviceId}' is not available for being rented from {rentalForCreate.RentalDateFrom.ToShortDateString()} to {rentalForCreate.RentalDateTo.ToShortDateString()}");
+                        $"Error! Device with ID '{item.DeviceId}' does not exist.");
+                    continue; // ← CLAVE: Salta al siguiente item sin procesar este
                 }
-                else
+                if (device.QuantityForRent < item.DeviceQuantity)
                 {
+                    ModelState.AddModelError("RentalItems",
+                        $"Error! Not enough stock for '{device.Name}'. Available: {device.QuantityForRent}, Requested: {item.DeviceQuantity}");
+                    continue; // ← No procesar este dispositivo
+                }
+                
+                
+                
                     // Agregar RentDevice
                     rental.RentDevices.Add(new RentDevice
                     {
@@ -151,7 +173,14 @@ namespace AppForSEII2526.API.Controllers
                         Quantity = item.DeviceQuantity
                     });
                     item.PriceForRenting = device.PriceForRent;
-                }
+                    // actualizar stock
+                    var deviceEntity = await _context.Devices.FindAsync(device.Id);
+                    if (deviceEntity != null)
+                    {
+                        deviceEntity.QuantityForRent -= item.DeviceQuantity;
+                        _logger.LogInformation($"Stock actualizado para '{deviceEntity.Name}': {deviceEntity.QuantityForRent + item.DeviceQuantity} -> {deviceEntity.QuantityForRent}");
+                    }
+                
             }
 
             rental.TotalPrice = rental.RentDevices.Sum(rd => rd.Price * rd.Quantity * numDays);
@@ -159,7 +188,22 @@ namespace AppForSEII2526.API.Controllers
             // Si hay problemas de disponibilidad
             if (ModelState.ErrorCount > 0)
             {
-                return BadRequest(new ValidationProblemDetails(ModelState));
+                _logger.LogWarning("==== ERRORES DE VALIDACIÓN ====");
+                foreach (var error in ModelState)
+                {
+                    foreach (var err in error.Value.Errors)
+                    {
+                        _logger.LogWarning($"Campo: {error.Key} - Error: {err.ErrorMessage}");
+                    }
+                }
+                _logger.LogWarning("================================");
+
+                // log para  Ver el JSON que se enviará al cliente
+                var validationProblem = new ValidationProblemDetails(ModelState);
+                var json = System.Text.Json.JsonSerializer.Serialize(validationProblem);
+                _logger.LogWarning($"JSON enviado al cliente: {json}");
+
+                return BadRequest(validationProblem);
             }
 
             _context.Add(rental);

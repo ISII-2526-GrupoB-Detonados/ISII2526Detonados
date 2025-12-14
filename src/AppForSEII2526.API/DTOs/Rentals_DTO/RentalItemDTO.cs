@@ -42,8 +42,7 @@
         [Display(Name = "Device Name")]
         public string DeviceName { get; set; }
 
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero")]
+        //quitado
         [Display(Name = "Price for Renting")]
         public double PriceForRenting { get; set; }
 

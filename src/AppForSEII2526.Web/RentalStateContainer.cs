@@ -9,6 +9,8 @@ namespace AppForSEII2526.Web
         // Creamos una instancia de Rental cuando se crea RentalStateContainer
         public RentalForCreateDTO Rental { get; private set; } = new RentalForCreateDTO()
         {
+            RentalDateFrom = DateTime.Today.AddDays(1),      // ← AÑADE ESTO: Mañana
+            RentalDateTo = DateTime.Today.AddDays(8),        // ← AÑADE ESTO: En una semana
             RentalItems = new List<RentalItemDTO>()
         };
 

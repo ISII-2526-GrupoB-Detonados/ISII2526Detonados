@@ -2,7 +2,7 @@
 
 @using AppForSEII2526.Web.API
 @using Microsoft.AspNetCore.Authorization
-
+@attribute [Authorize]
 @inject ISII2526DetonadosAPIClient apiclient
 @inject ILogger<Select4RentalDevices> logger
 @inject RentalStateContainer rentalState
@@ -90,22 +90,44 @@
             </div>
         </div>
 
-        <div class="col-2" hidden="@hideRentingCart">
+        <div class="col-4" hidden="@hideRentingCart">
             <h3>Shopping Cart</h3>
+
+            <!-- Flujo alternativo 3: Mostrar precio total actualizado dinámicamente -->
+            <div class="alert alert-info mb-3">
+                <strong>Total: @rental.TotalPrice.ToString("F2") €</strong>
+                <br />
+                <small>@rental.RentalItems.Count device(s) selected</small>
+            </div>
 
             @foreach (RentalItemDTO item in rental.RentalItems)
             {
-                <div class="row">
-                    <button type="button" class="btn btn-light"
-                            @onclick="@(() => RemoveRentalItem(item))">
-                        x @item.DeviceName - @item.PriceForRenting€
-                    </button>
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body p-2">
+                                <button type="button" class="btn btn-sm btn-danger float-end"
+                                        @onclick="@(() => RemoveRentalItem(item))"
+                                        title="Remove from cart">
+                                    &times;
+                                </button>
+                                <strong>@item.DeviceName</strong>
+                                <br />
+                                <small>@item.DeviceModel</small>
+                                <br />
+                                <span class="text-primary">@item.PriceForRenting.ToString("F2")€</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
 
-            <div class="row mt-2">
-                <button type="button" class="btn btn-primary" @onclick="RentDevices">
-                    Rent devices
+            <!-- Flujo alternativo 4: Botón deshabilitado si no hay dispositivos -->
+            <div class="row mt-3">
+                <button type="button" class="btn btn-primary"
+                        @onclick="RentDevices"
+                        disabled="@(!HasDevicesInCart)">
+                    Rent devices (@rental.RentalItems.Count)
                 </button>
             </div>
         </div>
@@ -115,7 +137,7 @@
 @code {
     private ICollection<DeviceDTOAlquilar>? devices;
     private string errors = "";
-    private string modelSelected = "All";   // ← CORREGIDO: valor por defecto
+    private string modelSelected = "All";
     private int? priceForRent { get; set; }
     private ICollection<string>? modelsNames = new List<string>();
 
@@ -125,11 +147,14 @@
     private RentalForCreateDTO rental => rentalState.Rental;
     private bool hideRentingCart => rental.RentalItems.Count == 0;
 
+    // Flujo alternativo 4: Propiedad para verificar si hay dispositivos
+    private bool HasDevicesInCart => rental.RentalItems != null && rental.RentalItems.Count > 0;
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            modelsNames = await apiclient.GetModelsAsync(null);//devolver collection string
+            modelsNames = await apiclient.GetModelsAsync(null);
         }
         catch (ApiException ex)
         {
@@ -137,7 +162,6 @@
             errors = $"Error loading models: {ex.StatusCode}";
             return;
         }
-
 
         try
         {
@@ -148,24 +172,39 @@
             logger.LogError("Error GetDevicesAsync: " + ex);
             errors = "Error loading devices.";
         }
+
+        // Suscribirse a cambios del estado para actualizar la UI automáticamente
+        rentalState.OnChange += StateHasChanged;
+
+        logger.LogInformation($"Página cargada. Dispositivos en carrito: {rental.RentalItems.Count}");
     }
 
-    
+    // Liberar suscripción cuando el componente se destruya
+    public void Dispose()
+    {
+        rentalState.OnChange -= StateHasChanged;
+    }
 
     private void AddDevice(DeviceDTOAlquilar device)
     {
-        
         rentalState.AddDeviceToRental(device);
+        logger.LogInformation($"Dispositivo añadido: {device.Name}. Total en carrito: {rental.RentalItems.Count}");
     }
 
+    // Flujo alternativo 3: Al eliminar, el precio se actualiza automáticamente
     private void RemoveRentalItem(RentalItemDTO item)
     {
         rentalState.RemoveRentalItemToRent(item);
+        logger.LogInformation($"Dispositivo eliminado: {item.DeviceName}. Total en carrito: {rental.RentalItems.Count}");
     }
 
     private void RentDevices()
     {
-        navigation.NavigateTo("/rentals/createrental");
+        if (HasDevicesInCart)
+        {
+            logger.LogInformation($"Navegando a crear rental con {rental.RentalItems.Count} dispositivos");
+            navigation.NavigateTo("/rentals/createrental");
+        }
     }
 
     public async void SearchDevices()
@@ -175,6 +214,7 @@
             string deviceModel = (modelSelected == "All") ? null : modelSelected;
 
             devices = await apiclient.GetDevicesAsync(deviceModel, priceForRent);
+            logger.LogInformation($"Búsqueda completada. Dispositivos encontrados: {devices?.Count ?? 0}");
         }
         catch (ApiException ex)
         {

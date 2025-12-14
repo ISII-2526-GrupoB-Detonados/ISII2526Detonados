@@ -9,7 +9,8 @@ VALUES (N'user-002', N'Lopes', N'Patrik', N'patrik.lopes@email.com', N'PATRIK.LO
 INSERT INTO [dbo].[AspNetUsers] ([Id], [Surname], [Name], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) 
 VALUES (N'user-003', N'Jara', N'Alejandro', N'alejandro.jara@email.com', N'ALEJANDRO.JARA@EMAIL.COM', N'alejandro.jara@email.com', N'ALEJANDRO.JARA@EMAIL.COM', 1, N'AQAAAAIAAYagAAAAEGJlFzgvI3GjBm0sYvMaQwzYb8aU5k59/G2J4K5XVkxPmxbKVt7sM01O6+mktdy8Fg==', N'BE2980C9-97EC-4951-9E27-795F1291FD9D', N'FEAE93AF-0400-4946-B7FA-E19C5D2F649B', N'+34600333444', 1, 0, NULL, 1, 0)
 
------------------------------------
+----------------------------------- hascode contrase帽a AQAAAAIAAYagAAAAEGJlFzgvI3GjBm0sYvMaQwzYb8aU5k59/G2J4K5XVkxPmxbKVt7sM01O6+mktdy8Fg==   equivale  a Password123!
+
 -- Patrik
 
 -- Scales 
@@ -23,21 +24,21 @@ SET IDENTITY_INSERT [dbo].[Scales] OFF
 
 -- Repairs
 SET IDENTITY_INSERT [dbo].[Repairs] ON
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (1, N'Reemplazo del sensor de pesaje averiado', 85.5, N'Reparaci髇 de sensor', 1)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (2, N'Ajuste de calibraci髇 por desviaci髇 m韓ima detectada', 45, N'Calibraci髇 de precisi髇', 2)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (3, N'Sustituci髇 de pantalla LCD da馻da', 120, N'Reparaci髇 de pantalla', 3)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (4, N'Reparaci髇 de cableado interno oxidado por humedad', 60, N'Reparaci髇 el閏trica', 1)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (5, N'Reemplazo del m骴ulo principal de lectura y prueba completa', 95.75, N'Reparaci髇 de m骴ulo principal', 4)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (6, N'Limpieza interna y revisi髇 de conectores', 35.5, N'Mantenimiento preventivo', 2)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (7, N'Actualizaci髇 del firmware de control interno', 110, N'Actualizaci髇 de software', 5)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (8, N'Revisi髇 y cambio de teclado da馻do por uso prolongado', 50, N'Reparaci髇 de teclado', 3)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (9, N'Reemplazo de celda de carga averiada', 80.25, N'Reparaci髇 de celda de carga', 4)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (10, N'Correcci髇 de lecturas err髇eas causadas por interferencia el閏trica', 70, N'Reparaci髇 de lectura', 1)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (11, N'Reemplazo de bater韆 interna y prueba de autonom韆', 40, N'Mantenimiento de bater韆', 2)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (12, N'Ajuste del sistema de pesaje tras golpe mec醤ico', 55.5, N'Reparaci髇 de alineaci髇', 3)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (13, N'Sustituci髇 del puerto de conexi髇 USB da馻do', 65, N'Reparaci髇 de puerto', 4)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (14, N'Lubricaci髇 y ajuste de piezas m髒iles', 30, N'Mantenimiento mec醤ico', 5)
-INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (15, N'Comprobaci髇 de estabilidad y recableado parcial', 75, N'Revisi髇 estructural', 1)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (1, N'Reemplazo del sensor de pesaje averiado', 85.5, N'Reparaci贸n de sensor', 1)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (2, N'Ajuste de calibraci贸n por desviaci贸n m铆nima detectada', 45, N'Calibraci贸n de precisi贸n', 2)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (3, N'Sustituci贸n de pantalla LCD da帽ada', 120, N'Reparaci贸n de pantalla', 3)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (4, N'Reparaci贸n de cableado interno oxidado por humedad', 60, N'Reparaci贸n el茅ctrica', 1)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (5, N'Reemplazo del m贸dulo principal de lectura y prueba completa', 95.75, N'Reparaci贸n de m贸dulo principal', 4)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (6, N'Limpieza interna y revisi贸n de conectores', 35.5, N'Mantenimiento preventivo', 2)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (7, N'Actualizaci贸n del firmware de control interno', 110, N'Actualizaci贸n de software', 5)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (8, N'Revisi贸n y cambio de teclado da帽ado por uso prolongado', 50, N'Reparaci贸n de teclado', 3)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (9, N'Reemplazo de celda de carga averiada', 80.25, N'Reparaci贸n de celda de carga', 4)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (10, N'Correcci贸n de lecturas err贸neas causadas por interferencia el茅ctrica', 70, N'Reparaci贸n de lectura', 1)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (11, N'Reemplazo de bater铆a interna y prueba de autonom铆a', 40, N'Mantenimiento de bater铆a', 2)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (12, N'Ajuste del sistema de pesaje tras golpe mec谩nico', 55.5, N'Reparaci贸n de alineaci贸n', 3)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (13, N'Sustituci贸n del puerto de conexi贸n USB da帽ado', 65, N'Reparaci贸n de puerto', 4)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (14, N'Lubricaci贸n y ajuste de piezas m贸viles', 30, N'Mantenimiento mec谩nico', 5)
+INSERT INTO [dbo].[Repairs] ([Id], [Description], [Cost], [Name], [ScaleId]) VALUES (15, N'Comprobaci贸n de estabilidad y recableado parcial', 75, N'Revisi贸n estructural', 1)
 SET IDENTITY_INSERT [dbo].[Repairs] OFF
 
 -- Receipts
@@ -102,11 +103,11 @@ INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [Applicat
 INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (7, N'Avenida Chad 25, Albacete', 0, N'user-001', N'2025-04-12 10:30:00', N'2025-04-13 00:00:00', N'2025-04-19 00:00:00', 1530)
 INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (10, N'Avenida Chad 25, Albacete', 0, N'user-001', N'2025-01-10 08:45:00', N'2025-01-11 00:00:00', N'2025-01-15 00:00:00', 920)
 
--- Alquileres de Patrik (user-002) - Calle Brasile駉 Edgy
-INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (2, N'Calle Brasile駉 Edgy 15, Madrid', 1, N'user-002', N'2025-09-15 11:30:00', N'2025-09-16 00:00:00', N'2025-09-20 00:00:00', 440)
-INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (5, N'Calle Brasile駉 Edgy 15, Madrid', 0, N'user-002', N'2025-06-10 16:45:00', N'2025-06-12 00:00:00', N'2025-07-17 00:00:00', 4900)
-INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (8, N'Calle Brasile駉 Edgy 15, Madrid', 2, N'user-002', N'2025-03-01 12:00:00', N'2025-03-02 00:00:00', N'2025-03-06 00:00:00', 540)
-INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (12, N'Calle Brasile駉 Edgy 15, Madrid', 0, N'user-002', N'2025-10-31 13:02:56', N'2025-11-05 00:00:00', N'2025-11-10 00:00:00', 250)
+-- Alquileres de Patrik (user-002) - Calle Brasile帽o Edgy
+INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (2, N'Calle Brasile帽o Edgy 15, Madrid', 1, N'user-002', N'2025-09-15 11:30:00', N'2025-09-16 00:00:00', N'2025-09-20 00:00:00', 440)
+INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (5, N'Calle Brasile帽o Edgy 15, Madrid', 0, N'user-002', N'2025-06-10 16:45:00', N'2025-06-12 00:00:00', N'2025-07-17 00:00:00', 4900)
+INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (8, N'Calle Brasile帽o Edgy 15, Madrid', 2, N'user-002', N'2025-03-01 12:00:00', N'2025-03-02 00:00:00', N'2025-03-06 00:00:00', 540)
+INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (12, N'Calle Brasile帽o Edgy 15, Madrid', 0, N'user-002', N'2025-10-31 13:02:56', N'2025-11-05 00:00:00', N'2025-11-10 00:00:00', 250)
 
 -- Alquileres de Alejandro (user-003) - Calle Femboys
 INSERT INTO [dbo].[Rentals] ([Id], [DeliveryAddress], [PaymentMethod], [ApplicationUserId], [RentalDate], [RentalDateFrom], [RentalDateTo], [TotalPrice]) VALUES (3, N'Calle Femboys 8, Barcelona', 0, N'user-003', N'2025-08-20 14:20:00', N'2025-08-22 00:00:00', N'2025-08-30 00:00:00', 960)
@@ -136,8 +137,8 @@ INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [Pa
 INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (2, N'user-002', N'Av. Diagonal 300, Barcelona', 2, N'2025-02-03 11:25:00', 1199.989990234375, 1)
 INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (3, N'user-003', N'C/ Feria 12, Sevilla', 0, N'2025-02-04 09:45:00', 1799.97998046875, 2)
 INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (4, N'user-001', N'Avenida del Puerto 10, Valencia', 1, N'2025-02-05 14:15:00', 849.989990234375, 1)
-INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (5, N'user-002', N'C/ Gran V韆 100, Madrid', 3, N'2025-02-06 17:40:00', 999.989990234375, 1)
-INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (6, N'user-003', N'Paseo del R韔 44, M醠aga', 2, N'2025-02-07 12:30:00', 1699.97998046875, 2)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (5, N'user-002', N'C/ Gran V铆a 100, Madrid', 3, N'2025-02-06 17:40:00', 999.989990234375, 1)
+INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (6, N'user-003', N'Paseo del R铆o 44, M谩laga', 2, N'2025-02-07 12:30:00', 1699.97998046875, 2)
 INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (7, N'user-001', N'C/ Serrano 61, Madrid', 1, N'2025-02-08 19:55:00', 599.989990234375, 1)
 INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (8, N'user-002', N'C/ Toledo 18, Toledo', 0, N'2025-02-09 13:00:00', 949.989990234375, 1)
 INSERT INTO [dbo].[Purchases] ([Id], [ApplicationUserId], [DeliveryAddress], [PaymentMethod], [PurchaseDate], [TotalPrice], [TotalQuantity]) VALUES (9, N'user-003', N'C/ Huertas 7, Sevilla', 1, N'2025-02-10 08:20:00', 3899.969970703125, 3)

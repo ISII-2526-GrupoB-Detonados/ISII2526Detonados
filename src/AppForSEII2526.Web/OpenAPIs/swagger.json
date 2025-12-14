@@ -1214,8 +1214,7 @@
           "deviceId",
           "deviceModel",
           "deviceName",
-          "deviceQuantity",
-          "priceForRenting"
+          "deviceQuantity"
         ],
         "type": "object",
         "properties": {
@@ -1244,7 +1243,6 @@
             "type": "string"
           },
           "priceForRenting": {
-            "minimum": 0.01,
             "type": "number",
             "format": "double"
           }
