@@ -50,7 +50,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
         }
 
         /// <summary>
-        /// Rellena solo el campo de nombre con disparó de evento blur
+        /// Rellena solo el campo de nombre con disparo de evento blur
         /// </summary>
         public void FillNameField(string nombre)
         {
@@ -115,6 +115,61 @@ namespace AppForSEII2526.UIT.CU_Receipt
             
             // Disparar evento blur
             DispatchBlurEvent(addressField);
+        }
+
+        /// <summary>
+        /// Rellena el campo de modelo para una reparación específica en la tabla
+        /// </summary>
+        public void FillModelField(string repairName, string model)
+        {
+            try
+            {
+                // Buscar la fila de la reparación por su id
+                By rowBy = By.Id($"RepairData_{repairName}");
+                WaitForBeingVisible(rowBy);
+                IWebElement row = _driver.FindElement(rowBy);
+
+                // Dentro de la fila, buscar el input de modelo (debe ser el tercer td con un input)
+                var inputs = row.FindElements(By.TagName("input"));
+                if (inputs.Count > 0)
+                {
+                    IWebElement modelInput = inputs[0]; // El primer input debe ser el de modelo
+                    modelInput.Clear();
+                    Thread.Sleep(100);
+                    modelInput.SendKeys(model);
+                    Thread.Sleep(100);
+                    DispatchBlurEvent(modelInput);
+                    Thread.Sleep(200);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new NoSuchElementException($"No se pudo rellenar el campo de modelo para la reparación '{repairName}'", ex);
+            }
+        }
+
+        /// <summary>
+        /// Obtiene el valor del campo de modelo para una reparación específica
+        /// </summary>
+        public string GetModelFieldValue(string repairName)
+        {
+            try
+            {
+                By rowBy = By.Id($"RepairData_{repairName}");
+                WaitForBeingVisible(rowBy);
+                IWebElement row = _driver.FindElement(rowBy);
+
+                var inputs = row.FindElements(By.TagName("input"));
+                if (inputs.Count > 0)
+                {
+                    return inputs[0].GetAttribute("value");
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         /// <summary>

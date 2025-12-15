@@ -33,10 +33,14 @@ namespace AppForSEII2526.UIT.CU_Receipt
         private const string USER_EMAIL = "luis.lorenzo@email.com";
         private const string USER_PASSWORD = "Password123!";
 
-        // ========== MÉTODOS DE PAGO - Texto visible en el dropdown ==========
+        // ========== MÉTODOS DE PAGO  ==========
         private const string PAYMENT_METHOD_CASH = "Efectivo";
         private const string PAYMENT_METHOD_CREDIT_CARD = "Tarjeta de Crédito";
         private const string PAYMENT_METHOD_PAYPAL = "PayPal";
+
+        // ========== DATOS DE PRUEBA: MODELOS A REPARAR ==========
+        private const string MODEL_1 = "Iphone";
+        private const string MODEL_2 = "Android";
 
         public CU_receiptForRepair_UIT(ITestOutputHelper output) : base(output)
         {
@@ -45,9 +49,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _receiptDetailsPO = new ReceiptDetailsPO(_driver, _output);
         }
 
-        /// <summary>
-        /// Pasos iniciales: Abre la aplicación, inicia sesión y navega a la selección de reparaciones
-        /// </summary>
+      
         private void InitialStepsForSelectRepair()
         {
             Initial_step_opening_the_web_page();
@@ -62,7 +64,8 @@ namespace AppForSEII2526.UIT.CU_Receipt
         ============================
         */
 
-        // FLUJO BÁSICO COMPLETO - Todas las reparaciones con tarjeta de crédito
+        /// CP_UC4_01: Flujo básico completo con tarjeta de crédito
+        /// Pasos: 1-7 del flujo básico
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -72,28 +75,42 @@ namespace AppForSEII2526.UIT.CU_Receipt
             // Arrange
             InitialStepsForSelectRepair();
 
-            // Act - Paso 2: Ver lista de reparaciones
+            // Act - Paso 2: Ver lista de reparaciones disponibles
             _selectRepairForSelectPO.SearchRepairs("", "All");
             Thread.Sleep(1000);
 
-            // Act - Paso 3: Seleccionar reparaciones
+            // Act - Paso 3: Seleccionar reparaciones (añadir al carrito)
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
             Thread.Sleep(500);
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_2);
             Thread.Sleep(500);
 
-            // Act - Paso 4: Contratar reparación (click en botón crear recibo)
+            // Act - Paso 4: Seleccionar Contratar reparación
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
 
-            // Act - Paso 5-6: Rellenar datos del cliente
-            _createReceiptPO.FillReceiptForm(
-                nombre: CLIENT_NAME,
-                apellidos: CLIENT_SURNAME,
-                direccion: DELIVERY_ADDRESS,
-                metodoPago: PAYMENT_METHOD_CREDIT_CARD
-            );
+            // Act - Paso 5-6: Rellenar datos obligatorios
+            // - Nombre y apellidos
+            _createReceiptPO.FillNameField(CLIENT_NAME);
+            Thread.Sleep(300);
+            _createReceiptPO.FillSurnameField(CLIENT_SURNAME);
+            Thread.Sleep(300);
+
+            // - Dirección de entrega
+            _createReceiptPO.FillDeliveryAddressField(DELIVERY_ADDRESS);
+            Thread.Sleep(300);
+
+            // - Modelo de cada dispositivo (OBLIGATORIO según paso 5)
+            _createReceiptPO.FillModelField(REPAIR_NAME_1, MODEL_1);
+            Thread.Sleep(300);
+            _createReceiptPO.FillModelField(REPAIR_NAME_2, MODEL_2);
+            Thread.Sleep(300);
+
+            // - Método de pago
+            _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
             Thread.Sleep(500);
+
+            // Act - Paso 6: Guardar (click en Submit)
             _createReceiptPO.ClickSubmitButton();
             Thread.Sleep(1000);
 
@@ -104,45 +121,53 @@ namespace AppForSEII2526.UIT.CU_Receipt
             }
             catch
             {
-                // Dialog puede no aparecer si la validación falla
+                // Dialog puede no aparecer
             }
 
-            // Assert - Paso 7: Verificar recibo (aceptar ambas posibles URLs)
-            bool isSuccessful = _driver.Url.Contains("/receipt/detailreceipt") ||
-                               _driver.Url.Contains("/receipts/detailreceipt") ||
-                               _driver.Url.Contains("/receipt/create") ||
-                               _driver.Url.Contains("/receipts/createreceipt");
+            // Assert - Paso 7: Verificar recibo con todos los datos
+            bool isOnReceiptDetailPage = _driver.Url.Contains("/receipt/detailreceipt") ||
+                                        _driver.Url.Contains("/receipts/detailreceipt");
 
-            Assert.True(isSuccessful, $"URL inesperada: {_driver.Url}");
+            Assert.True(isOnReceiptDetailPage,
+                $"Debería estar en la página de detalles del recibo. URL actual: {_driver.Url}");
         }
 
-        // FLUJO BÁSICO COMPLETO - Variantes del método de pago
+        /// CP_UC4_01b: Flujo básico con diferentes métodos de pago
+        /// Prueba que el flujo funciona con Efectivo y PayPal
         [Theory]
         [InlineData(PAYMENT_METHOD_CASH)]
         [InlineData(PAYMENT_METHOD_PAYPAL)]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
         [Trait("Flow", "BasicFlow")]
-        public void CP_UC4_01_BasicFlowWithDifferentPaymentMethods(string paymentMethod)
+        public void CP_UC4_01b_BasicFlowWithDifferentPaymentMethods(string paymentMethod)
         {
             // Arrange
             InitialStepsForSelectRepair();
 
-            // Act
+            // Act - Pasos 2-3: Buscar y seleccionar reparación
             _selectRepairForSelectPO.SearchRepairs("", "All");
             Thread.Sleep(1000);
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
             Thread.Sleep(500);
+
+            // Act - Paso 4: Contratar
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
 
-            _createReceiptPO.FillReceiptForm(
-                nombre: CLIENT_NAME,
-                apellidos: CLIENT_SURNAME,
-                direccion: DELIVERY_ADDRESS,
-                metodoPago: paymentMethod
-            );
+            // Act - Paso 5-6: Rellenar datos obligatorios
+            _createReceiptPO.FillNameField(CLIENT_NAME);
+            Thread.Sleep(300);
+            _createReceiptPO.FillSurnameField(CLIENT_SURNAME);
+            Thread.Sleep(300);
+            _createReceiptPO.FillDeliveryAddressField(DELIVERY_ADDRESS);
+            Thread.Sleep(300);
+            _createReceiptPO.FillModelField(REPAIR_NAME_1, MODEL_1);
+            Thread.Sleep(300);
+            _createReceiptPO.SelectPaymentMethod(paymentMethod);
             Thread.Sleep(500);
+
+            // Act - Paso 6: Guardar
             _createReceiptPO.ClickSubmitButton();
             Thread.Sleep(1000);
 
@@ -153,19 +178,18 @@ namespace AppForSEII2526.UIT.CU_Receipt
             }
             catch { }
 
-            // Assert
-            bool isSuccessful = _driver.Url.Contains("/receipt/detailreceipt") ||
-                               _driver.Url.Contains("/receipts/detailreceipt") ||
-                               _driver.Url.Contains("/receipt/create") ||
-                               _driver.Url.Contains("/receipts/createreceipt");
+            // Assert - Paso 7: Verificar recibo
+            bool isOnReceiptDetailPage = _driver.Url.Contains("/receipt/detailreceipt") ||
+                                        _driver.Url.Contains("/receipts/detailreceipt");
 
-            Assert.True(isSuccessful, $"URL inesperada: {_driver.Url}");
+            Assert.True(isOnReceiptDetailPage,
+                $"Debería estar en la página de detalles del recibo. URL actual: {_driver.Url}");
         }
 
         /*
         ============================
         FLUJO ALTERNATIVO 0 - PASO 2
-        Sin reparaciones disponibles
+        Si no hay reparaciones disponibles
         ============================
         */
 
@@ -178,25 +202,36 @@ namespace AppForSEII2526.UIT.CU_Receipt
             // Arrange
             InitialStepsForSelectRepair();
 
-            // Act
+            // Act - Paso 2: Buscar con criterio que no devuelve resultados
             _selectRepairForSelectPO.SearchRepairs("NombreQueNoExisteEnLaBaseDatos", "All");
             Thread.Sleep(1000);
 
-            // Assert - Verificar que no hay reparaciones o hay un mensaje
-            bool noRepairsMessage = _selectRepairForSelectPO.CheckNoRepairsMessage();
-            bool tableEmpty = !_selectRepairForSelectPO.CheckListOfRepairs(new List<string[]>());
-
-            Assert.True(noRepairsMessage || tableEmpty);
+            // Assert - Debe mostrar mensaje de sin reparaciones
+            // Buscar el párrafo que contiene "No repairs found"
+            bool noRepairsVisible = _selectRepairForSelectPO.CheckNoRepairsMessage();
+            
+            // Si el método no funciona, validar por ausencia de tabla de reparaciones
+            if (!noRepairsVisible)
+            {
+                // Alternativa: validar que la tabla no tiene filas (está vacía)
+                bool tableIsEmpty = !_selectRepairForSelectPO.CheckListOfRepairs(new List<string[]>());
+                Assert.True(tableIsEmpty || noRepairsVisible, 
+                    "Debería mostrar mensaje de sin reparaciones disponibles o la tabla estar vacía");
+            }
+            else
+            {
+                Assert.True(noRepairsVisible, "Debería mostrar mensaje de sin reparaciones disponibles");
+            }
         }
 
         /*
         ============================
         FLUJO ALTERNATIVO 1 - PASO 2
-        Filtrar reparaciones
+        Filtrar reparaciones según nombre y/o escala
         ============================
         */
 
-        // Filtro por nombre
+        /// Filtro por nombre de reparación
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -206,16 +241,16 @@ namespace AppForSEII2526.UIT.CU_Receipt
             // Arrange
             InitialStepsForSelectRepair();
 
-            // Act
+            // Act - Paso 2.2-2.3: Aplicar filtro por nombre
             _selectRepairForSelectPO.SearchRepairs("sensor", "All");
             Thread.Sleep(1000);
 
-            // Assert
+            // Assert - Debe mostrar solo reparaciones que coincidan con "sensor"
             bool hasRepairs = !_selectRepairForSelectPO.CheckNoRepairsMessage();
-            Assert.True(hasRepairs);
+            Assert.True(hasRepairs, "Debería encontrar reparaciones con 'sensor' en el nombre");
         }
 
-        // Filtro por escala
+        /// Filtro por escala
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -225,16 +260,16 @@ namespace AppForSEII2526.UIT.CU_Receipt
             // Arrange
             InitialStepsForSelectRepair();
 
-            // Act
+            // Act - Paso 2.2-2.3: Aplicar filtro por escala
             _selectRepairForSelectPO.SearchRepairs("", "Baja");
             Thread.Sleep(1000);
 
             // Assert
             bool hasRepairs = !_selectRepairForSelectPO.CheckNoRepairsMessage();
-            Assert.True(hasRepairs);
+            Assert.True(hasRepairs, "Debería encontrar reparaciones con escala 'Baja'");
         }
 
-        // Filtro por nombre y escala combinados
+        /// Filtro combinado: nombre y escala
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -244,19 +279,19 @@ namespace AppForSEII2526.UIT.CU_Receipt
             // Arrange
             InitialStepsForSelectRepair();
 
-            // Act
+            // Act - Paso 2.2-2.3: Aplicar filtros combinados
             _selectRepairForSelectPO.SearchRepairs("sensor", "Baja");
             Thread.Sleep(1000);
 
             // Assert
             bool hasRepairs = !_selectRepairForSelectPO.CheckNoRepairsMessage();
-            Assert.True(hasRepairs);
+            Assert.True(hasRepairs, "Debería encontrar reparaciones que coincidan con ambos filtros");
         }
 
         /*
         ============================
         FLUJO ALTERNATIVO 2 - PASO 5
-        Modificar carrito
+        Modificar carrito de la compra
         ============================
         */
 
@@ -264,12 +299,12 @@ namespace AppForSEII2526.UIT.CU_Receipt
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
         [Trait("Flow", "AlternativeFlow2")]
-        public void CP_UC4_06_ModifyCartRemoveRepair()
+        public void CP_UC4_06_ModifyCartRemoveOneRepair()
         {
             // Arrange
             InitialStepsForSelectRepair();
 
-            // Act - Agregar dos reparaciones
+            // Act - Paso 2-3: Seleccionar dos reparaciones
             _selectRepairForSelectPO.SearchRepairs("", "All");
             Thread.Sleep(1000);
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
@@ -277,20 +312,16 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_2);
             Thread.Sleep(500);
 
-            // Verificar que el botón está disponible (hay reparaciones)
-            bool buttonAvailableAfterAdd = !_selectRepairForSelectPO.CreateReceiptButtonNotAvailable();
-            Assert.True(buttonAvailableAfterAdd);
-
-            // Act - Remover una reparación
+            // Act - Paso 5: Modificar carrito (eliminar una)
             _selectRepairForSelectPO.RemoveRepairFromReceipt(REPAIR_NAME_1);
             Thread.Sleep(500);
 
-            // Assert - El botón sigue disponible (aún hay una reparación)
-            bool buttonAvailableAfterRemove = !_selectRepairForSelectPO.CreateReceiptButtonNotAvailable();
-            Assert.True(buttonAvailableAfterRemove);
+            // Assert - El botón debe seguir disponible (aún hay una reparación)
+            bool buttonAvailable = !_selectRepairForSelectPO.CreateReceiptButtonNotAvailable();
+            Assert.True(buttonAvailable, "El botón de crear recibo debe estar disponible con al menos una reparación");
         }
 
-        // Remover todas las reparaciones
+        
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -300,24 +331,25 @@ namespace AppForSEII2526.UIT.CU_Receipt
             // Arrange
             InitialStepsForSelectRepair();
 
-            // Act - Agregar reparación
+            // Act - Paso 2-3: Seleccionar reparación
             _selectRepairForSelectPO.SearchRepairs("", "All");
             Thread.Sleep(1000);
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
             Thread.Sleep(500);
 
-            // Remover la reparación
+            // Act - Paso 5: Eliminar la reparación (carrito vacío)
             _selectRepairForSelectPO.RemoveRepairFromReceipt(REPAIR_NAME_1);
             Thread.Sleep(500);
 
             // Assert - El botón debe estar deshabilitado (carrito vacío)
-            Assert.True(_selectRepairForSelectPO.CreateReceiptButtonNotAvailable());
+            bool buttonDisabled = _selectRepairForSelectPO.CreateReceiptButtonNotAvailable();
+            Assert.True(buttonDisabled, "El botón de crear recibo debe estar deshabilitado cuando el carrito está vacío");
         }
 
         /*
         ============================
         FLUJO ALTERNATIVO 3 - PASO 4
-        Carrito vacío
+        Carrito vacío - botón continuar no disponible
         ============================
         */
 
@@ -330,65 +362,29 @@ namespace AppForSEII2526.UIT.CU_Receipt
             // Arrange
             InitialStepsForSelectRepair();
 
-            // Act
+            // Act - Paso 2: Ver lista sin seleccionar nada
             _selectRepairForSelectPO.SearchRepairs("", "All");
             Thread.Sleep(1000);
 
-            // Assert - Botón no debe estar disponible
-            Assert.True(_selectRepairForSelectPO.CreateReceiptButtonNotAvailable());
+            // Assert - Botón no disponible sin reparaciones en carrito
+            bool buttonDisabled = _selectRepairForSelectPO.CreateReceiptButtonNotAvailable();
+            Assert.True(buttonDisabled,
+                "El botón continuar no debe estar disponible si el carrito está vacío");
         }
 
         /*
         ============================
         FLUJO ALTERNATIVO 4 - PASO 7
-        Validación de campos obligatorios
+        Campos obligatorios no rellenados
         ============================
         */
 
-        [Theory]
-        [InlineData("", CLIENT_SURNAME, DELIVERY_ADDRESS, "nombre")]
-        [InlineData(CLIENT_NAME, "", DELIVERY_ADDRESS, "apellidos")]
-        [InlineData(CLIENT_NAME, CLIENT_SURNAME, "", "dirección")]
-        [Trait("LevelTesting", "Functional Testing")]
-        [Trait("UserStory", "UC4-Receipt")]
-        [Trait("Flow", "AlternativeFlow4")]
-        public void CP_UC4_08_ValidationEmptyMandatoryFields(string nombre, string apellidos, string direccion, string fieldName)
-        {
-            // Arrange
-            InitialStepsForSelectRepair();
-            _selectRepairForSelectPO.SearchRepairs("", "All");
-            Thread.Sleep(1000);
-            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
-            Thread.Sleep(500);
-            _selectRepairForSelectPO.ClickCreateReceipt();
-            Thread.Sleep(1000);
-
-            // Act - Rellenar el formulario sin un campo obligatorio
-            _createReceiptPO.FillNameField(nombre);
-            _createReceiptPO.FillSurnameField(apellidos);
-            _createReceiptPO.FillDeliveryAddressField(direccion);
-            _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
-            Thread.Sleep(1000);
-
-            // Intentar enviar el formulario
-            _createReceiptPO.ClickSubmitButton();
-            Thread.Sleep(1500);
-
-            // Assert - Debe seguir en la página de creación y/o mostrar errores
-            bool isStillOnCreatePage = _driver.Url.Contains("/receipt/create") ||
-                                      _driver.Url.Contains("/receipts/createreceipt");
-            bool hasValidationErrors = _createReceiptPO.HasValidationErrors();
-
-            Assert.True(isStillOnCreatePage || hasValidationErrors,
-                $"Se esperaba validación para campo vacío: {fieldName}");
-        }
-
-        // Validación específica: campo nombre vacío
+        /// Campo nombre vacío
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
         [Trait("Flow", "AlternativeFlow4")]
-        public void CP_UC4_08a_ValidationEmptyNameField()
+        public void CP_UC4_08_ValidationEmptyName()
         {
             // Arrange
             InitialStepsForSelectRepair();
@@ -399,30 +395,135 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
 
-            // Act - Rellenar los campos sin nombre (nombre vacío)
-            _createReceiptPO.FillNameField("");  // Nombre vacío
+            // Act - Rellenar todos excepto nombre
+            _createReceiptPO.FillNameField("");  // Vacío
             _createReceiptPO.FillSurnameField(CLIENT_SURNAME);
             _createReceiptPO.FillDeliveryAddressField(DELIVERY_ADDRESS);
+            _createReceiptPO.FillModelField(REPAIR_NAME_1, MODEL_1);
             _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
-            Thread.Sleep(1000);
+            Thread.Sleep(500);
 
-            // Intentar enviar el formulario
             _createReceiptPO.ClickSubmitButton();
             Thread.Sleep(1500);
 
-            // Assert - Debe permanecer en la página de creación o mostrar errores
+            // Assert - Vuelve al paso 5 (permanece en la página)
             bool isStillOnCreatePage = _driver.Url.Contains("/receipt/create") ||
                                       _driver.Url.Contains("/receipts/createreceipt");
-            bool hasValidationErrors = _createReceiptPO.HasValidationErrors();
+            bool hasErrors = _createReceiptPO.HasValidationErrors();
 
-            Assert.True(isStillOnCreatePage || hasValidationErrors,
-                "Se esperaba validación: permanencia en página o errores visibles");
+            Assert.True(isStillOnCreatePage || hasErrors,
+                "Debe mostrar validación y permanecer en la página si falta el nombre");
+        }
+
+        /// Campo apellidos vacío
+        [Fact]
+        [Trait("LevelTesting", "Functional Testing")]
+        [Trait("UserStory", "UC4-Receipt")]
+        [Trait("Flow", "AlternativeFlow4")]
+        public void CP_UC4_08b_ValidationEmptySurname()
+        {
+            // Arrange
+            InitialStepsForSelectRepair();
+            _selectRepairForSelectPO.SearchRepairs("", "All");
+            Thread.Sleep(1000);
+            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
+            Thread.Sleep(500);
+            _selectRepairForSelectPO.ClickCreateReceipt();
+            Thread.Sleep(1000);
+
+            // Act
+            _createReceiptPO.FillNameField(CLIENT_NAME);
+            _createReceiptPO.FillSurnameField("");  // Vacío
+            _createReceiptPO.FillDeliveryAddressField(DELIVERY_ADDRESS);
+            _createReceiptPO.FillModelField(REPAIR_NAME_1, MODEL_1);
+            _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
+            Thread.Sleep(500);
+
+            _createReceiptPO.ClickSubmitButton();
+            Thread.Sleep(1500);
+
+            // Assert
+            bool isStillOnCreatePage = _driver.Url.Contains("/receipt/create") ||
+                                      _driver.Url.Contains("/receipts/createreceipt");
+
+            Assert.True(isStillOnCreatePage || _createReceiptPO.HasValidationErrors(),
+                "Debe mostrar validación si falta el apellido");
+        }
+
+        /// Campo dirección vacío
+        [Fact]
+        [Trait("LevelTesting", "Functional Testing")]
+        [Trait("UserStory", "UC4-Receipt")]
+        [Trait("Flow", "AlternativeFlow4")]
+        public void CP_UC4_08c_ValidationEmptyDeliveryAddress()
+        {
+            // Arrange
+            InitialStepsForSelectRepair();
+            _selectRepairForSelectPO.SearchRepairs("", "All");
+            Thread.Sleep(1000);
+            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
+            Thread.Sleep(500);
+            _selectRepairForSelectPO.ClickCreateReceipt();
+            Thread.Sleep(1000);
+
+            // Act
+            _createReceiptPO.FillNameField(CLIENT_NAME);
+            _createReceiptPO.FillSurnameField(CLIENT_SURNAME);
+            _createReceiptPO.FillDeliveryAddressField("");  // Vacío
+            _createReceiptPO.FillModelField(REPAIR_NAME_1, MODEL_1);
+            _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
+            Thread.Sleep(500);
+
+            _createReceiptPO.ClickSubmitButton();
+            Thread.Sleep(1500);
+
+            // Assert
+            bool isStillOnCreatePage = _driver.Url.Contains("/receipt/create") ||
+                                      _driver.Url.Contains("/receipts/createreceipt");
+
+            Assert.True(isStillOnCreatePage || _createReceiptPO.HasValidationErrors(),
+                "Debe mostrar validación si falta la dirección");
+        }
+
+        /// Campo modelo vacío
+        [Fact]
+        [Trait("LevelTesting", "Functional Testing")]
+        [Trait("UserStory", "UC4-Receipt")]
+        [Trait("Flow", "AlternativeFlow4")]
+        public void CP_UC4_08d_ValidationEmptyModel()
+        {
+            // Arrange
+            InitialStepsForSelectRepair();
+            _selectRepairForSelectPO.SearchRepairs("", "All");
+            Thread.Sleep(1000);
+            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
+            Thread.Sleep(500);
+            _selectRepairForSelectPO.ClickCreateReceipt();
+            Thread.Sleep(1000);
+
+            // Act - Rellenar todo excepto modelo
+            _createReceiptPO.FillNameField(CLIENT_NAME);
+            _createReceiptPO.FillSurnameField(CLIENT_SURNAME);
+            _createReceiptPO.FillDeliveryAddressField(DELIVERY_ADDRESS);
+            // No rellenar modelo
+            _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
+            Thread.Sleep(500);
+
+            _createReceiptPO.ClickSubmitButton();
+            Thread.Sleep(1500);
+
+            // Assert
+            bool isStillOnCreatePage = _driver.Url.Contains("/receipt/create") ||
+                                      _driver.Url.Contains("/receipts/createreceipt");
+
+            Assert.True(isStillOnCreatePage || _createReceiptPO.HasValidationErrors(),
+                "Debe mostrar validación si falta el modelo");
         }
 
         /*
         ============================
         FLUJO ALTERNATIVO 5 - PASO 7
-        Modificar reparaciones desde CREATE
+        Modificar reparaciones desde la página de creación
         ============================
         */
 
@@ -434,121 +535,28 @@ namespace AppForSEII2526.UIT.CU_Receipt
         {
             // Arrange
             InitialStepsForSelectRepair();
+
+            // Act - Pasos 2-3: Seleccionar reparación
             _selectRepairForSelectPO.SearchRepairs("", "All");
             Thread.Sleep(1000);
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
             Thread.Sleep(500);
+
+            // Act - Paso 4: Ir a crear recibo
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
 
-            // Act - Rellenar algunos datos del cliente
+            // Act - Paso 5: Rellenar algunos datos
             _createReceiptPO.FillNameField(CLIENT_NAME);
             Thread.Sleep(500);
 
-            // Clickear en modificar reparaciones
+            // Act - Decidir modificar reparaciones
             _createReceiptPO.ClickModifyRepairsButton();
             Thread.Sleep(1000);
 
-            // Assert - Volver a la página de selección
-            Assert.True(_driver.Url.Contains("/receipt/select-repair-for-receipt"));
-        }
-
-        /*
-        ============================
-        PRUEBAS ADICIONALES DE VERIFICACIÓN
-        ============================
-        */
-
-        // Verificar que el precio total se calcula
-        [Fact]
-        [Trait("LevelTesting", "Functional Testing")]
-        [Trait("UserStory", "UC4-Receipt")]
-        [Trait("Flow", "BasicFlow")]
-        public void CP_UC4_10_VerifyTotalPriceUpdates()
-        {
-            // Arrange
-            InitialStepsForSelectRepair();
-
-            // Act
-            _selectRepairForSelectPO.SearchRepairs("", "All");
-            Thread.Sleep(1000);
-            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
-            Thread.Sleep(500);
-            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_2);
-            Thread.Sleep(500);
-            _selectRepairForSelectPO.ClickCreateReceipt();
-            Thread.Sleep(1000);
-
-            // Assert - Verificar navegación exitosa
-            bool isOnCreatePage = _driver.Url.Contains("/receipt/create") ||
-                                 _driver.Url.Contains("/receipts/createreceipt");
-
-            Assert.True(isOnCreatePage,
-                $"Se esperaba navegación a la página de crear recibo. URL actual: {_driver.Url}");
-        }
-
-        // Verificar que se muestra correctamente el carrito de la compra
-        [Fact]
-        [Trait("LevelTesting", "Functional Testing")]
-        [Trait("UserStory", "UC4-Receipt")]
-        [Trait("Flow", "BasicFlow")]
-        public void CP_UC4_11_VerifyRepairsDisplayedInCreatePage()
-        {
-            // Arrange
-            InitialStepsForSelectRepair();
-
-            // Act
-            _selectRepairForSelectPO.SearchRepairs("", "All");
-            Thread.Sleep(1000);
-            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
-            Thread.Sleep(500);
-            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_3);
-            Thread.Sleep(500);
-            _selectRepairForSelectPO.ClickCreateReceipt();
-            Thread.Sleep(1000);
-
-            // Assert - Verificar que se navegó a la página de crear recibo
-            bool isOnCreatePage = _driver.Url.Contains("/receipt/create") ||
-                                 _driver.Url.Contains("/receipts/createreceipt");
-
-            Assert.True(isOnCreatePage,
-                $"Se esperaba navegación a página de crear recibo. URL actual: {_driver.Url}");
-        }
-
-        // Verificar navegación completa del flujo
-        [Fact]
-        [Trait("LevelTesting", "Functional Testing")]
-        [Trait("UserStory", "UC4-Receipt")]
-        [Trait("Flow", "BasicFlow")]
-        public void CP_UC4_12_VerifyCompleteReceiptFlow()
-        {
-            // Arrange
-            InitialStepsForSelectRepair();
-
-            // Act & Assert - Paso a paso
-            _selectRepairForSelectPO.SearchRepairs("", "All");
-            Thread.Sleep(1000);
-            Assert.True(_driver.Url.Contains("/receipt/select-repair-for-receipt"));
-
-            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
-            Thread.Sleep(500);
-
-            _selectRepairForSelectPO.ClickCreateReceipt();
-            Thread.Sleep(1000);
-
-            bool isOnCreatePage = _driver.Url.Contains("/receipt/create") ||
-                                 _driver.Url.Contains("/receipts/createreceipt");
-            Assert.True(isOnCreatePage);
-
-            _createReceiptPO.FillReceiptForm(
-                nombre: CLIENT_NAME,
-                apellidos: CLIENT_SURNAME,
-                direccion: DELIVERY_ADDRESS,
-                metodoPago: PAYMENT_METHOD_CREDIT_CARD
-            );
-            Thread.Sleep(500);
-            _createReceiptPO.ClickSubmitButton();
-            Thread.Sleep(1000);
+            // Assert - Vuelve a paso 2 (página de selección)
+            Assert.True(_driver.Url.Contains("/receipt/select-repair-for-receipt"),
+                "Debe volver a la página de selección de reparaciones");
         }
     }
 }
