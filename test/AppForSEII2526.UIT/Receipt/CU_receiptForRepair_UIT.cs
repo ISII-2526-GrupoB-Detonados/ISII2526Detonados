@@ -33,7 +33,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
         private const string USER_EMAIL = "luis.lorenzo@email.com";
         private const string USER_PASSWORD = "Password123!";
 
-        // ========== MÉTODOS DE PAGO - Texto visible en el dropdown ==========
+        // ========== MÉTODOS DE PAGO  ==========
         private const string PAYMENT_METHOD_CASH = "Efectivo";
         private const string PAYMENT_METHOD_CREDIT_CARD = "Tarjeta de Crédito";
         private const string PAYMENT_METHOD_PAYPAL = "PayPal";
@@ -49,9 +49,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _receiptDetailsPO = new ReceiptDetailsPO(_driver, _output);
         }
 
-        /// <summary>
-        /// Pasos iniciales: Abre la aplicación, inicia sesión y navega a la selección de reparaciones
-        /// </summary>
+      
         private void InitialStepsForSelectRepair()
         {
             Initial_step_opening_the_web_page();
@@ -66,10 +64,8 @@ namespace AppForSEII2526.UIT.CU_Receipt
         ============================
         */
 
-        /// <summary>
         /// CP_UC4_01: Flujo básico completo con tarjeta de crédito
         /// Pasos: 1-7 del flujo básico
-        /// </summary>
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -136,10 +132,8 @@ namespace AppForSEII2526.UIT.CU_Receipt
                 $"Debería estar en la página de detalles del recibo. URL actual: {_driver.Url}");
         }
 
-        /// <summary>
         /// CP_UC4_01b: Flujo básico con diferentes métodos de pago
         /// Prueba que el flujo funciona con Efectivo y PayPal
-        /// </summary>
         [Theory]
         [InlineData(PAYMENT_METHOD_CASH)]
         [InlineData(PAYMENT_METHOD_PAYPAL)]
@@ -237,9 +231,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
         ============================
         */
 
-        /// <summary>
         /// Filtro por nombre de reparación
-        /// </summary>
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -258,9 +250,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             Assert.True(hasRepairs, "Debería encontrar reparaciones con 'sensor' en el nombre");
         }
 
-        /// <summary>
         /// Filtro por escala
-        /// </summary>
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -279,9 +269,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             Assert.True(hasRepairs, "Debería encontrar reparaciones con escala 'Baja'");
         }
 
-        /// <summary>
         /// Filtro combinado: nombre y escala
-        /// </summary>
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -307,9 +295,6 @@ namespace AppForSEII2526.UIT.CU_Receipt
         ============================
         */
 
-        /// <summary>
-        /// El cliente elimina una reparación del carrito
-        /// </summary>
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -336,9 +321,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             Assert.True(buttonAvailable, "El botón de crear recibo debe estar disponible con al menos una reparación");
         }
 
-        /// <summary>
-        /// El cliente elimina todas las reparaciones del carrito
-        /// </summary>
+        
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -396,9 +379,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
         ============================
         */
 
-        /// <summary>
         /// Campo nombre vacío
-        /// </summary>
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -434,9 +415,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
                 "Debe mostrar validación y permanecer en la página si falta el nombre");
         }
 
-        /// <summary>
         /// Campo apellidos vacío
-        /// </summary>
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -471,9 +450,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
                 "Debe mostrar validación si falta el apellido");
         }
 
-        /// <summary>
         /// Campo dirección vacío
-        /// </summary>
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
@@ -508,9 +485,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
                 "Debe mostrar validación si falta la dirección");
         }
 
-        /// <summary>
         /// Campo modelo vacío
-        /// </summary>
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC4-Receipt")]
