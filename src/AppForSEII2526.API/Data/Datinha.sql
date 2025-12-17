@@ -67,7 +67,7 @@ INSERT INTO [dbo].[ReceiptItems] ([ReceiptId], [RepairId], [Model]) VALUES (2078
 
 -- MODELOS
 SET IDENTITY_INSERT [dbo].[Models] ON
-INSERT INTO [dbo].[Models] ([Id], [NameModel]) VALUES (1, N'Xiami x3')
+INSERT INTO [dbo].[Models] ([Id], [NameModel]) VALUES (1, N'Xiaomi x3')
 INSERT INTO [dbo].[Models] ([Id], [NameModel]) VALUES (2, N'Samsung Galaxy S24')
 INSERT INTO [dbo].[Models] ([Id], [NameModel]) VALUES (3, N'Xiaomi 14 Pro')
 INSERT INTO [dbo].[Models] ([Id], [NameModel]) VALUES (4, N'Google Pixel 8')
@@ -86,7 +86,7 @@ INSERT INTO [dbo].[Devices] ([Id], [Brand], [Color], [Name], [PriceForPurchase],
 INSERT INTO [dbo].[Devices] ([Id], [Brand], [Color], [Name], [PriceForPurchase], [PriceForRent], [QuantityForPurchase], [QuantityForRent], [Year], [ModelId]) VALUES (2, N'Samsung', N'White', N'Samsung Galaxy S24 Ultra', 1199.99, 55, 80, 20, 2024, 2)
 INSERT INTO [dbo].[Devices] ([Id], [Brand], [Color], [Name], [PriceForPurchase], [PriceForRent], [QuantityForPurchase], [QuantityForRent], [Year], [ModelId]) VALUES (3, N'Xiaomi', N'Blue', N'Xiaomi 14 Pro Max', 899.99, 60, 90, 22, 2024, 3)
 INSERT INTO [dbo].[Devices] ([Id], [Brand], [Color], [Name], [PriceForPurchase], [PriceForRent], [QuantityForPurchase], [QuantityForRent], [Year], [ModelId]) VALUES (4, N'Google', N'Gray', N'Google Pixel 8 Pro', 999.99, 65, 70, 18, 2024, 4)
-INSERT INTO [dbo].[Devices] ([Id], [Brand], [Color], [Name], [PriceForPurchase], [PriceForRent], [QuantityForPurchase], [QuantityForRent], [Year], [ModelId]) VALUES (5, N'OnePlus', N'Green', N'OnePlus 12 Pro', 849.99, 70, 85, 21, 2024, 5)
+INSERT INTO [dbo].[Devices] ([Id], [Brand], [Color], [Name], [PriceForPurchase], [PriceForRent], [QuantityForPurchase], [QuantityForRent], [Year], [ModelId]) VALUES (5, N'OnePlus', N'Green', N'OnePlus 12 Pro', 849.99, 70, 85, 0, 2024, 5)
 INSERT INTO [dbo].[Devices] ([Id], [Brand], [Color], [Name], [PriceForPurchase], [PriceForRent], [QuantityForPurchase], [QuantityForRent], [Year], [ModelId]) VALUES (6, N'Huawei', N'Silver', N'Huawei P60 Pro', 1099.99, 45, 75, 19, 2024, 6)
 INSERT INTO [dbo].[Devices] ([Id], [Brand], [Color], [Name], [PriceForPurchase], [PriceForRent], [QuantityForPurchase], [QuantityForRent], [Year], [ModelId]) VALUES (7, N'Motorola', N'Red', N'Motorola Edge 40 Neo', 599.99, 80, 95, 24, 2024, 7)
 INSERT INTO [dbo].[Devices] ([Id], [Brand], [Color], [Name], [PriceForPurchase], [PriceForRent], [QuantityForPurchase], [QuantityForRent], [Year], [ModelId]) VALUES (8, N'Oppo', N'Purple', N'Oppo Find X7 Ultra', 949.99, 35, 65, 16, 2024, 8)
