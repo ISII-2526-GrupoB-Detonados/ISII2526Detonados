@@ -69,6 +69,15 @@ namespace AppForSEII2526.API.Controllers
             if (purchaseForCreate.PurchaseItems.Count == 0)
                 ModelState.AddModelError("PurchaseItems", "Error! You must include at least one device to be purchased");
 
+            //EXAMEN=================================================
+
+            if (purchaseForCreate.PaymentMethod==PaymentMethod.PayPal)
+            {
+                ModelState.AddModelError("PaymentMethod", "¡Error! Solo aceptamos compras pagadas con Tarjeta de Crédito");
+            }
+
+            //======================================================
+
             // Validar que el usuario existe
             var user = _context.ApplicationUsers.FirstOrDefault(au => au.UserName == purchaseForCreate.CustomerUserName);
             if (user == null)

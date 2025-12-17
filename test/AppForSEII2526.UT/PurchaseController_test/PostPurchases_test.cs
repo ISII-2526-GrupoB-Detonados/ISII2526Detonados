@@ -81,13 +81,19 @@ namespace AppForSEII2526.UT.PurchaseController_test
 
             var purchaseDeviceNotAvailable = new Purchase_ForCreate_DTO(_userName, _customerName + " " + _customerSurname, deliveryAddress,
                 PaymentMethod.CreditCard, new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(1, "iPhone17", 999.99, "Apple", "Naranja", "iPhone 17", 20, "Último modelo") });
-
+            //EXAMEN=========================
+            var purchaseBadPaymentMethod = new Purchase_ForCreate_DTO(_userName, _customerName + " " + _customerSurname, deliveryAddress,
+                PaymentMethod.PayPal, new List<Purchase_Item_DTO>() { new Purchase_Item_DTO(1, "iPhone17", 999.99, "Apple", "Naranja", "iPhone 17", 1, "Último modelo") });
+            //===============================
             var allTests = new List<object[]>
             {
                 new object[] { purchaseNoItem, "Error! You must include at least one device to be purchased" },
                 new object[] { purchaseApplicationUser, "Error! UserName is not registered" },
                 new object[] { purchaseDeviceNotExisting, $"Error! Device {"Apple"} {"iPhone 18"} {"Naranja"} does not exist"},
-                new object[] { purchaseDeviceNotAvailable, $"Error! Device {"Apple"} {"iPhone 17"} does not have enough stock. Available: {15}, Requested: {20}" }
+                new object[] { purchaseDeviceNotAvailable, $"Error! Device {"Apple"} {"iPhone 17"} does not have enough stock. Available: {15}, Requested: {20}" },
+                //EXAMEN===================
+                new object[] {purchaseBadPaymentMethod, "¡Error! Solo aceptamos compras pagadas con Tarjeta de Crédito" }
+                //==========================
             };
             return allTests;
         }
