@@ -93,7 +93,18 @@
                             <td>@item.RepairName</td>
                             <td>@item.Scale</td>
                             <td>
-                                <InputText @bind-Value="item.ModelToRepair" class="form-control form-control-sm" placeholder="Introduce el modelo" />
+                                <!-- Cambio: usar input HTML en lugar de InputText -->
+                                <input type="text" 
+                                       id="model_@item.RepairName" 
+                                       @bind="item.ModelToRepair" 
+                                       class="form-control form-control-sm" 
+                                       placeholder="Introduce el modelo" 
+                                       required />
+                                <!-- Mostrar errores si existen -->
+                                @if (modelErrors.ContainsKey(item.RepairName))
+                                {
+                                    <small class="text-danger d-block">@modelErrors[item.RepairName]</small>
+                                }
                             </td>
                             <td>@item.RepairCost?.ToString("C")</td>
                         </tr>
@@ -118,6 +129,7 @@
     private bool hideErrors { get { return messageError.Length == 0; } }
     private bool DialogIsOpen;
     private AppForSEII2526.API.DTOs.ReceiptDTO.ReceiptForCreateDTO? receipt;
+    private Dictionary<string, string> modelErrors = new();
 
     private float TotalCost
     {
@@ -134,6 +146,27 @@
 
     private void OpenDialog()
     {
+        // VALIDACIÓN: Verificar que todos los modelos estén rellenados
+        modelErrors.Clear();
+        
+        if (receipt?.Repairs != null)
+        {
+            foreach (var item in receipt.Repairs)
+            {
+                if (string.IsNullOrWhiteSpace(item.ModelToRepair))
+                {
+                    modelErrors[item.RepairName] = "El modelo es obligatorio.";
+                }
+            }
+        }
+
+        // Si hay errores, no abrir el diálogo
+        if (modelErrors.Count > 0)
+        {
+            messageError = "Todos los modelos son obligatorios.";
+            return;
+        }
+
         DialogIsOpen = true;
     }
 
@@ -147,6 +180,22 @@
             {
                 try
                 {
+                    // Validar modelos
+                    modelErrors.Clear();
+                    foreach (var item in receipt.Repairs)
+                    {
+                        if (string.IsNullOrWhiteSpace(item.ModelToRepair))
+                        {
+                            modelErrors[item.RepairName] = "El modelo es obligatorio.";
+                        }
+                    }
+
+                    if (modelErrors.Count > 0)
+                    {
+                        messageError = "Todos los modelos son obligatorios.";
+                        return;
+                    }
+
                     // Validar que UserName no esté vacío
                     if (string.IsNullOrWhiteSpace(receipt.UserName))
                     {
@@ -154,7 +203,7 @@
                         return;
                     }
 
-                    // Validar que DeliveryAddress cumpla los requisitos (5-100 caracteres)
+                    // Validar que DeliveryAddress cumpla los requisitos
                     if (string.IsNullOrWhiteSpace(receipt.DeliveryAddress) || receipt.DeliveryAddress.Length < 5)
                     {
                         messageError = "La dirección de entrega debe tener al menos 5 caracteres.";
@@ -180,7 +229,6 @@
 
                     var created = await apiclient.CreateRepairAsync(receiptForApi);
                     
-                    // Capturar el ID del recibo creado
                     int receiptId = created.Id;
                     
                     receiptState.SetReceiptId(receiptId);
