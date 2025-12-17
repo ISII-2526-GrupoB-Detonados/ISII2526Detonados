@@ -50,7 +50,7 @@ namespace AppForSEII2526.UIT.CU_Rental
             _createRentalPO = new CreateRentalPO(_driver, _output);
             _rentalDetailsPO = new RentalDetailsPO(_driver, _output);
         }
-
+        //navegar a select devices + login con mi clave
         private void InitialStepsForSelectDevices()
         {
             Initial_step_opening_the_web_page();
@@ -62,18 +62,13 @@ namespace AppForSEII2526.UIT.CU_Rental
 
             // Ahora ir a la página de selección de dispositivos
             _driver.Navigate().GoToUrl(_URI + "rental/selectdevicesforrental");
-            Thread.Sleep(1500); // Aumentar el tiempo de espera
+            Thread.Sleep(1500); // tiempo de espera para funcionamiento correcto testeado en las 15
         }
 
 
-        /*
-        ============================
-        FLUJO BÁSICO - ESC-1
-        UC2_1, UC2_2, UC2_3: Alquiler exitoso con diferentes métodos de pago
-        ============================
-        */
+       
 
-        /// UC2_1: Flujo básico completo con tarjeta de crédito
+        // UC2_1: Flujo básico completo con tarjeta de crédito-----------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -129,7 +124,7 @@ namespace AppForSEII2526.UIT.CU_Rental
             Assert.True(_rentalDetailsPO.GetDeliveryAddress().Contains(DELIVERY_ADDRESS_VALID));
         }
 
-        /// UC2_2: Flujo básico con PayPal
+        // UC2_2: Flujo básico con PayPal----------------------------------------------------------------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -170,7 +165,7 @@ namespace AppForSEII2526.UIT.CU_Rental
             Assert.True(isOnDetailPage);
         }
 
-        /// UC2_3: Flujo básico con Efectivo
+        // UC2_3: Flujo básico con Efectivo----------------------------------------------------------------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -211,14 +206,9 @@ namespace AppForSEII2526.UIT.CU_Rental
             Assert.True(isOnDetailPage);
         }
 
-        /*
-        ============================
-        FLUJO ALTERNATIVO 1 - ESC-3
-        UC2_4, UC2_5: Filtrar dispositivos
-        ============================
-        */
 
-        /// UC2_4: Filtro por modelo
+
+        // UC2_4: Filtro por modelo----------------------------------------------------------------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -238,7 +228,7 @@ namespace AppForSEII2526.UIT.CU_Rental
             Assert.True(deviceVisible, $"Debería mostrar el dispositivo '{DEVICE_NAME_2}'");
         }
 
-        /// UC2_5: Filtro por precio máximo
+        // UC2_5: Filtro por precio máximo----------------------------------------------------------------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -261,14 +251,10 @@ namespace AppForSEII2526.UIT.CU_Rental
                 "Debería mostrar dispositivos con precio menor o igual a 40");
         }
 
-        /*
-        ============================
-        FLUJO ALTERNATIVO 2 - ESC-4
-        UC2_6: Modificar carrito de alquiler
-        ============================
-        */
 
-        /// UC2_6: Eliminar un dispositivo y añadir otro
+        // UC2_6: Modificicar carritos alquiler
+        //Añadir un dispositivo, eliminar otro y proceder con el alquiler
+        // ----------------------------------------------------------------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -300,14 +286,11 @@ namespace AppForSEII2526.UIT.CU_Rental
                 "Debería haber dispositivos en el carrito");
         }
 
-        /*
-        ============================
-        FLUJO ALTERNATIVO 3 - ESC-5
-        UC2_7: Carrito vacío
-        ============================
-        */
 
-        /// UC2_7: Eliminar todos los dispositivos del carrito
+
+
+        // UC2_7: Nada seleccionado
+        // Eliminar todos los dispositivos del carrito----------------------------------------------------------------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -332,14 +315,9 @@ namespace AppForSEII2526.UIT.CU_Rental
                 "El botón 'Rent devices' debe estar deshabilitado cuando el carrito está vacío");
         }
 
-        /*
-        ============================
-        FLUJO ALTERNATIVO 4 - ESC-6
-        UC2_8, UC2_9, UC2_10: Errores al rellenar datos
-        ============================
-        */
 
-        /// UC2_8: Dirección vacía
+
+        // UC2_8: Dirección vacía----------------------------------------------------------------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -374,7 +352,7 @@ namespace AppForSEII2526.UIT.CU_Rental
             Assert.True(hasError, "Debe mostrar error de validación si falta la dirección");
         }
 
-        /// UC2_9: Nombre del cliente vacío
+        // UC2_9: Nombre del cliente vacío----------------------------------------------------------------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -409,7 +387,7 @@ namespace AppForSEII2526.UIT.CU_Rental
             Assert.True(hasError, "Debe mostrar error de validación si falta el nombre");
         }
 
-        /// UC2_10: Dirección sin "Calle" o "Carretera"
+        // UC2_10: Dirección sin "Calle" o "Carretera"----------------------------------------------------------------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -445,15 +423,10 @@ namespace AppForSEII2526.UIT.CU_Rental
                 "Debe mostrar error indicando que la dirección debe incluir 'Calle' o 'Carretera'");
         }
 
-        /*
-        ============================
-        FLUJO ALTERNATIVO 0 - ESC-2
-        UC2_11: No hay stock disponible
-        ============================
-        */
 
-        /// UC2_11: Intentar alquilar dispositivo sin stock
-        /// NOTA: Requiere que OnePlus 12 Pro tenga QuantityForRent = 0
+
+        // UC2_11: Intentar alquilar dispositivo sin stock-----------------------------------------------------
+        /// NOTA: Requiere que OnePlus 12 Pro tenga QuantityForRent = 0 con el script de datos iniciales ya esta
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -497,14 +470,9 @@ namespace AppForSEII2526.UIT.CU_Rental
                 "Debe mostrar error de cantidad de stock insuficiente");
         }
 
-        /*
-        ============================
-        FLUJO ALTERNATIVO 5 - ESC-7
-        UC2_12: Eliminar un dispositivo antes de terminar el POST
-        ============================
-        */
-
-        /// UC2_12: Modificar dispositivos desde la página de creación
+       
+        //UC2_12: Eliminar un dispositivo antes de terminar el POST
+        // UC2_12: Modificar dispositivos desde la página de creación-----------------------------------------------------
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -557,11 +525,11 @@ namespace AppForSEII2526.UIT.CU_Rental
             Assert.Equal(1, deviceCount);
         }
 
-        /*
-        ============================
-        UC2_13: No existen dispositivos (búsqueda sin resultados)
-        ============================
-        */
+
+
+        //UC2_13: No existen dispositivos Stock All == 0-----------------------------------------------------
+
+
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
@@ -584,41 +552,18 @@ namespace AppForSEII2526.UIT.CU_Rental
             _output.WriteLine("✓ Test UC2_14 completado: Mensaje de sin disponibilidad mostrado correctamente");
         }
 
-        /// UC2_13: Búsqueda que no devuelve resultados
-        [Fact]
-        [Trait("LevelTesting", "Functional Testing")]
-        [Trait("UserStory", "UC2-Rental")]
-        [Trait("Flow", "AlternativeFlow0")]
-        [Trait("TestCase", "UC2_13")]
-        public void UC2_13_NoDevicesFoundInSearch()
-        {
-            // Arrange
-            InitialStepsForSelectDevices();
+        
 
-            // Act - Buscar con filtro de precio imposible (muy bajo)
-            _selectDevicesForRentalPO.SearchDevices(MODEL_FILTER_ALL, 1); // Precio máximo 1€
-            Thread.Sleep(1000);
-
-            // Assert - No debe mostrar dispositivos
-            bool noDevices = _selectDevicesForRentalPO.CheckNoDevicesFound();
-            Assert.True(noDevices, "No debería encontrar dispositivos con precio menor a 1€");
-
-            // Assert adicional - El botón de alquilar debe estar deshabilitado
-            bool buttonDisabled = _selectDevicesForRentalPO.IsRentDevicesButtonDisabled();
-            Assert.True(buttonDisabled,
-                "El botón 'Rent devices' debe estar deshabilitado sin dispositivos");
-        }
-
-        /// UC2_15: Eliminar todos los dispositivos desde Create Rental
+        // UC2_14: Alquilar sin dispositivos en el carrito
         [Fact]
         [Trait("LevelTesting", "Functional Testing")]
         [Trait("UserStory", "UC2-Rental")]
         [Trait("Flow", "AlternativeFlow")]
-        [Trait("TestCase", "UC2_15")]
-        public void UC2_15_RemoveAllDevicesFromCreateRental()
+        [Trait("TestCase", "UC2_14")]
+        public void UC2_14_RemoveAllDevicesFromCreateRental()
         {
             // Arrange
-            _output.WriteLine("=== Iniciando UC2_15: Eliminar todos los dispositivos desde Create Rental ===");
+            _output.WriteLine("=== Iniciando UC2_14: Eliminar todos los dispositivos desde Create Rental ===");
             InitialStepsForSelectDevices();
 
             // Act - Agregar dispositivos al carrito
@@ -654,6 +599,31 @@ namespace AppForSEII2526.UIT.CU_Rental
                 "El botón 'Create Rental' debe estar deshabilitado cuando no hay dispositivos");
 
             _output.WriteLine("✓ Test UC2_15 completado: Mensaje de carrito vacío mostrado correctamente");
+        }
+
+        // UC2_15: Búsqueda que no devuelve resultados-----------------------------------------------------
+        [Fact]
+        [Trait("LevelTesting", "Functional Testing")]
+        [Trait("UserStory", "UC2-Rental")]
+        [Trait("Flow", "AlternativeFlow0")]
+        [Trait("TestCase", "UC2_15")]
+        public void UC2_15_NoDevicesFoundInSearch()
+        {
+            // Arrange
+            InitialStepsForSelectDevices();
+
+            // Act - Buscar con filtro de precio imposible (muy bajo)
+            _selectDevicesForRentalPO.SearchDevices(MODEL_FILTER_ALL, 1); // Precio máximo 1€
+            Thread.Sleep(1000);
+
+            // Assert - No debe mostrar dispositivos
+            bool noDevices = _selectDevicesForRentalPO.CheckNoDevicesFound();
+            Assert.True(noDevices, "No debería encontrar dispositivos con precio menor a 1€");
+
+            // Assert adicional - El botón de alquilar debe estar deshabilitado
+            bool buttonDisabled = _selectDevicesForRentalPO.IsRentDevicesButtonDisabled();
+            Assert.True(buttonDisabled,
+                "El botón 'Rent devices' debe estar deshabilitado sin dispositivos");
         }
 
     }
