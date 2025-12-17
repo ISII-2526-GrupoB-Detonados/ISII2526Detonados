@@ -328,29 +328,28 @@ namespace AppForSEII2526.UIT.CU_Rental
             // Arrange
             InitialStepsForSelectDevices();
             _selectDevicesForRentalPO.SearchDevices(MODEL_FILTER_ALL, null);
-            Thread.Sleep(1000);
-            _selectDevicesForRentalPO.AddDeviceToCart(DEVICE_NAME_1);
             Thread.Sleep(500);
+            _selectDevicesForRentalPO.AddDeviceToCart(DEVICE_NAME_1);
+            Thread.Sleep(300);
             _selectDevicesForRentalPO.ClickRentDevices();
-            Thread.Sleep(1000);
+            Thread.Sleep(800);
 
             // Act - Rellenar todo excepto dirección
             _createRentalPO.FillCustomerNameField(CUSTOMER_NAME_SURNAME);
-            Thread.Sleep(300);
+            Thread.Sleep(200);
             _createRentalPO.FillDeliveryAddressField(""); // Vacío
-            Thread.Sleep(300);
+            Thread.Sleep(200);
             _createRentalPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
-            Thread.Sleep(500);
+            Thread.Sleep(300);
 
             _createRentalPO.ClickCreateRentalButton();
-            Thread.Sleep(1500);
+            Thread.Sleep(800);
 
-            // Assert - Debe mostrar error
-            bool hasError = _createRentalPO.CheckErrorMessage("required") ||
-                           _createRentalPO.HasValidationErrors();
-
-            Assert.True(hasError, "Debe mostrar error de validación si falta la dirección");
+            // Assert - Verificar mensaje exacto
+            string errorText = _createRentalPO.GetValidationErrorText();
+            Assert.Contains("The DeliveryAddress field is required.", errorText);
         }
+
 
         // UC2_9: Nombre del cliente vacío----------------------------------------------------------------------------------------------------------
         [Fact]
@@ -363,29 +362,28 @@ namespace AppForSEII2526.UIT.CU_Rental
             // Arrange
             InitialStepsForSelectDevices();
             _selectDevicesForRentalPO.SearchDevices(MODEL_FILTER_ALL, null);
-            Thread.Sleep(1000);
-            _selectDevicesForRentalPO.AddDeviceToCart(DEVICE_NAME_1);
             Thread.Sleep(500);
+            _selectDevicesForRentalPO.AddDeviceToCart(DEVICE_NAME_1);
+            Thread.Sleep(300);
             _selectDevicesForRentalPO.ClickRentDevices();
-            Thread.Sleep(1000);
+            Thread.Sleep(800);
 
             // Act - Rellenar todo excepto nombre
             _createRentalPO.FillCustomerNameField(""); // Vacío
-            Thread.Sleep(300);
+            Thread.Sleep(200);
             _createRentalPO.FillDeliveryAddressField(DELIVERY_ADDRESS_VALID);
-            Thread.Sleep(300);
+            Thread.Sleep(200);
             _createRentalPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
-            Thread.Sleep(500);
+            Thread.Sleep(300);
 
             _createRentalPO.ClickCreateRentalButton();
-            Thread.Sleep(1500);
+            Thread.Sleep(800);
 
-            // Assert
-            bool hasError = _createRentalPO.CheckErrorMessage("required") ||
-                           _createRentalPO.HasValidationErrors();
-
-            Assert.True(hasError, "Debe mostrar error de validación si falta el nombre");
+            // Assert - Verificar mensaje exacto
+            string errorText = _createRentalPO.GetValidationErrorText();
+            Assert.Contains("The CustomerNameSurname field is required.", errorText);
         }
+
 
         // UC2_10: Dirección sin "Calle" o "Carretera"----------------------------------------------------------------------------------------------------------
         [Fact]
