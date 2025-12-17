@@ -59,6 +59,22 @@ namespace AppForSEII2526.UIT.CU_Rental
         {
             return CheckBodyTable(expectedDevices, tableOfDevicesBy);
         }
+        /// <summary>
+        /// Verifica si se muestra el mensaje de sin disponibilidad de stock
+        /// </summary>
+        public bool HasNoStockWarning()
+        {
+            try
+            {
+                By warningMessage = By.XPath("//div[contains(@class, 'alert-warning')]//h4[contains(text(), 'Sin disponibilidad')]");
+                WaitForBeingVisible(warningMessage);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Añade un dispositivo al carrito de alquiler

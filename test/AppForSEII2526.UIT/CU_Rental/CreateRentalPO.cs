@@ -47,6 +47,24 @@ namespace AppForSEII2526.UIT.CU_Rental
             Thread.Sleep(300);
         }
 
+
+        /// <summary>
+        /// Verifica si se muestra el mensaje de carrito vacío
+        /// </summary>
+        public bool HasEmptyCartMessage()
+        {
+            try
+            {
+                By emptyCartMessage = By.XPath("//div[contains(@class, 'alert-warning') and contains(text(), 'No devices selected')]");
+                WaitForBeingVisible(emptyCartMessage);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Rellena solo el campo de nombre del cliente con disparo de evento blur
         /// </summary>

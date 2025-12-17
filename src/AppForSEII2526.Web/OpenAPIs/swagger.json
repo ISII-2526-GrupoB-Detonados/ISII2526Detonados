@@ -621,47 +621,29 @@
         }
       }
     },
-    "/GetScales": {
+    "/api/RentalDevice/check-stock": {
       "get": {
         "tags": [
-          "Reparaciones"
+          "RentalDevice"
         ],
-        "operationId": "GetScales",
-        "parameters": [
-          {
-            "name": "scaleName",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "operationId": "CheckStock",
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "boolean"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "boolean"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "boolean"
                 }
               }
             }
@@ -737,6 +719,54 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GetScales": {
+      "get": {
+        "tags": [
+          "Reparaciones"
+        ],
+        "operationId": "GetScales",
+        "parameters": [
+          {
+            "name": "scaleName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -1032,29 +1062,32 @@
         "additionalProperties": false
       },
       "ReceiptForCreateDTO": {
+        "required": [
+          "deliveryAddress",
+          "name",
+          "surname",
+          "userName"
+        ],
         "type": "object",
         "properties": {
           "name": {
             "maxLength": 20,
             "minLength": 2,
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "surname": {
             "maxLength": 50,
             "minLength": 2,
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "userName": {
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           },
           "deliveryAddress": {
             "maxLength": 100,
             "minLength": 5,
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "paymentMethod": {
             "$ref": "#/components/schemas/PaymentMethod"

@@ -562,6 +562,27 @@ namespace AppForSEII2526.UIT.CU_Rental
         UC2_13: No existen dispositivos (búsqueda sin resultados)
         ============================
         */
+        [Fact]
+        [Trait("LevelTesting", "Functional Testing")]
+        [Trait("UserStory", "UC2-Rental")]
+        [Trait("Flow", "AlternativeFlow")]
+        [Trait("TestCase", "UC2_14")]
+        public void UC2_14_NoStockWarningMessage()
+        {
+            // Arrange
+            _output.WriteLine("=== Iniciando UC2_14: Verificar mensaje cuando no hay stock disponible ===");
+            InitialStepsForSelectDevices();
+
+            // Act
+            _output.WriteLine("Verificando que aparece el mensaje de sin disponibilidad...");
+            Thread.Sleep(1000);
+
+            // Assert
+            Assert.True(_selectDevicesForRentalPO.HasNoStockWarning(),
+                "Debería mostrar el mensaje 'Sin disponibilidad' cuando todo el stock es 0");
+
+            _output.WriteLine("✓ Test UC2_14 completado: Mensaje de sin disponibilidad mostrado correctamente");
+        }
 
         /// UC2_13: Búsqueda que no devuelve resultados
         [Fact]
@@ -586,6 +607,53 @@ namespace AppForSEII2526.UIT.CU_Rental
             bool buttonDisabled = _selectDevicesForRentalPO.IsRentDevicesButtonDisabled();
             Assert.True(buttonDisabled,
                 "El botón 'Rent devices' debe estar deshabilitado sin dispositivos");
+        }
+
+        /// UC2_15: Eliminar todos los dispositivos desde Create Rental
+        [Fact]
+        [Trait("LevelTesting", "Functional Testing")]
+        [Trait("UserStory", "UC2-Rental")]
+        [Trait("Flow", "AlternativeFlow")]
+        [Trait("TestCase", "UC2_15")]
+        public void UC2_15_RemoveAllDevicesFromCreateRental()
+        {
+            // Arrange
+            _output.WriteLine("=== Iniciando UC2_15: Eliminar todos los dispositivos desde Create Rental ===");
+            InitialStepsForSelectDevices();
+
+            // Act - Agregar dispositivos al carrito
+            _output.WriteLine("Agregando dispositivos al carrito...");
+            _selectDevicesForRentalPO.SearchDevices(MODEL_FILTER_ALL, null);
+            Thread.Sleep(1000);
+            _selectDevicesForRentalPO.AddDeviceToCart(DEVICE_NAME_1);
+            Thread.Sleep(500);
+            _selectDevicesForRentalPO.AddDeviceToCart(DEVICE_NAME_2);
+            Thread.Sleep(500);
+
+            // Act - Ir a Create Rental
+            _output.WriteLine("Navegando a Create Rental...");
+            _selectDevicesForRentalPO.ClickRentDevices();
+            Thread.Sleep(1000);
+
+            // Act - Eliminar todos los dispositivos desde Create Rental
+            _output.WriteLine("Eliminando todos los dispositivos desde Create Rental...");
+            _createRentalPO.RemoveDeviceFromCart(DEVICE_NAME_1);
+            Thread.Sleep(500);
+            _createRentalPO.RemoveDeviceFromCart(DEVICE_NAME_2);
+            Thread.Sleep(1000);
+
+            // Assert - Debe mostrar mensaje de carrito vacío
+            _output.WriteLine("Verificando mensaje de carrito vacío...");
+            Assert.True(_createRentalPO.HasEmptyCartMessage(),
+                "Debe mostrar mensaje 'No devices selected. Please go back and select devices.'");
+
+            // Assert - El botón de crear alquiler no debe estar visible o debe estar deshabilitado
+            _output.WriteLine("Verificando que el botón Create Rental está deshabilitado...");
+            bool buttonDisabled = _createRentalPO.IsCreateRentalButtonDisabled();
+            Assert.True(buttonDisabled,
+                "El botón 'Create Rental' debe estar deshabilitado cuando no hay dispositivos");
+
+            _output.WriteLine("✓ Test UC2_15 completado: Mensaje de carrito vacío mostrado correctamente");
         }
 
     }
