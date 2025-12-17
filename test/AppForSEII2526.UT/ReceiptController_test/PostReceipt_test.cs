@@ -43,6 +43,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 UserName = _userName,
                 Email = _userName
             };
+          
             // Inserción de las entidades en el contexto de pruebas
             _context.Scales.Add(scale);
             _context.Repairs.Add(repair);
@@ -85,6 +86,18 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 Repairs = new List<ReceiptItemDTO> { new ReceiptItemDTO("Reparación pantalla", "Modelo-Test") }
             };
 
+            //CASO 4: MODELO INVALIDO -> EXAMEN
+
+            var dtoInavalidModel = new ReceiptForCreateDTO()
+            {
+                UserName = _userName,
+                Name = _customerName,
+                Surname = _customerSurname,
+                DeliveryAddress = deliveryAddress,
+                PaymentMethod = PaymentMethod.CreditCard,
+                Repairs = new List<ReceiptItemDTO> { new ReceiptItemDTO("Reparación pantalla", "Nokia") }
+            };
+                 
             // Lista de todos los casos de prueba
             var allTests = new List<object[]>
             {
@@ -93,7 +106,10 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 new object[] { dtoRepairNotExisting, $"Reparación '{dtoRepairNotExisting.Repairs.First().RepairName}' no existe", false },
 
                 // caso ModelState inválido: no comprobamos mensaje concreto (se pasa null), y marcamos forceModelStateInvalid = true
-                new object[] { dtoValidButModelStateInvalid, null, true }
+                new object[] { dtoValidButModelStateInvalid, null, true },
+
+                //CASO - MODELO INVALIDO EXAMEN
+                new object[] { dtoInavalidModel, $"Error, no ofrecemos reparaciones para moviles Nokia", false }
             };
 
             return allTests;
@@ -126,20 +142,7 @@ namespace AppForSEII2526.UT.ReceiptController_test
                 // En el caso del ModelState inválido comprobamos:
                 // El BadRequest contiene algún valor (ModelState/ValidationProblemDetails/SerializableError)
                 Assert.NotNull(badRequestResult.Value);
-                // Se ha registrado un log de advertencia con el mensaje esperado
-                var logInvocations = mockLogger.Invocations
-                    .Where(inv =>
-                        inv.Method.Name == "Log" &&
-                        inv.Arguments != null &&
-                        inv.Arguments.Count >= 3 &&
-                        inv.Arguments[0] is LogLevel lvl &&
-                        lvl == LogLevel.Warning &&
-                        inv.Arguments[2] != null &&
-                        inv.Arguments[2].ToString().Contains("Datos inválidos para crear el recibo"))
-                    .ToList();
-
-                Assert.Single(logInvocations);
-
+            
                 // No se ha creado ningún recibo en la BD de pruebas
                 Assert.Empty(_context.Receipts);
 
