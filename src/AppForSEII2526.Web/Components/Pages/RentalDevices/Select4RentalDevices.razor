@@ -7,6 +7,7 @@
 @inject ILogger<Select4RentalDevices> logger
 @inject RentalStateContainer rentalState
 @inject NavigationManager navigation
+@inject HttpClient Http
 
 <h3>Select Devices For Rental</h3>
 
@@ -15,126 +16,138 @@
         <p id="ErrorsShown">Errors: @errors</p>
     </div>
 
-    <div class="row">
-        <div class="col-8">
-            <div class="row">
-                <div class="col">
-                    <select class="form-select" @bind="modelSelected" id="selectModel">
-                        <option value="All">All</option>
-                        @if (modelsNames != null)
-                        {
-                            @foreach (string modelName in modelsNames)
-                            {
-                                <option value="@modelName">@modelName</option>
-                            }
-                        }
-                    </select>
-                </div>
-
-                <div class="col">
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon2">Max Price</span>
-                        <input type="number" id="inputPrice" @bind="priceForRent"
-                               class="form-control" placeholder="Max Price">
-                    </div>
-                </div>
-
-                <div class="col">
-                    <button type="button" class="btn btn-primary"
-                            @onclick="SearchDevices" id="searchDevices">
-                        Search devices
-                    </button>
-                </div>
-            </div>
-
-            <div class="row">
-                @if (devices == null)
-                {
-                    <p>Loading devices...</p>
-                }
-                else
-                {
-                    <div class="mh-100 table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Brand</th>
-                                    <th>Model</th>
-                                    <th>Year</th>
-                                    <th>Price For Rent</th>
-                                    <th>Rent</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var device in devices)
-                                {
-                                    <tr>
-                                        <td>@device.Name</td>
-                                        <td>@device.Brand</td>
-                                        <td>@device.Model</td>
-                                        <td>@device.Year</td>
-                                        <td>@device.PriceForRent</td>
-                                        <td>
-                                            <button class="btn btn-outline-secondary"
-                                                    @onclick="@(() => AddDevice(device))">
-                                                Add
-                                            </button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
+    @if (allStockIsZero)
+    {
+        <div class="alert alert-warning" role="alert">
+            <h4>Sin disponibilidad</h4>
+            <p>No hay dispositivos disponibles para alquilar en este momento.</p>
+            <p>Por favor, inténtelo más tarde o contacte con el servicio de atención al cliente.</p>
         </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-8">
+                <div class="row">
+                    <div class="col">
+                        <select class="form-select" @bind="modelSelected" id="selectModel">
+                            <option value="All">All</option>
+                            @if (modelsNames != null)
+                            {
+                                @foreach (string modelName in modelsNames)
+                                {
+                                    <option value="@modelName">@modelName</option>
+                                }
+                            }
+                        </select>
+                    </div>
 
-        <div class="col-4" hidden="@hideRentingCart">
-            <h3>Shopping Cart</h3>
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon2">Max Price</span>
+                            <input type="number" id="inputPrice" @bind="priceForRent"
+                                   class="form-control" placeholder="Max Price">
+                        </div>
+                    </div>
 
-            <!-- Flujo alternativo 3: Mostrar precio total actualizado dinámicamente -->
-            <div class="alert alert-info mb-3">
-                <strong>Total: @rental.TotalPrice.ToString("F2") €</strong>
-                <br />
-                <small>@rental.RentalItems.Count device(s) selected</small>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary"
+                                @onclick="SearchDevices" id="searchDevices">
+                            Search devices
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    @if (devices == null)
+                    {
+                        <p>Loading devices...</p>
+                    }
+                    else
+                    {
+                        <div class="mh-100 table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Brand</th>
+                                        <th>Model</th>
+                                        <th>Year</th>
+                                        <th>Price For Rent</th>
+                                        <th>Rent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var device in devices)
+                                    {
+                                        <tr>
+                                            <td>@device.Name</td>
+                                            <td>@device.Brand</td>
+                                            <td>@device.Model</td>
+                                            <td>@device.Year</td>
+                                            <td>@device.PriceForRent</td>
+                                            <td>
+                                                <button class="btn btn-outline-secondary"
+                                                        @onclick="@(() => AddDevice(device))">
+                                                    Add
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
             </div>
 
-            @foreach (RentalItemDTO item in rental.RentalItems)
-            {
-                <div class="row mb-2">
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body p-2">
-                                <button type="button" class="btn btn-sm btn-danger float-end"
-                                        @onclick="@(() => RemoveRentalItem(item))"
-                                        title="Remove from cart">
-                                    &times;
-                                </button>
-                                <strong>@item.DeviceName</strong>
-                                <br />
-                                <small>@item.DeviceModel</small>
-                                <br />
-                                <span class="text-primary">@item.PriceForRenting.ToString("F2")€</span>
+            <div class="col-4" hidden="@hideRentingCart">
+                <h3>Shopping Cart</h3>
+
+                <div class="alert alert-info mb-3">
+                    <strong>Total: @rental.TotalPrice.ToString("F2") €</strong>
+                    <br />
+                    <small>@rental.RentalItems.Count device(s) selected</small>
+                </div>
+
+                @foreach (RentalItemDTO item in rental.RentalItems)
+                {
+                    <div class="row mb-2">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body p-2">
+                                    <button type="button" class="btn btn-sm btn-danger float-end"
+                                            @onclick="@(() => RemoveRentalItem(item))"
+                                            title="Remove from cart">
+                                        &times;
+                                    </button>
+                                    <strong>@item.DeviceName</strong>
+                                    <br />
+                                    <small>@item.DeviceModel</small>
+                                    <br />
+                                    <span class="text-primary">@item.PriceForRenting.ToString("F2")€</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
 
-            <!-- Flujo alternativo 4: Botón deshabilitado si no hay dispositivos -->
-            <div class="row mt-3">
-                <button type="button" class="btn btn-primary"
-                        @onclick="RentDevices"
-                        disabled="@(!HasDevicesInCart)">
-                    Rent devices (@rental.RentalItems.Count)
-                </button>
+                <div class="row mt-3">
+                    <button type="button" class="btn btn-primary"
+                            @onclick="RentDevices"
+                            disabled="@(!HasDevicesInCart)">
+                        Rent devices (@rental.RentalItems.Count)
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+    }
 </div>
 
+
 @code {
+
+    private bool allStockIsZero = false;
     private ICollection<DeviceDTOAlquilar>? devices;
     private string errors = "";
     private string modelSelected = "All";
@@ -143,15 +156,27 @@
 
     private bool hideErrors => errors.Length == 0;
 
-    // RentalStateContainer
     private RentalForCreateDTO rental => rentalState.Rental;
     private bool hideRentingCart => rental.RentalItems.Count == 0;
 
-    // Flujo alternativo 4: Propiedad para verificar si hay dispositivos
     private bool HasDevicesInCart => rental.RentalItems != null && rental.RentalItems.Count > 0;
 
     protected override async Task OnInitializedAsync()
     {
+        try
+        {
+            // Usar ruta relativa sin el puerto hardcodeado
+            var response = await Http.GetFromJsonAsync<bool>("api/RentalDevice/check-stock");
+            allStockIsZero = !response;
+
+            logger.LogInformation($"Stock check: hasStock={response}, allStockIsZero={allStockIsZero}");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"Error checking stock: {ex.Message}");
+            allStockIsZero = false; // Si falla, no bloquear la página
+        }
+
         try
         {
             modelsNames = await apiclient.GetModelsAsync(null);
@@ -173,13 +198,11 @@
             errors = "Error loading devices.";
         }
 
-        // Suscribirse a cambios del estado para actualizar la UI automáticamente
         rentalState.OnChange += StateHasChanged;
 
         logger.LogInformation($"Página cargada. Dispositivos en carrito: {rental.RentalItems.Count}");
     }
 
-    // Liberar suscripción cuando el componente se destruya
     public void Dispose()
     {
         rentalState.OnChange -= StateHasChanged;
@@ -191,7 +214,6 @@
         logger.LogInformation($"Dispositivo añadido: {device.Name}. Total en carrito: {rental.RentalItems.Count}");
     }
 
-    // Flujo alternativo 3: Al eliminar, el precio se actualiza automáticamente
     private void RemoveRentalItem(RentalItemDTO item)
     {
         rentalState.RemoveRentalItemToRent(item);

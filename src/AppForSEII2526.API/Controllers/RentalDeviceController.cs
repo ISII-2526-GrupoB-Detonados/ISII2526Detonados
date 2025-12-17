@@ -58,6 +58,7 @@ namespace AppForSEII2526.API.Controllers
 
             return Ok(rental);
         }
+
         [HttpPost]
         [Route("[action]")]
         [ProducesResponseType(typeof(RentalDetailDTO), (int)HttpStatusCode.Created)]
@@ -246,5 +247,16 @@ namespace AppForSEII2526.API.Controllers
 
             return CreatedAtAction("GetRental", new { id = rental.Id }, rentalDetail);
         }
+        [HttpGet("check-stock")]
+        public async Task<ActionResult<bool>> CheckStock()
+        {
+            var devices = await _context.Devices.ToListAsync();
+
+            bool hasStock = devices.Any(d => d.QuantityForRent > 0);
+
+            return Ok(hasStock);
+        }
+
     }
+
 }
