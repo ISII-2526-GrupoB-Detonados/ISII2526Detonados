@@ -12,6 +12,7 @@
         [StringLength(20, ErrorMessage = "El nombre no puede ser mayor de 20 caracteres ni menor de 2", MinimumLength = 2)]
         public string Name { get; set; }
 
+
         [Required(ErrorMessage = "El apellido es obligatorio")]
         [StringLength(50, ErrorMessage = "El apellido no puede contener mas de 50 caracteres o menos de 2 caracteres", MinimumLength = 2)]
         public string Surname { get; set; }

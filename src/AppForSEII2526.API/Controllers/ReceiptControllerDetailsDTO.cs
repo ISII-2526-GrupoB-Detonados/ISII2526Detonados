@@ -74,6 +74,7 @@ public class RecibosController : ControllerBase
             return BadRequest($"Usuario '{dto.UserName}' no existe");
         }
 
+      
         var receiptItems = new List<ReceiptItem>();
         float totalPrice = 0;
         var enrichedItems = new List<ReceiptItemDTO>();
@@ -89,6 +90,12 @@ public class RecibosController : ControllerBase
                 _logger.LogError($"Reparación '{item.RepairName}' no encontrada");
                 return BadRequest($"Reparación '{item.RepairName}' no existe");
             }
+            // MODIFICACION EXAMEN -> MODELO NOKIA NO ACEPTADO
+            if (item.ModelToRepair == "Nokia") {
+
+                return BadRequest($"Error, no ofrecemos reparaciones para moviles Nokia");
+            }
+            // FIN MODIFICACION EXAMEN
 
             totalPrice += (float)repair.Cost;
 
@@ -103,7 +110,8 @@ public class RecibosController : ControllerBase
              repair.Scale.Name,     // Parámetro 2: scale
               item.ModelToRepair,    // Parámetro 3: modelToRepair
             (float)repair.Cost    // Parámetro 4: repairCost
-));
+));         
+           
         }
 
         var receipt = new Receipt
