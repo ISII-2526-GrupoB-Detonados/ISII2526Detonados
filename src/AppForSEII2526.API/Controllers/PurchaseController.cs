@@ -70,11 +70,12 @@ namespace AppForSEII2526.API.Controllers
                 ModelState.AddModelError("PurchaseItems", "Error! You must include at least one device to be purchased");
 
             //EXAMEN=================================================
-
+            /*
             if (purchaseForCreate.PaymentMethod==PaymentMethod.PayPal)
             {
                 ModelState.AddModelError("PaymentMethod", "¡Error! Solo aceptamos compras pagadas con Tarjeta de Crédito");
             }
+            */
 
             //======================================================
 
