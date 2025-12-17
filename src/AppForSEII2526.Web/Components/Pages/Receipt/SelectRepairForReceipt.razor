@@ -146,12 +146,12 @@
         catch (ApiException ex)
         {
             logger.LogError($"{DateTime.Now} Error: {ex}");
-            errors = "Error while connecting to the system";
+            errors = "No existe esa reparación";
         }
         catch (Exception ex)
         {
             logger.LogError($"{DateTime.Now} Error: {ex.Message}");
-            errors = "Unexpected error while searching repairs";
+            errors = "Error inesperado al buscar reparación";
         }
         StateHasChanged();
     }
