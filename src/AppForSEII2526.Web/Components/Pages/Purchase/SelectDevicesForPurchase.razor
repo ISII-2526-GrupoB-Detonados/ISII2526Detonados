@@ -79,6 +79,14 @@
                     <button type="button" class="btn btn-light" id="removeDevice_@item.Name" @onclick="@(() => RemovePurchaseItem(item))">x @item.Name - @item.Price.ToString("N2")€</button>
                 </div>
             }
+            <div class="row mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Price</h5>
+                        <p class="card-text fs-4 fw-bold" id="cartTotalPrice">@CurrentTotalPrice.ToString("N2") €</p>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <button type="button" class="btn btn-primary" id="purchaseDeviceButton" @onclick=@PurchaseDevices>Purchase Devices</button>
             </div>
@@ -96,10 +104,20 @@
     private string errors = "";
     private string deviceColor { get; set; }
     private string deviceName { get; set; }
+    private bool showNoDevicesMessage { get; set; } = false;
 
     private Purchase_ForCreate_DTO purchase => purchaseState.Purchase;
 
     private bool hiddenPurchaseCart = true;
+
+    private double CurrentTotalPrice
+    {
+        get
+        {
+            if (purchase?.PurchaseItems == null) return 0;
+            return purchase.PurchaseItems.Sum(item => item.Price * item.Quantity);
+        }
+    }
 
     private void AddDevice(Device_DTO_Comprar device) {
         purchaseState.AddDeviceToPurchase(device);
@@ -112,7 +130,18 @@
 
     public async void SearchDevices() {
         try {
-            devices = await apiclient.GetDevicesComprarDTOsAsync(deviceColor, deviceName); //null?
+            devices = await apiclient.GetDevicesComprarDTOsAsync(deviceColor, deviceName);
+            showNoDevicesMessage = devices != null && devices.Count == 0;
+
+            
+            if (showNoDevicesMessage)
+            {
+                errors = "No devices available";
+            }
+            else
+            {
+                errors = ""; 
+            }
 
         }
         catch (ApiException ex) {

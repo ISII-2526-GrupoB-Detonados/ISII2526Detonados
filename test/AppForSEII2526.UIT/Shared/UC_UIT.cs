@@ -53,6 +53,7 @@ namespace AppForMovies.UIT.Shared
         protected void Perform_login(string email, string password)
         {
             _driver.Navigate().GoToUrl(_URI + "Account/Login");
+
             
             _driver.FindElement(By.Name("Input.Email"))
                 .SendKeys(email);
@@ -71,6 +72,7 @@ namespace AppForMovies.UIT.Shared
                 PageLoadStrategy = PageLoadStrategy.Normal,
                 AcceptInsecureCertificates = true
             };
+
             
             if (_pipeline) optionsc.AddArgument("--headless");
 
@@ -84,6 +86,7 @@ namespace AppForMovies.UIT.Shared
                 PageLoadStrategy = PageLoadStrategy.Normal,
                 AcceptInsecureCertificates = true
             };
+
             
             if (_pipeline) optionsff.AddArgument("--headless");
 
