@@ -9,7 +9,7 @@ namespace AppForMovies.UIT.Shared
         private bool _pipeline = false;
 
         // Establecer el navegador a usar
-        private string _browser = "Chrome";
+        private string _browser = "Chrome";  
         //private string _browser = "Firefox";
         //private string _browser = "Edge";
 
@@ -54,6 +54,7 @@ namespace AppForMovies.UIT.Shared
         {
             _driver.Navigate().GoToUrl(_URI + "Account/Login");
 
+            
             _driver.FindElement(By.Name("Input.Email"))
                 .SendKeys(email);
 
@@ -72,6 +73,7 @@ namespace AppForMovies.UIT.Shared
                 AcceptInsecureCertificates = true
             };
 
+            
             if (_pipeline) optionsc.AddArgument("--headless");
 
             _driver = new ChromeDriver(optionsc);
@@ -85,6 +87,7 @@ namespace AppForMovies.UIT.Shared
                 AcceptInsecureCertificates = true
             };
 
+            
             if (_pipeline) optionsff.AddArgument("--headless");
 
             _driver = new FirefoxDriver(optionsff);

@@ -8,15 +8,19 @@
 
     public class ReceiptForCreateDTO
     {
-
+        [Required(ErrorMessage = "El nombre es obligatorio")]
         [StringLength(20, ErrorMessage = "El nombre no puede ser mayor de 20 caracteres ni menor de 2", MinimumLength = 2)]
         public string Name { get; set; }
 
+
+        [Required(ErrorMessage = "El apellido es obligatorio")]
         [StringLength(50, ErrorMessage = "El apellido no puede contener mas de 50 caracteres o menos de 2 caracteres", MinimumLength = 2)]
         public string Surname { get; set; }
 
+        [Required(ErrorMessage = "El usuario (email) es obligatorio")]
         public string UserName { get; set; }
 
+        [Required(ErrorMessage = "La dirección de entrega es obligatoria")]
         [StringLength(100, ErrorMessage = "La direccion de envio no debe contener mas de 100 caracteres o menos de 5", MinimumLength = 5)]
         public string DeliveryAddress { get; set; }
 

@@ -92,7 +92,9 @@
                         <tr id="RepairData_@item.RepairName">
                             <td>@item.RepairName</td>
                             <td>@item.Scale</td>
-                            <td>@item.ModelToRepair</td>
+                            <td>
+                                <InputText @bind-Value="item.ModelToRepair" class="form-control form-control-sm" placeholder="Introduce el modelo" />
+                            </td>
                             <td>@item.RepairCost?.ToString("C")</td>
                         </tr>
                     }
