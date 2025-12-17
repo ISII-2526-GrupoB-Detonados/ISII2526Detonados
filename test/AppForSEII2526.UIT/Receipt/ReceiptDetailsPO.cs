@@ -17,9 +17,8 @@ namespace AppForSEII2526.UIT.CU_Receipt
         {
         }
 
-        /// <summary>
-        /// Verifica los detalles principales del recibo
-        /// </summary>
+        // Verifica los detalles principales del recibo
+       
         public bool CheckReceiptDetail(string nombre, string apellidos, string direccion,
             DateTime fechaOperacion, float precioTotal)
         {
@@ -36,53 +35,41 @@ namespace AppForSEII2526.UIT.CU_Receipt
             return result;
         }
 
-        /// <summary>
-        /// Verifica la lista de reparaciones en el recibo
-        /// </summary>
+        // Verifica la lista de reparaciones en el recibo
         public bool CheckListOfRepairs(List<string[]> expectedRepairs)
         {
             return CheckBodyTable(expectedRepairs, By.Id("Repairs"));
         }
 
-        /// <summary>
-        /// Obtiene el nombre del cliente desde el recibo
-        /// </summary>
+        // Obtiene el nombre del cliente desde el recibo
         public string GetClientName()
         {
             WaitForBeingVisible(By.Id("NameSurname"));
             return _driver.FindElement(By.Id("NameSurname")).Text;
         }
 
-        /// <summary>
-        /// Obtiene la dirección de entrega desde el recibo
-        /// </summary>
+        // Obtiene la dirección de entrega desde el recibo
         public string GetDeliveryAddress()
         {
             WaitForBeingVisible(By.Id("DeliveryAddress"));
             return _driver.FindElement(By.Id("DeliveryAddress")).Text;
         }
 
-        /// <summary>
-        /// Obtiene la fecha de operación desde el recibo
-        /// </summary>
+        // Obtiene la fecha de operación desde el recibo
         public string GetOperationDate()
         {
             WaitForBeingVisible(By.Id("OperationDate"));
             return _driver.FindElement(By.Id("OperationDate")).Text;
         }
 
-        /// <summary>
-        /// Obtiene el precio total desde el recibo
-        /// </summary>
+        // Obtiene el precio total desde el recibo
         public string GetTotalPrice()
         {
             WaitForBeingVisible(totalPriceElement);
             return _driver.FindElement(totalPriceElement).Text;
         }
 
-        /// <summary>
-        /// Verifica si el recibo contiene un mensaje de error
-        /// </summary>
+        // Verifica si el recibo contiene un mensaje de error
         public bool CheckErrorMessage()
         {
             try

@@ -27,9 +27,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
         {
         }
 
-        /// <summary>
-        /// Rellena el formulario de creación del recibo con los datos del cliente
-        /// </summary>
+        // Rellena el formulario de creación del recibo con los datos del cliente
         public void FillReceiptForm(string nombre, string apellidos, string direccion, string metodoPago)
         {
             // Rellenar nombre
@@ -49,9 +47,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             Thread.Sleep(300);
         }
 
-        /// <summary>
-        /// Rellena solo el campo de nombre con disparo de evento blur
-        /// </summary>
+        // Rellena solo el campo de nombre con disparo de evento blur
         public void FillNameField(string nombre)
         {
             WaitForBeingClickable(inputName);
@@ -73,9 +69,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             DispatchBlurEvent(nameField);
         }
 
-        /// <summary>
-        /// Rellena solo el campo de apellidos con disparo de evento blur
-        /// </summary>
+        // Rellena solo el campo de apellidos con disparo de evento blur
         public void FillSurnameField(string apellidos)
         {
             WaitForBeingClickable(inputSurname);
@@ -95,9 +89,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             DispatchBlurEvent(surnameField);
         }
 
-        /// <summary>
-        /// Rellena solo el campo de dirección con disparo de evento blur
-        /// </summary>
+        // Rellena solo el campo de dirección con disparo de evento blur
         public void FillDeliveryAddressField(string direccion)
         {
             WaitForBeingClickable(inputDeliveryAddress);
@@ -117,9 +109,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             DispatchBlurEvent(addressField);
         }
 
-        /// <summary>
-        /// Rellena el campo de modelo para una reparación específica en la tabla
-        /// </summary>
+        // Rellena el campo de modelo para una reparación específica en la tabla
         public void FillModelField(string repairName, string model)
         {
             try
@@ -148,9 +138,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             }
         }
 
-        /// <summary>
-        /// Obtiene el valor del campo de modelo para una reparación específica
-        /// </summary>
+        // Obtiene el valor del campo de modelo para una reparación específica
         public string GetModelFieldValue(string repairName)
         {
             try
@@ -172,9 +160,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             }
         }
 
-        /// <summary>
-        /// Dispara el evento blur en un elemento para que Blazor valide
-        /// </summary>
+        // Dispara el evento blur en un elemento para que Blazor valide
         private void DispatchBlurEvent(IWebElement element)
         {
             try
@@ -191,17 +177,13 @@ namespace AppForSEII2526.UIT.CU_Receipt
             }
         }
 
-        /// <summary>
-        /// Selecciona el método de pago
-        /// </summary>
+        // Selecciona el método de pago
         public void SelectPaymentMethod(string metodoPago)
         {
             SelectPaymentMethodByText(metodoPago);
         }
 
-        /// <summary>
-        /// Selecciona el método de pago por texto visible
-        /// </summary>
+        // Selecciona el método de pago por texto visible
         private void SelectPaymentMethodByText(string metodoPago)
         {
             WaitForBeingClickable(selectPaymentMethod);
@@ -240,9 +222,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             DispatchChangeEvent(paymentDropdown);
         }
 
-        /// <summary>
-        /// Dispara el evento change en un elemento
-        /// </summary>
+        // Dispara el evento change en un elemento
         private void DispatchChangeEvent(IWebElement element)
         {
             try
@@ -253,44 +233,34 @@ namespace AppForSEII2526.UIT.CU_Receipt
             catch { }
         }
 
-        /// <summary>
-        /// Obtiene el valor del campo nombre
-        /// </summary>
+        // Obtiene el valor del campo nombre
         public string GetNameFieldValue()
         {
             WaitForBeingVisible(inputName);
             return _driver.FindElement(inputName).GetAttribute("value");
         }
 
-        /// <summary>
-        /// Obtiene el valor del campo apellidos
-        /// </summary>
+        // Obtiene el valor del campo apellidos
         public string GetSurnameFieldValue()
         {
             WaitForBeingVisible(inputSurname);
             return _driver.FindElement(inputSurname).GetAttribute("value");
         }
 
-        /// <summary>
-        /// Obtiene el valor del campo dirección
-        /// </summary>
+        // Obtiene el valor del campo dirección
         public string GetDeliveryAddressFieldValue()
         {
             WaitForBeingVisible(inputDeliveryAddress);
             return _driver.FindElement(inputDeliveryAddress).GetAttribute("value");
         }
 
-        /// <summary>
-        /// Verifica la lista de reparaciones en el recibo
-        /// </summary>
+        // Verifica la lista de reparaciones en el recibo
         public bool CheckListOfRepairs(List<string[]> expectedRepairs)
         {
             return CheckBodyTable(expectedRepairs, tableOfReceiptItemsBy);
         }
 
-        /// <summary>
-        /// Obtiene el precio total del recibo
-        /// </summary>
+        // Obtiene el precio total del recibo
         public string GetTotalPrice()
         {
             try
@@ -324,9 +294,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             }
         }
 
-        /// <summary>
-        /// Hace click en el botón de envío del formulario
-        /// </summary>
+        // Hace click en el botón de envío del formulario
         public void ClickSubmitButton()
         {
             WaitForBeingClickable(buttonSubmit);
@@ -334,27 +302,21 @@ namespace AppForSEII2526.UIT.CU_Receipt
             Thread.Sleep(500); // Esperar a que Blazor procese
         }
 
-        /// <summary>
-        /// Confirma el diálogo de confirmación
-        /// </summary>
+        // Confirma el diálogo de confirmación
         public void ConfirmDialog()
         {
             WaitForBeingClickable(dialogOkButton);
             _driver.FindElement(dialogOkButton).Click();
         }
 
-        /// <summary>
-        /// Hace click en el botón para modificar reparaciones
-        /// </summary>
+        // Hace click en el botón para modificar reparaciones
         public void ClickModifyRepairsButton()
         {
             WaitForBeingClickable(modifyRepairsButton);
             _driver.FindElement(modifyRepairsButton).Click();
         }
 
-        /// <summary>
-        /// Verifica si se muestra un mensaje de error
-        /// </summary>
+        // Verifica si se muestra un mensaje de error
         public bool CheckErrorMessage(string expectedError)
         {
             try
@@ -369,9 +331,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             }
         }
 
-        /// <summary>
-        /// Verifica si hay errores de validación visibles en el formulario
-        /// </summary>
+        // Verifica si hay errores de validación visibles en el formulario
         public bool HasValidationErrors()
         {
             try
@@ -408,9 +368,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             }
         }
 
-        /// <summary>
-        /// Obtiene el texto de los errores de validación
-        /// </summary>
+        // Obtiene el texto de los errores de validación
         public string GetValidationErrorText()
         {
             try
@@ -434,9 +392,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             }
         }
 
-        /// <summary>
-        /// Verifica si el botón submit está deshabilitado
-        /// </summary>
+        // Verifica si el botón submit está deshabilitado
         public bool IsSubmitButtonDisabled()
         {
             try
