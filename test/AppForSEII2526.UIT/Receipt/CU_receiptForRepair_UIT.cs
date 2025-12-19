@@ -81,9 +81,9 @@ namespace AppForSEII2526.UIT.CU_Receipt
 
             // Act - Paso 3: Seleccionar reparaciones (añadir al carrito)
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_2);
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
 
             // Act - Paso 4: Seleccionar Contratar reparación
             _selectRepairForSelectPO.ClickCreateReceipt();
@@ -335,11 +335,11 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _selectRepairForSelectPO.SearchRepairs("", "All");
             Thread.Sleep(1000);
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
 
             // Act - Paso 5: Eliminar la reparación (carrito vacío)
             _selectRepairForSelectPO.RemoveRepairFromReceipt(REPAIR_NAME_1);
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
 
             // Assert - El botón debe estar deshabilitado (carrito vacío)
             bool buttonDisabled = _selectRepairForSelectPO.CreateReceiptButtonNotAvailable();
@@ -391,7 +391,7 @@ namespace AppForSEII2526.UIT.CU_Receipt
             _selectRepairForSelectPO.SearchRepairs("", "All");
             Thread.Sleep(1000);
             _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             _selectRepairForSelectPO.ClickCreateReceipt();
             Thread.Sleep(1000);
 
@@ -558,5 +558,71 @@ namespace AppForSEII2526.UIT.CU_Receipt
             Assert.True(_driver.Url.Contains("/receipt/select-repair-for-receipt"),
                 "Debe volver a la página de selección de reparaciones");
         }
+        [Fact]
+        [Trait("LevelTesting", "Functional Testing")]
+        [Trait("UserStory", "UC4-Receipt")]
+        [Trait("Flow", "AlternativeFlow6")]
+        public void CP_UC4_10_Examen()
+        {
+            // Arrange
+            InitialStepsForSelectRepair();
+
+            //Añadir un elemento
+            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_1);
+            Thread.Sleep(500);
+            // Fitrar por escala 
+            _selectRepairForSelectPO.SearchRepairs("", "Mediocre");
+            Thread.Sleep(1000);
+            // Añadir un nuevo elemento 
+            _selectRepairForSelectPO.AddRepairToReceipt(REPAIR_NAME_2);
+            Thread.Sleep(500);
+            // Eliminar el primer elemento añadido 
+            _selectRepairForSelectPO.RemoveRepairFromReceipt(REPAIR_NAME_1);
+            Thread.Sleep(500);
+            //Continuar con el proceso hasta el final
+            _selectRepairForSelectPO.ClickCreateReceipt();
+            Thread.Sleep(1000);
+            // Nombre y apellidos
+            _createReceiptPO.FillNameField(CLIENT_NAME);
+            Thread.Sleep(300);
+            _createReceiptPO.FillSurnameField(CLIENT_SURNAME);
+            Thread.Sleep(300);
+
+            // Dirección de entrega
+            _createReceiptPO.FillDeliveryAddressField(DELIVERY_ADDRESS);
+            Thread.Sleep(300);
+
+            // Modelo de cada dispositivo (OBLIGATORIO según paso 5)
+          
+            _createReceiptPO.FillModelField(REPAIR_NAME_2, MODEL_2);
+            Thread.Sleep(300);
+
+            // - Método de pago
+            _createReceiptPO.SelectPaymentMethod(PAYMENT_METHOD_CREDIT_CARD);
+            Thread.Sleep(500);
+
+            // Act - Paso 6: Guardar (click en Submit)
+            _createReceiptPO.ClickSubmitButton();
+            Thread.Sleep(1000);
+
+            try
+            {
+                _createReceiptPO.ConfirmDialog();
+                Thread.Sleep(1000);
+            }
+            catch
+            {
+                // Dialog puede no aparecer
+            }
+
+            // Assert - Paso 7: Verificar recibo con todos los datos
+            bool isOnReceiptDetailPage = _driver.Url.Contains("/receipt/detailreceipt") ||
+                                        _driver.Url.Contains("/receipts/detailreceipt");
+
+            Assert.True(isOnReceiptDetailPage,
+                $"Debería estar en la página de detalles del recibo. URL actual: {_driver.Url}");
+        }
     }
+
+    
 }
