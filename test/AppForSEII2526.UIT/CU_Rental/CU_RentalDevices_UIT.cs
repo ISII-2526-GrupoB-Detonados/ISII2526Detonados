@@ -64,9 +64,64 @@ namespace AppForSEII2526.UIT.CU_Rental
             _driver.Navigate().GoToUrl(_URI + "rental/selectdevicesforrental");
             Thread.Sleep(1500); // tiempo de espera para funcionamiento correcto testeado en las 15
         }
+        
+        [Fact]
+        [Trait("LevelTesting", "Functional Testing")]
+        [Trait("UserStory", "UC2-BF+AF1+AF2")]
+        [Trait("Flow", "Examen test")]
+        [Trait("TestCase", "UC2_2")]
+        //
+        public void test()
+        {
+            // Arrange
+            InitialStepsForSelectDevices();
+
+            // Act
+
+            //ver dispositivos todos
+            _selectDevicesForRentalPO.SearchDevices(MODEL_FILTER_ALL, null);
+            //seleccionar pixel primero
+            _selectDevicesForRentalPO.AddDeviceToCart(DEVICE_NAME_1);
+            Thread.Sleep(500);
+
+            //FILTRAR POR MODELO "oppo"
+            _selectDevicesForRentalPO.SearchDevices(MODEL_FILTER_OPPO, null);
+            Thread.Sleep(1000);
+            //seleccionar oppo
+            _selectDevicesForRentalPO.AddDeviceToCart(DEVICE_NAME_2);
+            Thread.Sleep(500);
+           
+          
+            _selectDevicesForRentalPO.RemoveDeviceFromCart(DEVICE_NAME_1);
+            Thread.Sleep(500);
+            _selectDevicesForRentalPO.ClickRentDevices();
+            Thread.Sleep(1000);
 
 
-       
+            //terminar alquiler
+            _createRentalPO.FillCustomerNameField(CUSTOMER_NAME_SURNAME);
+            Thread.Sleep(300);
+            _createRentalPO.FillDeliveryAddressField(DELIVERY_ADDRESS_VALID);
+            Thread.Sleep(300);
+            _createRentalPO.SelectPaymentMethod(PAYMENT_METHOD_PAYPAL);
+            Thread.Sleep(500);
+
+            _createRentalPO.ClickCreateRentalButton();
+            Thread.Sleep(1000);
+
+            try
+            {
+                _createRentalPO.ConfirmDialog();
+                Thread.Sleep(1000);
+            }
+            catch { }
+
+            // Assert
+            bool isOnDetailPage = _driver.Url.Contains("/rental/detailrental");
+            Assert.True(isOnDetailPage);
+        }
+
+        
 
         // UC2_1: Flujo básico completo con tarjeta de crédito-----------------------------------------------------
         [Fact]
