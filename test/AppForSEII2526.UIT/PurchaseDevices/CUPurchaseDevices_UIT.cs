@@ -80,6 +80,61 @@ namespace AppForSEII2526.UIT.PurchaseDevices
                 direccionEntrega, metodoPago, precioTotal));
         }
 
+        //EXAMEN==================================================================================
+        [Fact]
+        public void ExamenSprint3()
+        {
+            // Arrange
+            var listDevices_PO = new ListDevicesForPurchase_PO(_driver, _output);
+            var createPurchase_PO = new CreatePurchase_PO(_driver, _output);
+            var detailPurchase_PO = new DetailPurchase_PO(_driver, _output);
+            string nombreCliente = "alejandro.jara@email.com";
+            string apellidoCliente = "Jara Sánchez";
+            string direccionEntrega = "Calle La Feria, 23";
+            string descripcionDispositivo = "mola";
+            string precioTotal = "299,99";
+            string metodoPago = "CreditCard";
+
+            // Act INICIAR SESIÓN
+            Precondition_perform_login();
+            System.Threading.Thread.Sleep(2000);
+
+            // 1. Navegar hasta la página de Comprar Dispositivos
+            ListDevicesForPurchase_PO.WaitForBeingVisible(By.LinkText("Purchase"));
+            _driver.FindElement(By.LinkText("Purchase")).Click();
+
+            // 2. Seleccionar el dispositivo
+            listDevices_PO.SelectDevices(new List<string>() { deviceName2 });
+
+            // 3. Filtrar por model
+            listDevices_PO.FilterDevices("", deviceName1);
+
+            // 4. Seleccionar por filtro
+            listDevices_PO.SelectDevices(new List<string>() { deviceName1 });
+
+            // 5. Eliminar primero
+            listDevices_PO.DeselectDevice(deviceName2);
+
+            // 6. Pulsar el botón de comprar
+            listDevices_PO.Purchase();
+
+            // 7. Rellenar los datos del cliente
+            createPurchase_PO.setDatos(nombreCliente, apellidoCliente, direccionEntrega, metodoPago);
+            createPurchase_PO.setDescripcionDispositivo(deviceID1, descripcionDispositivo);
+
+            // 8. Pulsar comprar para finalizar la compra
+            createPurchase_PO.Comprar();
+            createPurchase_PO.ConfirmarPedido();
+
+            System.Threading.Thread.Sleep(2000);
+
+            // Assert
+            // 9. Verificar los detalles de la compra
+            Assert.True(detailPurchase_PO.CheckPurchaseDetail($"{nombreCliente} Jara",
+                direccionEntrega, metodoPago, precioTotal));
+        }
+        
+        //========================================================================================
         //FLUJO ALTERNATIVO 0 - No hay dispositivos disponibles
         [Fact]
         public void UC2_FA0_NoHayDispositivosDisponibles()
@@ -121,7 +176,7 @@ namespace AppForSEII2526.UIT.PurchaseDevices
             "Xiaomi",
             deviceColor1,
             deviceName1,
-            "Xiami x3",
+            "Xiaomi x3",
             devicePriceForPurchase1
                 });
             }
